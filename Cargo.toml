@@ -1,0 +1,10 @@
+[package]
+name = "dnd"
+version = "0.1.0"
+authors = ["rfm <r@robertmasen.pizza>"]
+edition = "2018"
+
+[dependencies]
+web-view = "0.4"
+serde = "1"
+serde_json = "1"

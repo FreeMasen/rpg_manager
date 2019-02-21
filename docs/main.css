@@ -1,0 +1,685 @@
+:root {
+    --border-color: brown;
+}
+
+i {
+    font-style: normal;
+}
+
+html, body {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+* {
+    box-sizing: border-box;
+}
+
+.top-bar {
+    width: 100%;
+    height: 50px;
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 75px auto 75px;
+    grid-template-areas: 'back title x'
+}
+
+.back-button {
+    grid-area: back;
+    width: 45px;
+    height: 45px;
+    font-size: 24pt;
+    border: 0;
+    border-radius: 50%;
+    text-align: center;
+}
+
+
+.top-bar-title {
+    grid-area: title;
+    text-align: center;
+    font-size: 24pt;
+}
+
+.character-picker {
+    display: flex;
+    width: 500px;
+    margin: auto;
+    flex-flow: column;
+    overflow: scroll;
+    border-radius: 5px;
+}
+
+.character-picker-header {
+    font-weight: bold;
+    
+}
+
+.character-picker-entry,
+.character-picker-header {
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 24pt;
+    height: 50px;
+}
+
+.character-picker-entry {
+    display: grid;
+    grid-template-columns: 100px 400px;
+    grid-template-rows: 50px;
+    grid-template-areas: 'cls name';
+    cursor: pointer;
+}
+
+.character-picker-entry:hover {
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+.character-picker-class-container {
+    grid-area: cls;
+    display: flex;
+    flex-flow: row;
+}
+
+.character-picker-class {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    background-origin: content-box;
+    width: 50px;
+    height: 50px;
+}
+
+.character-name {
+    grid-area: name;
+    font-size: 24pt;
+}
+
+.character-sheet {
+    display: grid;
+    grid-template-columns: 55px 165px 387px 400px;
+    grid-template-rows: 75px 125px 80px 270px 25px 300px;
+    grid-template-areas: 
+    'name name   meta meta  spells'
+    'abi  save   def  notes spells'
+    'abi  skills def  notes spells'
+    'abi  skills cmb  notes spells'
+    'pas  pas    mon  items spells'
+    'prof  prof  mon  items spells';
+    margin-bottom: 50px;
+}
+
+.character-name-container {
+    grid-area: name;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin: 5px 0 0 5px;
+    text-align: center;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.character-name-text {
+    font-size: 33pt;
+    font-weight: bold;
+}
+
+.inspiration-container {
+    display: grid;
+    grid-template-rows: 15px 15px;
+    grid-template-columns: 100px 15px;
+    grid-template-areas: 'insp up'
+                        'insp down';
+}
+.inspiration-container > span {
+    grid-area: insp;
+    line-height: 1.75;
+}
+
+.inspiration-container > button,
+.adjustable-inner > button {
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    text-align: center;
+    font-size: 6pt;
+}
+.inspiration-container > .up {
+    grid-area: up;
+}
+.inspiration-container > .down {
+    grid-area: down;
+}
+
+.character-description {
+    grid-area: meta;
+    border-radius: 5px;
+    margin: 5px 0 0 5px;
+    display: grid;
+    grid-template-rows: 50% 50%;
+    grid-template-columns: 160px 38px 198px 198px;
+    grid-template-areas: 
+        'cls  level background background'
+        'race race  alignment  experience';
+}
+
+.character-class {
+    grid-area: cls;
+}
+
+.class-level {
+    grid-area: level;
+}
+
+.character-race {
+    grid-area: race;
+}
+
+.character-background {
+    grid-area: background;
+}
+
+.character-alignment {
+    grid-area: alignment;
+}
+
+.character-experience {
+    grid-area: experience;
+    cursor: pointer;
+}
+
+.experience-adjuster {
+    position: absolute;
+    left: 600px;
+    top: 100px;
+    display: flex;
+    flex-flow: column;
+    background: lightgrey;
+    border-radius: 5px;
+    width: 175px;
+    box-shadow: 1px 1px 1px 1px grey;
+}
+
+.desc-part {
+    display: grid;
+    grid-template-rows: 18px 1px 17px;
+    grid-template-areas: 
+        'value'
+        'divider'
+        'label';
+}
+
+.desc-value {
+    font-size: 16pt;
+    margin-left: 10px;
+    line-height: 30pt;
+}
+.desc-divider {
+    margin: auto;
+    width: calc(100% - 10px);
+}
+
+.desc-label {
+    font-size: 9pt;
+    color: grey;
+    margin-left: 5px;
+}
+
+.ability-scores-column {
+    grid-area: abi;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    align-items: center;
+    align-content: flex-start;
+    margin: 5px 0 0 5px;
+}
+
+.ability-score-container > span {
+    height: 17px;
+}
+
+.ability-score-adjustor {
+    background: lightgrey;
+    border-radius: 5px;
+    position: absolute;
+    left: 50px;
+    top: -74px;
+    box-shadow: 1px 1px 1px 1px grey;
+}
+
+.ability-score-adjustor > .scores-list > .input-group {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.ability-score-adjustor > .scores-list > .input-group > input {
+    width: 75px;
+}
+
+.ability-score-container {
+    margin: 5px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    align-content: flex-start;
+    padding: 0px;
+    height: 71px;
+    justify-content: flex-start;
+}
+
+.saves-list {
+    display: flex;
+    flex-flow: column;
+    grid-area: save;
+    align-items: flex-end;
+    border-radius: 5px;
+    height: 120px;
+    margin: 5px 0 0 5px;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+    padding-left: 5px;
+    padding-top: 1px;
+}
+
+.skills-list {
+    display: flex;
+    flex-flow: column;
+    grid-area: skills;
+    align-items: flex-end;
+    border-radius: 5px;
+    margin: 5px 0 0 5px;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.skill-container {
+    display: grid;
+    grid-template-columns: 25px 20px 135px;
+    grid-template-rows: 19px;
+    grid-template-areas: 'enabled score name';
+    margin-left: 5px;
+    /*! margin-top: 5px; */
+    padding-left: 5px;
+}
+
+.skill-name {
+    grid-area: name;
+}
+
+.skill-value {
+    grid-area: score;
+    text-align: center;
+
+}
+
+.check-box {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    border: 2px solid black;
+}
+
+.check-box.selected {
+    background: black;
+}
+
+.passive-wisdom {
+    grid-area: pas;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+}
+
+.defences {
+    grid-area: def;
+    display: grid;
+    margin: 5px 0 0 5px;
+    grid-template-rows: 60px 60px 60px;
+    grid-template-columns: 125px 125px 125px;
+    grid-template-areas: 
+        'ac init speed'
+        'hp temp dmg'
+        'hd hd hd';
+}
+
+
+.defence-container {
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    border-radius: 5px;
+    margin: 5px 0 0 5px;
+    font-size: 12pt;
+}
+.defence-container.armor-class {
+    grid-area: ac;
+}
+
+.defence-container.initiative {
+    grid-area: init;
+}
+
+.defence-container.speed {
+    grid-area: speed;
+}
+
+.defence-container.hit-points {
+    grid-area: hp;
+}
+
+.defence-container.damage {
+    grid-area: dmg;
+}
+.defence-container > .adjustable-inner {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    grid-template-columns: auto 10px;
+    grid-template-areas: 
+        "value up"
+        "value down";
+    padding: 0 15px;
+}
+.adjustable-inner > .defence-value {
+    grid-area: value;
+}
+
+.defence-container > .adjustable-inner > button:hover {
+    background: white;
+}
+.adjustable-inner > .adjust-up {
+    grid-area: up;
+}
+
+.adjustable-inner > .adjust-down {
+    grid-area: down;
+}
+
+.defence-container.hit-die {
+    grid-area: hd;
+}
+
+.weapons {
+    grid-area: cmb;
+    grid-template-areas: 'name dmg misc';
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin: 5px 0 0 5px;
+    overflow-y: scroll;
+}
+
+.weapon-container {
+    margin: 5px 0 0 5px;
+    display: grid;
+    grid-template-rows: 25px;
+    grid-template-columns: 120px 60px 135px 15px;
+    grid-template-areas: 'name dmg misc del';
+    border-radius: 5px;
+    font-size: 14pt;
+    padding-top: 5px;
+    margin-right: 5px;
+}
+
+.weapon-container > button {
+    grid-area: del;
+    height: 15px;
+    width: 15px;
+    padding: 0;
+    border: 0;
+    line-height: 5px;
+    font-size: 12pt;
+    text-align: center;
+    color: crimson;
+}
+
+.weapon-name {
+    grid-area: name;
+    margin-left: 5px;
+}
+
+.weapon-dmg {
+    grid-area: dmg;
+}
+
+.weapon-misc {
+    grid-area: misc;
+}
+
+.new-weapon {
+    display: flex;
+    flex-flow: column;
+    position: absolute;
+    left: 260px;
+    top: 343px;
+    background: lightgrey;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px grey;
+}
+
+.new-weapon > div {
+    display: flex;
+    flex-flow: row;
+}
+
+.new-weapon > div > label {
+    width: 150px;
+}
+
+.money {
+    grid-area: mon;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin: 5px 0 0 5px;
+}
+
+.money-unit {
+    display: grid;
+    grid-template-columns: 25px 125px;
+    grid-template-areas: 
+        'value unit';
+    height: 25px;
+    line-height: 25px;
+    margin-top: 5px;
+}
+
+.unit-value {
+    grid-area: value;
+    text-align: center;
+}
+
+.unit-unit {
+    grid-area: unit;
+}
+
+.money-adjuster {
+    position: absolute;
+    top: 550px;
+    left: 313px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px grey;
+    background: lightgrey;
+    display: flex;
+    flex-flow: column;
+}
+
+.money-adjuster > .inputs {
+    display: flex;
+    flex-flow: row;
+}
+
+.input-pair {
+    display: flex;
+    flex-flow: column;
+}
+
+.money-adjuster > .inputs > .input-pair > input {
+    width: 75px;
+}
+
+.passive-wisdom {
+    grid-area: pas;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin: 5px 0 0 5px;
+}
+
+.proficiency {
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin: 5px 0 0 5px;
+    grid-area: prof;
+    display: flex;
+    flex-flow: column;
+    overflow: scroll;
+}
+
+.notes {
+    grid-area: notes;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin: 5px 0 0 5px;
+    display: flex;
+    flex-flow: column;
+    overflow: scroll;
+}
+
+.items-list {
+    grid-area: items;
+    display: flex;
+    flex-flow: column;
+    border-radius: 5px;
+    margin: 5px 0 0 5px;
+    justify-content: space-between;
+    overflow: scroll;
+}
+
+.items-list > .item-list {
+    display: flex;
+    flex-flow: column;
+}
+
+.magic-list-item > button {
+    margin-left: 5px;
+    width: 15px;
+    height: 15px;
+    line-height: 5px;
+    text-align: center;
+    padding: 0;
+    border: 0;
+}
+
+.new-item {
+    position: absolute;
+    display: flex;
+    flex-flow: row nowrap;
+    left: 620px;
+    top: 650px;
+    background: lightgrey;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px grey;
+    padding: 5px;
+}
+
+.new-item > select {
+    width: 100px;
+}
+
+.spells-list {
+    
+}
+
+input[type="number"] {
+    width: 75px;
+}
+
+.expendable-list-title,
+.magic-list-title {
+    font-weight: bold;
+}
+
+.character-creator {
+    display: grid;
+    grid-template-rows: 50px auto;
+    grid-template-columns: 100%;
+    grid-template-areas: 'tab-bar' 'body';
+}
+
+.character-creator-tab-bar {
+    grid-area: tab-bar;
+    display: flex;
+    flex-flow: row;
+}
+
+.race-info {
+    display: flex;
+    flex-flow: row;
+}
+
+.race-selector {
+    display: flex;
+    flex-flow: row;
+    max-width: 66%;
+}
+
+.race-details {
+    max-width: 33%;
+}
+
+.race-option.selected {
+    background: #007bfa;
+    color: white;
+}
+.height-inputs {
+    display: flex;
+    flex-flow: row;
+}
+.height-inputs > input {
+    width: 50px;
+}
+
+.class-info {
+    display: flex;
+    flex-flow: row;
+}
+
+.class-selector {
+    display: flex;
+    flex-flow: row;
+}
+
+.class-selector {
+    width: 100px;
+}
+
+.levels-list {
+    width: 20%;
+    border-left: 1px solid rgba(0,0,0,0.5);
+    border-right: 1px solid rgba(0,0,0,0.5);
+}
+
+.class-entry.selected,
+.level-entry.selected {
+    background: #007bfa;
+    color: white;
+}
+.class-entry.selected > * {
+    color: white;
+}
+
+.background-info {
+    display: flex;
+    flex-flow: row;
+}
+
+.background-list {
+    width: 250px;
+}

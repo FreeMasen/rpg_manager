@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "dom",
+            "es2015",
+            "es2016",
+            "webworker",
+        ],
+        "removeComments": false,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "target": "es5",
+        "jsx": "react",
+        "module": "commonjs",
+        "allowJs": true,
+        "typeRoots": ["node_modules/@types"]
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": ["./ts/**/*.ts"]
+}

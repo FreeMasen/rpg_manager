@@ -1,0 +1,201 @@
+<svg 
+    width="400px" height="400px" 
+    xmlns="http://www.w3.org/2000/svg" version="1.1" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 100 100"
+>
+<defs>
+<mask id="cut-outs">
+    <rect x="40"  y="0" width="20" height="20" fill="white" />
+    <path 
+        d="M 42.75 3.5
+           l 1 0
+           a 2 2 0 0 1 1 1
+           l 0 13
+           a 2 2 0 0 1 -1 1
+           l -1 0
+           a 2 2 0 0 1 -1 -1
+           l 0 -13
+           a 2 2 0 0 1 1 -1"
+        x="41" 
+        y="8" 
+        width="4" 
+        height="10"
+        stroke-linejoin="round"
+    />
+    <path 
+        d="M 48.5 3.5
+           l 1 0
+           a 2 2 0 0 1 1 1
+           l 0 13
+           a 2 2 0 0 1 -1 1
+           l -1 0
+           a 2 2 0 0 1 -1 -1
+           l 0 -13
+           a 2 2 0 0 1 1 -1"
+        x="41" 
+        y="8" 
+        width="4" 
+        height="10"
+        stroke-linejoin="round"
+    />
+</mask>
+</defs>
+    <g transform="rotate(45) translate(30 -50)"> 
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 45 4.5
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="38" cy="4.5" />
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 54 7.1
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="54" cy="7.1" />
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 45 9.7
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="38" cy="9.7" />
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 54 12.3
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="54" cy="12.3" />
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 45 14.9
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="38" cy="14.9" />
+        <path 
+            fill="none"
+            stroke="black"
+            d="M 54 17.5
+            l -7 0"
+         />
+         <ellipse rx="0.75" ry="1.5" cx="54" cy="17.5" />
+        <path 
+            mask="url(#cut-outs)"
+            fill="#691b0a"
+            stroke="none"
+            d="M 40 0
+                a 10 50  0 0 0 5 1
+                a 10 70 0 0 1 2 0
+                a 10 50  0 0 0 5 -1
+                l 0 20
+                l -12 0
+                z"
+        />
+        <path
+            stroke="none"
+            fill="#691b0a" 
+            d="M 40 20
+            a 10 50 45 0 1 2 5
+            l 8 0
+            a 10 50 -45 0 1 2 -5
+            z" 
+        />
+        <path 
+            stroke="none"
+            fill="tan"
+            d="M 42 25
+            l 0 40
+            l 8 0
+            l 0 -40
+            z" 
+        />
+        <path 
+            fill="#691b0a"
+            d="M 42 65
+            a 15 50 -30 0 0 -12 15
+            l 32 0 
+            M42 65
+            l 8 0
+            a 15 50 30 0 1 12 15
+            "
+        />
+        <path 
+            fill="#691b0a"
+            stroke="none"
+            d="M 30 80
+            a 17 50 50 0 0 2 18.5
+            a 10 1 0 0 0 28 0
+            M 30 80
+            l 32 0
+            a 17 50 -50 0 1 -2 18.5
+            "
+        />
+        <rect 
+            width="8" 
+            height="0.5" 
+            x="42"
+            y="25"
+            fill="ivory"
+        />
+        <circle cx="46" cy="81" r="5"/>
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 42.75 90
+            l 0 -65
+            l -0.6 -21" 
+        />
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 44.05 90
+            l 0 -65
+            l -1 -15.8" 
+        />
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 45.35 90
+            l 0 -65
+            l -1.2 -10.6" 
+        />
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 46.85 90
+            l 0 -65
+            l 1.2 -8" 
+        />
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 48.2 90
+            l 0 -65
+            l 0.7 -13.2" 
+        />
+        <path 
+            fill="none"
+            stroke="silver"
+            stroke-width="0.25"
+            d="M 49.25 90
+            l 0 -65
+            l 0.7 -18.4" 
+        />
+        <rect 
+            width="10" 
+            height="1" 
+            x="41" y="90" 
+        />
+    </g>
+
+</svg>
