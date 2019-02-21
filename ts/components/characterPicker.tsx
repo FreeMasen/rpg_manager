@@ -76,6 +76,7 @@ export class CharacterPickerEntry extends React.Component<ICharacterPickerEntryP
                     borderBottom: '1px solid rgba(0,0,0,0.2)',
                 }}
                 background={this.state.hover ? 'blue' : 'white'}
+                onClick={() => this.props.onClick()}
             >
                 
                 <CharacterClassIcon 
@@ -86,7 +87,6 @@ export class CharacterPickerEntry extends React.Component<ICharacterPickerEntryP
                     marginLeft={5}
                     style={{lineHeight: '25px'}}
                     size={24}
-                    onDoubleClick={() => this.props.onClick()}
                     title={`${this.props.name}\n${chClass.split('/').join('\n')}`}
                     color={this.state.hover ? 'white' : null}
                 >{`${this.props.name} ${this.characterClassString()}`}</Text>
