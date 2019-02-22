@@ -13,7 +13,7 @@
         "jsx": "react",
         "module": "commonjs",
         "allowJs": true,
-        "typeRoots": ["node_modules/@types", "node_modules/dexie/dist"],
+        "typeRoots": ["node_modules/@types"],
         "moduleResolution": "node"
     },
     "exclude": [

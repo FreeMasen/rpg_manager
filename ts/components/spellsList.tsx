@@ -56,20 +56,26 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
         if (this.state.selectedSpell === -1) {
             return (
                 <ListView>
-                    <ListViewHeader>{this.props.title}</ListViewHeader>
+                    <ListViewHeader
+                            background='rgba(0,0,0,0.2)'
+                    >
+                        <Text bold={true}>
+                            {this.props.title}
+                        </Text>
+                    </ListViewHeader>
                     {this.state.spells.map((list: Spell[], level: number) => {
                         return (
                             <ListViewSection key={`spell-level-list-${level}`}>
-                                <ListViewSectionHeader>
+                                <ListViewSectionHeader
+                                    background="rgba(0,0,0,0.1)"
+                                >
                                     <Text>{`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}</Text>
                                 </ListViewSectionHeader>
                                 {list.map((s: Spell, i: number) => {
                                     return (
                                         <ListViewRow
+                                            className="spell-list-entry"
                                             padding="0 0 0 5px"
-                                            style={{
-                                                borderBottom: '1px solid rgba(0,0,0,0.2)',
-                                            }}
                                             key={`spell-list-entry-${i}`}
                                             onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
                                         >

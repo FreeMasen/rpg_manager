@@ -141,7 +141,6 @@ export class CharacterCreator extends React.Component<ICharacterCreatorProps, IC
 
     valueChanged(key: string, value: any) {
         this.setState((prev, props) => {
-            console.log('valueChanged', key, value);
             let newProps = {[key]: value};
             if (key === 'race') {
                 let race = value as Race;
@@ -210,7 +209,9 @@ export class RaceDetails extends React.Component<IRaceDetailsProps, IRaceDetails
                         borderRight: '1px solid rgba(0,0,0,0.3)',
                     }}
                 >
-                <ListViewHeader><Text>Details</Text></ListViewHeader>
+                <ListViewHeader
+                    background='rgba(0,0,0,0.33)'
+                ><Text>Details</Text></ListViewHeader>
                     {this.getList().map((s, i) => {
                         return (
                             <ListViewRow 
@@ -463,7 +464,6 @@ export class CharacterInfo extends React.Component<ICharacterInfoProps, ICharact
                         let enabledFromBackground = this.props.backgroundSkills.indexOf(s.kind) > -1;
                         let isClassSkill = this.props.chClass.availableSkills.indexOf(s.kind) > -1
                         let checkboxDisabled = enabledFromBackground || !isClassSkill;
-                        console.log('checkBoxDisabled', enabledFromBackground, isClassSkill);
                         return (<SkillRadio
                                 key={`skill-list-item-${s.kind}`}
                                 checked={s.enabled}
@@ -619,7 +619,9 @@ export class ClassSelector extends React.Component<IClassSelectorProps, IClassSe
                         borderRight: '1px solid black',
                     }}
                 >
-                    <ListViewHeader><Text>Class</Text></ListViewHeader>
+                    <ListViewHeader
+                        background='rgba(0,0,0,0.33)'
+                    ><Text>Class</Text></ListViewHeader>
                     {this.props.classes.map((n, i) => {
                         return (
                             <ListViewRow
@@ -736,7 +738,9 @@ export class RaceSelector extends React.Component<IRaceSelectorProps, IRaceSelec
                     borderRight: '1px solid rgba(0,0,0,0.3)'
                 }}
             >
-                <ListViewHeader>
+                <ListViewHeader
+                    background='rgba(0,0,0,0.33)'
+                >
                     <Text>Race</Text>
                 </ListViewHeader>
                 {this.allRaces.map(r => {
@@ -765,7 +769,9 @@ export class RaceSelector extends React.Component<IRaceSelectorProps, IRaceSelec
                             borderRight: '1px solid rgba(0,0,0,0.3)'
                         }}
                     >
-                    <ListViewHeader><Text>Sub Race</Text></ListViewHeader>
+                    <ListViewHeader
+                        background='rgba(0,0,0,0.33)'
+                    ><Text>Sub Race</Text></ListViewHeader>
                     {subRaces.map((s, i) => 
                         (<ListViewRow 
                             key={`sub-race-${i}`}
@@ -775,7 +781,6 @@ export class RaceSelector extends React.Component<IRaceSelectorProps, IRaceSelec
                             }}
                             margin="0px"
                             onClick={() => {
-                                console.log('clicked', s);
                                 if (this.props.subRace === s) {
                                     this.props.subRaceChanged(null);
                                 } else {
@@ -819,7 +824,9 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                     flex: null,
                 }}
             >
-                <ListViewHeader>
+                <ListViewHeader
+                        background='rgba(0,0,0,0.33)'
+                >
                     <Text>Background</Text>
                 </ListViewHeader>
                 {this.props.backgrounds.map(b => {
@@ -852,7 +859,9 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                     flex: null,
                 }}
             >
-            <ListViewHeader>
+            <ListViewHeader
+                background='rgba(0,0,0,0.33)'
+            >
                 <Text>Skill Proficiencies</Text>
             </ListViewHeader>
             {this.props.characterBackground.skills.map(s => {
@@ -878,7 +887,9 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                         flex: null,
                     }}
                 >
-                <ListViewHeader>
+                <ListViewHeader
+                    background='rgba(0,0,0,0.33)'
+                >
                     <Text>{`Choose ${this.props.characterBackground.languages.length} Bonus Languages`}</Text>
                 </ListViewHeader>
                 {this.props.languages.map(l => {
@@ -928,7 +939,9 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
             <ListView
                 key={'background-tool-prof-list'}
             >
-                <ListViewHeader>
+                <ListViewHeader
+                        background='rgba(0,0,0,0.33)'
+                >
                     <Text>Tools Proficiencies</Text>
                 </ListViewHeader>
                 {this.props.characterBackground.toolProficiencies.map((t, i) => {
@@ -938,7 +951,9 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                             <ListViewSection
                                 key={`tool-options-${i}`}
                             >
-                                <ListViewSectionHeader>
+                                <ListViewSectionHeader
+                                    background="rgba(0,0,0,0.1)"
+                                >
                                     <Text>Choose One</Text>
                                 </ListViewSectionHeader>
                                     {opts.map((o, j) => {

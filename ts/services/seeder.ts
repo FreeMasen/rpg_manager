@@ -14,27 +14,27 @@ export async function seed(db: Database) {
         .then(res => res.text())
         .then(text => JSON.parse(text));
 
-    console.log('seeding characters');
+    console.info('seeding characters');
     await db.characters.bulkPut(seedCharacters());
-    console.log('seeding bard spells');
+    console.info('seeding bard spells');
     await db.clericSpells.bulkPut(spellBooks.bard);
-    console.log('seeding cleric spells');
+    console.info('seeding cleric spells');
     await db.clericSpells.bulkPut(spellBooks.cleric);
-    console.log('seeding druid spells');
+    console.info('seeding druid spells');
     await db.druidSpells.bulkPut(spellBooks.druid);
-    console.log('seeding paladin spells');
+    console.info('seeding paladin spells');
     await db.paladinSpells.bulkPut(spellBooks.paladin);
-    console.log('seeding ranger spells');
+    console.info('seeding ranger spells');
     await db.rangerSpells.bulkPut(spellBooks.ranger);
-    console.log('seeding rogue spells');
+    console.info('seeding rogue spells');
     await db.rogueSpells.bulkPut(spellBooks.rogue);
-    console.log('seeding sorcerer spells');
+    console.info('seeding sorcerer spells');
     await db.sorcererSpells.bulkPut(spellBooks.sorcerer);
-    console.log('seeding warlock spells');
+    console.info('seeding warlock spells');
     await db.warlockSpells.bulkPut(spellBooks.warlock);
-    console.log('seeding wizard spells');
+    console.info('seeding wizard spells');
     await db.wizardSpells.bulkPut(spellBooks.wizard);
-    console.log('seeding seeds')
+    console.info('seeding seeds')
     await db.seeds.put({when: new Date().toISOString()});
 }
 

@@ -246,9 +246,9 @@ export class Database extends Dexie {
     }
 
     public async init() {
-        console.log('checking for seeds');
+        console.info('checking for seeds');
         if (await this.seeds.count() === 0) {
-            console.log('no seeds... seeding');
+            console.info('no seeds... seeding');
             await this.seed();
         }
         this.ready = true;

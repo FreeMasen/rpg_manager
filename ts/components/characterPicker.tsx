@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Character } from '../models/character';
 import { Class, ClassKind } from '../models/class';
-import { Box, Text, ListView, ListViewHeader, ListViewRow } from 'react-desktop/macOs';
+import { Text, ListView, ListViewHeader, ListViewRow } from 'react-desktop/macOs';
 import {Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, NewCharacter } from './icons';
 
 interface ICharacterPickerProps {
@@ -23,7 +23,9 @@ export class CharacterPicker extends React.Component<ICharacterPickerProps, ICha
             <ListView
                 className="character-picker"
             >
-            <ListViewHeader>
+            <ListViewHeader
+                    background='rgba(0,0,0,0.33)'
+            >
                 <Text>
                     Choose Your Character
                 </Text>

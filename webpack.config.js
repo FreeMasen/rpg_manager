@@ -6,6 +6,7 @@ module.exports = function config(env) {
         entry: {
             main: path.join(__dirname, 'ts', 'app.tsx'),
             seeder: path.join(__dirname, 'ts', 'services', 'seeder.ts'),
+            serviceWorker: path.join(__dirname, 'ts', 'serviceWorker.ts'),
         },
         output: {
             filename: '[name].js',
@@ -22,11 +23,11 @@ module.exports = function config(env) {
                 use: 'ts-loader'
             }]
         },
-        optimization: {
-            splitChunks: {
-                chunks: 'all'
-            },
-        }
+        // optimization: {
+        //     splitChunks: {
+        //         chunks: 'all'
+        //     },
+        // }
     };
     opts.devtool = 'source-map';
     if (env === 'prod') {
