@@ -10,7 +10,7 @@ import { Background, BackgroundKind } from '../models/background';
 import { MiscTools, GamingSet } from '../models/tools';
 
 export async function seed(db: Database) { 
-    let spellBooks = await fetch(window.location.href + 'spellbook.json')
+    let spellBooks = await fetch(window.location.href + 'spellBook.json')
         .then(res => res.text())
         .then(text => JSON.parse(text));
 
