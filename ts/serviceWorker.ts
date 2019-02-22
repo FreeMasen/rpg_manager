@@ -5,7 +5,15 @@
         ev.waitUntil(self.skipWaiting());
     });
     self.addEventListener('activate', ev => {
-        ev.waitUntil(self.caches.delete(CACHE_NAME).then(() => self.clients.claim()));
+        ev.waitUntil(self.caches.keys()
+            .then(cacheNames => Promise.all(cacheNames.map(name => {
+                if (name != CACHE_NAME) {
+                    return self.caches.delete(name)
+                } else {
+                    return Promise.resolve(false);
+                }
+            })))
+            .then(() => self.clients.claim()));
     })
     self.addEventListener('fetch', ev => {
         ev.respondWith(handleFetch(ev));
