@@ -7,6 +7,7 @@
     self.addEventListener('activate', ev => {
         ev.waitUntil(self.caches.keys()
             .then(cacheNames => Promise.all(cacheNames.map(name => {
+                console.log('deleting old cache', name);
                 if (name != CACHE_NAME) {
                     return self.caches.delete(name)
                 } else {
