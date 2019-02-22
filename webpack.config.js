@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = function config(env) {
     let opts = {
@@ -32,7 +33,6 @@ module.exports = function config(env) {
         opts.output.path = path.join(__dirname, 'docs');
     } else {
         opts.mode = 'development';
-        
         opts.devServer = {
         }
     }
