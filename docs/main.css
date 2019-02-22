@@ -680,3 +680,7 @@ input[type="number"] {
 .background-list {
     width: 250px;
 }
+
+.spell-list-entry + .spell-list-entry {
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
