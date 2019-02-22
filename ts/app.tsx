@@ -4,18 +4,16 @@ import { CharacterSheet } from './components/characterSheet';
 import { CharacterPicker } from './components/characterPicker';
 import { Character, Wealth, ExpendableItem, MagicItem, Weapon } from './models/character';
 import { Data } from './services/data';
-import { Randomizer } from './services/randomizer';
 import { CharacterCreator } from './components/newCharacter';
 import { AbilityScores } from './models/abilityScore';
-import { TitleBar, Text, Button } from 'react-desktop';
-import { Race } from './models/race';
-import { Class } from './models/class';
-import { Background, BackgroundKind } from './models/background';
+import { TitleBar, Text, Button, Box, ProgressCircle } from 'react-desktop';
+import { Spell } from './models/spells';
 
 interface IAppState {
     currentView: View,
     characters: Character[];
     selectedCharacter: number;
+    spellList: Spell[];
 }
 
 export class App extends React.Component<{}, IAppState> {
@@ -27,6 +25,7 @@ export class App extends React.Component<{}, IAppState> {
             currentView: View.CharacterPicker,
             characters: [],
             selectedCharacter: -1,
+            spellList: [],
         }
     }
 
@@ -86,8 +85,9 @@ export class App extends React.Component<{}, IAppState> {
                     }}
                 />)
             case View.CharacterSheet:
+                let ch = this.state.characters[this.state.selectedCharacter];
                 return (<CharacterSheet 
-                            character={this.state.characters[this.state.selectedCharacter] || new Character()} 
+                            character={ch} 
                             adjustDamage={newDmg => this.adjustSelectedCharacterDamage(newDmg)}
                             adjustTempHP={newHp => this.adjustSelectedCharacterTempHP(newHp)}
                             adjustExp={newExp => this.adjustCharacterExperience(newExp)}
@@ -96,28 +96,33 @@ export class App extends React.Component<{}, IAppState> {
                             adjustExpendables={expends => this.adjustCharacterExpends(expends)}
                             adjustMagics={magics => this.adjustCharacterMagicItems(magics)}
                             adjustWeapons={newWeapons => this.adjustCharacterWeapons(newWeapons)}
-                            adjustInspiration={newValue => this.adjustCharacterInspiration(newValue)}
+                            adjustInspiration={async newValue => await this.adjustCharacterInspiration(newValue)}
+                            spellList={this.state.spellList}
                         />);
             case View.CharacterCreator:
                     return (<CharacterCreator 
                             onSave={ch => this.newCharacter(ch)}
                         />)
+            case View.Loading:
+                    return (<Box width="100%" height="100%"><ProgressCircle size={100}/></Box>)
         }
     }
 
     switchView(newView: View, meta?: number) {
-        let newState;
         switch (newView) {
             case View.CharacterPicker:
-                newState = {currentView: newView, selectedCharacter: -1};
+                this.setState({currentView: newView, selectedCharacter: -1, spellList: []});
             break;
             case View.CharacterSheet:
-                newState = {currentView: newView, selectedCharacter: meta};
+                this.setState({currentView: newView, selectedCharacter: meta});
+                this.data.getSpellsForClass(this.state.characters[meta].characterClass.name).then(spells => {
+                    this.setState({currentView: newView, selectedCharacter: meta, spellList: spells});
+                });
             break;
             case View.CharacterCreator:
-                newState = {currentView: newView, selectedCharacter: -1};
+                this.setState({currentView: newView, selectedCharacter: -1, spellList: []});
+            break;
         }
-        this.setState(newState);
     }
 
     goBack() {
@@ -131,84 +136,138 @@ export class App extends React.Component<{}, IAppState> {
         }
     }
     adjustSelectedCharacterDamage(newDmg: number) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.damage = newDmg;
-            return Object.apply(prev, {character: ch});
-        }, () => {
-            this.data.saveCharacters(this.state.characters)
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustSelectedCharacterTempHP(newHP: number) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.tempHp = newHP;
-            return Object.apply(prev, {character: ch});
-        }, () => {
-            this.data.saveCharacters(this.state.characters)
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterExperience(newExp: number) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.experience = newExp;
-            return Object.apply(prev, {character: ch});
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterWealth(wealth: Wealth) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.wealth = wealth;
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterScores(scores: AbilityScores) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.abilityScores = ch.abilityScores.add(scores);
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterExpends(expends: ExpendableItem[]) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.expendables = expends;
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterMagicItems(magics: MagicItem[]) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.magicItems = magics;
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterWeapons(weapons: Weapon[]) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.weapons = weapons;
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
     adjustCharacterInspiration(inspiration: number) {
+        let ch: Character;
         this.setState((prev, props) => {
-            let ch = prev.characters[this.state.selectedCharacter];
+            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
             ch.inspiration = inspiration;
-            return Object.apply(prev, {character: ch})
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
         });
     }
 
@@ -216,8 +275,8 @@ export class App extends React.Component<{}, IAppState> {
         this.setState((prev, props) => {
             let newChs = prev.characters.concat([ch]);
             return {characters: newChs, currentView: View.CharacterPicker};
-        }, () => {
-            this.data.saveCharacters(this.state.characters);
+        }, async () => {
+            await this.data.addCharacter(ch);
         });
     }
 }
@@ -226,6 +285,7 @@ enum View {
     CharacterPicker,
     CharacterSheet,
     CharacterCreator,
+    Loading,
 }
 
 (function() {

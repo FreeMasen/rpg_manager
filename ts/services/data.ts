@@ -1,136 +1,37 @@
-import { Character, Height, Armor, ArmorWeight, Weapon, 
-    WeaponType, WeaponKind, WeaponDamageKind, 
-    WeaponWeight, WeaponHandedness, 
-    Wealth, NormalLanguage, Alignment, MagicItem, 
-    ExpendableItem, LightArmor } from "../models/character";
-import { Race, RaceKind, SubRace, Elf, Dwarf, Gnome, Halfling, Dragon } from '../models/race';
-import { Class, ClassKind } from '../models/class';
-import { RogueDetails, RoguishArchType} from '../models/classDetails';
-import { AbilityScores, AbilityScore, AbilityKind } from "../models/abilityScore";
-import { Background, BackgroundKind } from "../models/background";
-import { MiscTools, GamingSet } from '../models/tools';
-import { Skills, SkillKind } from '../models/skills';
-import { BARD_SPELLS, CLERIC_SPELLS, DRUID_SPELLS, PALADIN_SPELLS, 
-    RANGER_SPELLS, ROGUE_SPELLS, SORCERER_SPELLS, 
-    WARLOCK_SPELLS, WIZARD_SPELLS } from "../models/spellBook";
+import { Character, Wealth } from "../models/character";
+import { RaceKind, SubRace, Elf, Dwarf, Gnome, Halfling, Dragon } from '../models/race';
+import { ClassKind } from '../models/class';
+import { Background } from "../models/background";
 import { Spell } from "../models/spells";
-import { Range } from '../models/range';
-function seedCharacters() {
-    let d = new Character('Daggers', 
-                new AbilityScores([
-                    new AbilityScore(8, AbilityKind.Strength),
-                    new AbilityScore(8+7, AbilityKind.Dexterity),
-                    new AbilityScore(8, AbilityKind.Constitution),
-                    new AbilityScore(8, AbilityKind.Intelligence),
-                    new AbilityScore(8+1, AbilityKind.Wisdom),
-                    new AbilityScore(8+7, AbilityKind.Charisma),
-                ]), 
-                new Race(RaceKind.Human), 
-                new Class(ClassKind.Rogue, 4, 
-                    [
-                    [AbilityKind.Strength, 0],
-                    [AbilityKind.Dexterity, 2],
-                    [AbilityKind.Constitution, 0],
-                    [AbilityKind.Intelligence, 0],
-                    [AbilityKind.Wisdom, 0],
-                    [AbilityKind.Charisma, 0],
-                    ],
-                    [SkillKind.Acrobatics, SkillKind.SleightOfHand, SkillKind.Persuasion, SkillKind.Perception,]
-                ),
-                new Background(BackgroundKind.Criminal,
-                    [SkillKind.Stealth, SkillKind.Deception],
-                    [],
-                    [MiscTools.Thieves, GamingSet.Dragonchess]),
-                Alignment.TrueNeutral(),
-                5116,
-                new Height(5, 8),
-                160,
-                'Blue',
-                0,
-                new Armor(LightArmor.Leather, ArmorWeight.Light, 2),
-                null,
-                new Skills(),
-                [new Weapon('Dagger', 
-                            WeaponType.Melee, 
-                            WeaponKind.Simple, 
-                            WeaponDamageKind.Piercing, 
-                            WeaponWeight.Light, 
-                            WeaponHandedness.One, 
-                            [1, 4], 
-                            new Range(5), 
-                            1, 
-                            new Range(20, 60), 
-                            false, 
-                            true),
-                new Weapon('Short Bow', 
-                            WeaponType.Range, 
-                            WeaponKind.Simple, 
-                            WeaponDamageKind.Piercing, 
-                            WeaponWeight.Light, 
-                            WeaponHandedness.Two, 
-                            [1,6], 
-                            new Range(80, 320), 
-                            1, 
-                            null, 
-                            true, 
-                            false),
-                ],
-                new Wealth(0, 0, 0, 3450, 0),
-                [NormalLanguage.Common],
-                [],
-                0,
-                0,
-                [
-                    new MagicItem('Cloak of Elvenkind', 'Hood up: Preception checks to see you have disadvantage, stealth checks have advantage'),
-                    new MagicItem('Goggles of Night', 'Darkvision (60 feet)'),
-                ],
-                [new ExpendableItem(1, 'Health Pot.', 'heal 2d4+2 Damage')],
-    );
-    let details = d.characterClass.classDetails as RogueDetails;
-    details.archType = RoguishArchType.Thief;
-    details.expertise.push(SkillKind.Deception, SkillKind.Stealth);
-    return [d];
-} 
-export class Data {
+import Dexie from 'dexie';
 
+export class Data {
+    private db = new Database();
     async getCharacters(): Promise<Character[]> {
-        let rawCh = localStorage.getItem('characters');
-        if (!rawCh || rawCh.length == 0) {
-            return seedCharacters();
-        } 
-        let chs;
-        try {
-            chs = JSON.parse(rawCh);
-        } catch (e) {
-            console.error(e);
-            return seedCharacters();
+        if (!this.db.ready) {
+            await this.db.init();
         }
-        return chs.map(Character.fromJson);
+        return await this.db.allCharacters();
+    }
+
+    async addCharacter(ch: Character): Promise<void> {
+        await this.db.addCharacter(ch);
+    }
+
+    async saveCharacter(ch: Character): Promise<void> {
+        await this.db.saveCharacters([ch]);
     }
 
     async saveCharacters(characters: Character[]): Promise<void> {
-        localStorage.setItem('characters', JSON.stringify(characters));
+        if (!this.db.ready) {
+            await this.db.init();
+        }
+        return await this.db.saveCharacters(characters);
     }
 
-    // private sendMsg<T>(event: string, data?: any): Promise<T> {
-    //     return new Promise((resolve, reject) => {
-    //         let to = setTimeout(rejectHandler, 5000)
-    //         function resultHandler(ev) {
-    //             window.removeEventListener('rcp-update', resultHandler);
-    //             clearTimeout(to);
-    //             resolve(ev.detail);
-    //         }
-    //         function rejectHandler() {
-    //             reject("timeout");
-    //         }
-    //         let obj = {
-    //             event,
-    //             data: data != undefined ? data : null,
-    //         };
-    //         window.addEventListener('rcp-update', resultHandler);
-    //         (window.external as any).invoke(JSON.stringify(obj));
-    //     });
-    // }
+    async getSpellsForClass(cls: ClassKind): Promise<Spell[]> {
+        return this.db.spellsForClass(cls);
+    }
 
     static getAllClasses(): ClassKind[] {
         return Object.getOwnPropertyNames(ClassKind).map(n => ClassKind[n]);
@@ -302,29 +203,116 @@ export class Data {
         }
         return new Wealth(0,0,0,gp * mul,0);
     }
+}
 
-    static spellsForClass(name: ClassKind): Spell[] {
-        switch (name) {
-            case ClassKind.Bard:
-                return BARD_SPELLS;
-            case ClassKind.Cleric:
-                return CLERIC_SPELLS;
-            case ClassKind.Druid:
-                return DRUID_SPELLS;
-            case ClassKind.Paladin:
-                return PALADIN_SPELLS;
-            case ClassKind.Ranger:
-                return RANGER_SPELLS;
-            case ClassKind.Rogue:
-                return ROGUE_SPELLS;
-            case ClassKind.Sorcerer:
-                return SORCERER_SPELLS;
-            case ClassKind.Warlock:
-                return WARLOCK_SPELLS;
-            case ClassKind.Wizard:
-                return WIZARD_SPELLS;
-            default:
-                return [];
+export interface IStorable<T> {
+    id?: number;
+    data: T
+}
+
+export interface ISeed {
+    id?: number;
+    when: string;
+}
+
+export class Database extends Dexie {
+    public seeds: Dexie.Table<ISeed, number>;
+    public characters: Dexie.Table<Character, number>;
+    public bardSpells: Dexie.Table<Spell, number>;
+    public clericSpells: Dexie.Table<Spell, number>;
+    public druidSpells: Dexie.Table<Spell, number>;
+    public paladinSpells: Dexie.Table<Spell, number>;
+    public rangerSpells: Dexie.Table<Spell, number>;
+    public rogueSpells: Dexie.Table<Spell, number>;
+    public sorcererSpells: Dexie.Table<Spell, number>;
+    public warlockSpells: Dexie.Table<Spell, number>;
+    public wizardSpells: Dexie.Table<Spell, number>;
+    public ready = false;
+    constructor() {
+        super("DnDCharacterManager");
+        this.version(1).stores({
+            seeds: "++id",
+            characters: "++id,name",
+            bardSpells: "++id,name",
+            clericSpells: "++id,name",
+            druidSpells: "++id,name",
+            paladinSpells: "++id,name",
+            rangerSpells: "++id,name",
+            rogueSpells: "++id,name",
+            sorcererSpells: "++id,name",
+            warlockSpells: "++id,name",
+            wizardSpells: "++id,name",
+        });
+    }
+
+    public async init() {
+        console.log('checking for seeds');
+        if (await this.seeds.count() === 0) {
+            console.log('no seeds... seeding');
+            await this.seed();
+        }
+        this.ready = true;
+    }
+
+    public async seed() {
+        try {
+            let mod = await import('./seeder');
+            await mod.seed(this);
+        } catch (e) {
+            console.error('error seeding', e);
+            throw e;
         }
     }
+
+    async allCharacters(): Promise<Character[]> {
+        let arr = await this.characters.toArray();
+        return arr.map(Character.fromJson);
+    }
+
+    async addCharacter(ch: Character): Promise<void> {
+        try {
+            await this.characters.add(ch);
+        } catch (e) {
+            console.error('failed to add character', e, ch);
+        }
+    }
+
+    async saveCharacters(chs: Character[]): Promise<void> {
+        try {
+            await this.characters.bulkPut(chs);
+        } catch (e) {
+            console.error('Failed to save characters', e, chs,)
+        }
+    }
+
+    async spellsForClass(cls: ClassKind): Promise<Spell[]> {
+        try {
+
+            switch (cls) {
+                case ClassKind.Bard:
+                    return (await this.bardSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Cleric:
+                    return (await this.clericSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Druid:
+                    return (await this.druidSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Paladin:
+                    return (await this.paladinSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Ranger:
+                    return (await this.rangerSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Rogue:
+                    return (await this.rogueSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Sorcerer:
+                    return (await this.sorcererSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Warlock:
+                    return (await this.warlockSpells.toArray()).map(Spell.fromJson);
+                case ClassKind.Wizard:
+                    return (await this.wizardSpells.toArray()).map(Spell.fromJson);
+                default:
+                    return [];
+            }
+        } catch (e) {
+            console.error('failed to get spells for ', cls, e);
+        }
+    }
+
 }

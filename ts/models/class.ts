@@ -464,7 +464,6 @@ export class Class {
         this.level += 1;
     }
     public static fromJson(json: any): Class {
-        console.log('Class.fromJson', json);
         let ret = new Class(
             null,
             json._level,

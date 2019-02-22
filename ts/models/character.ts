@@ -10,6 +10,7 @@ export class Character {
     private static counter = 0;
     public shield?: Armor;
     public armor?: Armor;
+    public id?: number;
     constructor(
         public name: string = Character.nextName(),
         public abilityScores: AbilityScores = new AbilityScores(),
@@ -108,7 +109,6 @@ export class Character {
     }
 
     public get rawSkills(): [SkillKind, number, boolean][] {
-        console.log('Character.rawSkills', this.characterClass.name, this.characterClass.classDetails);
         let bonuses = this.modifiedAbilityScores().reduce((acc, ability) => {
             acc[ability.kind] = ability.modifier;
             return acc;
@@ -275,7 +275,7 @@ export class Character {
     }
 
     public static fromJson(json: any): Character {
-        return new Character(
+        let ret = new Character(
             json.name,
             AbilityScores.fromJson(json.abilityScores),
             Race.fromJson(json.race),
@@ -298,7 +298,11 @@ export class Character {
             json.tempHp,
             json.magicItems.map(MagicItem.fromJson),
             json.expendables.map(ExpendableItem.fromJson),
-        )
+        );
+        if (json.id) {
+            ret.id = json.id;
+        }
+        return ret;
     }
 }
 

@@ -11,10 +11,11 @@ import { RogueDetails } from '../models/classDetails';
 import { Background } from '../models/background';
 import { SkillKind } from '../models/skills';
 import { SpellsList } from './spellsList';
-import { Data } from '../services/data';
+import { Data, Database } from '../services/data';
+import { Spell } from '../models/spells';
 
 interface ICharacterSheetProps {
-    character: Character,
+    character: Character;
     adjustDamage: (newValue: number) => void;
     adjustTempHP: (newValue: number) => void;
     adjustExp: (newValue: number) => void;
@@ -24,6 +25,7 @@ interface ICharacterSheetProps {
     adjustMagics: (newMagics: MagicItem[]) => void;
     adjustWeapons: (newWeapons: Weapon[]) => void;
     adjustInspiration: (newValue: number) => void;
+    spellList: Spell[];
 }
 
 interface ICharacterSheetState {
@@ -32,7 +34,6 @@ interface ICharacterSheetState {
 export class CharacterSheet extends React.Component<ICharacterSheetProps, ICharacterSheetState> {
     constructor(props: ICharacterSheetProps) {
         super(props);
-        this.state = {};
     }
 
     render() {
@@ -58,7 +59,6 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                     scores={this.props.character.modifiedAbilityScores()}
                     updateScores={scores => this.props.adjustScores(scores)}
                 />
-                <PassiveWisdom value={this.props.character.passiveWisdom} />
                 <Proficiency
                     proficiency={this.props.character.proficiency}
                     languages={this.props.character.languages}
@@ -95,7 +95,7 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 />
                 <SpellsList
                     title={`${this.props.character.characterClass.name} Spells`}
-                    spells={Data.spellsForClass(this.props.character.characterClass.name)}
+                    spells={this.props.spellList}
                 />
             </div>
         )

@@ -44,17 +44,26 @@ async function convertSpells() {
             duration = s.duration;
         }
         let range = 'null';
+        // let formattedName = formatSpellName(s.name);
+        // acc.enum.push(`${formattedName} = "${s.name}"`);
+        let ret = {
+            name: s.name,
+            level: s.level,
+            verbalRequirement: ver,
+            somaticRequirement: som,
+            materialRequirement: [mat],
+            castingTime: s.time,
+            desc: s.desc,
+            duration: s.duration,
+        }//`new Spell(SpellName.${formattedName}, ${s.level}, ${ver}, ${som}, ["${mat}"], "${s.time}", "${s.desc}", "${duration}", ${range})`;
         if (s.range) {
             let val;
             if (s.range.length == 1) {
-                range = `new Range(${s.range[0]})`
+                ret.range = {first: s.range[0]}; //`new Range(${s.range[0]})`
             } else if (s.range.length == 2) {
-                range = `new Range(${s.range[0]}, ${s.range[1]})`
+                ret.range = {first: s.range[0], second: s.range[0]};//`new Range(${s.range[0]}, ${s.range[1]})`
             }
         }
-        let formattedName = formatSpellName(s.name);
-        acc.enum.push(`${formattedName} = "${s.name}"`);
-        let ret = `new Spell(SpellName.${formattedName}, ${s.level}, ${ver}, ${som}, ["${mat}"], "${s.time}", "${s.desc}", "${duration}", ${range})`;
         if (s.classes.indexOf('Bard') > -1) {
             acc.bard.push(ret);
         }
@@ -84,7 +93,7 @@ async function convertSpells() {
         }
         return acc;
     }, {
-        enum: [],
+        // enum: [],
         bard: [],
         cleric: [],
         druid: [],
@@ -121,27 +130,32 @@ function formatSpellName(name) {
     }
     return ret;
 }
-const FILE_PATH = 'ts/models/spellBook.ts';
+const FILE_PATH = 'spellBook.json';
 async function write(lists) {
     console.log('removing old file');
-    await removeFile(FILE_PATH);
-    await append(`import { Spell } from './spells';\nimport { Range } from './character';\n`);
-    for (let key in lists) {
-        console.log('writing', key);
-        if (key == 'enum') {
-            await append('export enum SpellName {\n')
-        } else {
-            await append(`export const ${key.toLocaleUpperCase()}_SPELLS = [\n`);
-        }
-        for (let entry of lists[key]) {
-            await append(`    ${entry},\n`);
-        }
-        if (key === 'enum') {
-            await append("}\n");
-        } else {    
-            await append("];\n");
-        }
-    }
+    try {
+        await removeFile(FILE_PATH);
+    } catch {}
+    await append(JSON.stringify(lists));
+    // await append(`import { Spell } from './spells';\nimport { Range } from './character';\n`);
+    // await append("{");
+    // for (let key in lists) {
+    //     console.log('writing', key);
+    //     await append(`key: `)
+        // if (key == 'enum') {
+        //     await append('export enum SpellName {\n')
+        // } else {
+        //     await append(`export const ${key.toLocaleUpperCase()}_SPELLS = [\n`);
+        // }
+        // for (let entry of lists[key]) {
+        //     await append(`    ${entry},\n`);
+        // }
+        // if (key === 'enum') {
+        //     await append("}\n");
+        // } else {    
+        //     await append("];\n");
+        // }
+    // }
 }
 
 async function append(text) {

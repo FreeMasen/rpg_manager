@@ -1,0 +1,1 @@
+cp ./main.css ./docs && cp ./spellBook.json ./docs && ./node_modules/.bin/webpack --env=prod

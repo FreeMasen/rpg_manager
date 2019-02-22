@@ -8,6 +8,7 @@ interface ISpellsListProps {
 }
 
 interface ISpellsListState {
+    spells: Spell[][];
     selectedSpell: number;
     selectedSpellLevel: number;
 }
@@ -23,7 +24,17 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
         this.state = {
             selectedSpell: -1,
             selectedSpellLevel: -1,
+            spells: [],
         };
+    }
+    componentWillReceiveProps(props: ISpellsListProps) {
+        if (this.state.spells.length === 0 && props.spells.length > 0) {
+            let spells = props.spells.reduce((acc, spell) => {
+                acc[spell.level].push(spell);
+                return acc;
+            }, [[],[],[],[],[],[],[],[],[],[]]);
+            this.setState({spells});
+        }
     }
     render() {
         return (
@@ -46,7 +57,7 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
             return (
                 <ListView>
                     <ListViewHeader>{this.props.title}</ListViewHeader>
-                    {this.spellLists.map((list: Spell[], level: number) => {
+                    {this.state.spells.map((list: Spell[], level: number) => {
                         return (
                             <ListViewSection key={`spell-level-list-${level}`}>
                                 <ListViewSectionHeader>
@@ -55,6 +66,10 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                                 {list.map((s: Spell, i: number) => {
                                     return (
                                         <ListViewRow
+                                            padding="0 0 0 5px"
+                                            style={{
+                                                borderBottom: '1px solid rgba(0,0,0,0.2)',
+                                            }}
                                             key={`spell-list-entry-${i}`}
                                             onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
                                         >
@@ -68,7 +83,7 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                 </ListView>
             );
         } else {
-            let selectedSpell = this.spellLists[this.state.selectedSpellLevel][this.state.selectedSpell];
+            let selectedSpell = this.state.spells[this.state.selectedSpellLevel][this.state.selectedSpell];
             let components = '';
             if (selectedSpell.verbalRequirement) {
                 components += 'V';

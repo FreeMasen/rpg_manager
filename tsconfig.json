@@ -9,11 +9,12 @@
         "removeComments": false,
         "experimentalDecorators": true,
         "sourceMap": true,
-        "target": "es5",
+        "target": "es6",
         "jsx": "react",
         "module": "commonjs",
         "allowJs": true,
-        "typeRoots": ["node_modules/@types"]
+        "typeRoots": ["node_modules/@types", "node_modules/dexie/dist"],
+        "moduleResolution": "node"
     },
     "exclude": [
         "node_modules"
