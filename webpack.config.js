@@ -10,6 +10,7 @@ module.exports = function config(env) {
         output: {
             filename: '[name].js',
             sourceMapFilename: '[name].js.map',
+            path: path.join(__dirname, 'docs'),
         },
         resolve: {
             extensions: ['.wasm', '.mjs', '.js', '.json', '.tsx', '.ts', '.jsx']
