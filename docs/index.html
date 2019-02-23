@@ -4,15 +4,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
     <base href="/">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="/rpg_manager/favicon.ico">
     <meta name="msapplication-TileColor" content="#0E2B5E">
     <title>DnD Character Manager</title>
 
     <base href="/rpg_manager/">
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('serviceWorker.js')
+            navigator.serviceWorker.register('/rpg_manager/serviceWorker.js')
                 .then(() => { })
                 .catch(e => {
                     console.error('error registering service worker', e);
@@ -20,13 +19,13 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="main.css" rel="stylesheet" type="text/css" />
+    <link href="/rpg_manager/main.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
     <div id="app"></div>
     <div id="kind"></div>
-    <script src="main.js" type="text/javascript"></script>
+    <script src="/rpg_manager/main.js" type="text/javascript"></script>
 </body>
 
 </html>
