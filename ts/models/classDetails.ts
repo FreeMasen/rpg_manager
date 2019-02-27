@@ -553,7 +553,12 @@ export class ClericDetails {
         let ret = [];
         switch (this.domain) {
             case ClericDomain.Knowledge:
-
+                if (this.level > 1) {
+                    ret.push(new Note('Channel Divinity: Knowledge of the Ages', 'For 10 minutes you have proficiency with a chosen skill or tool', ''));
+                }
+                if (this.level > 5) {
+                    ret.push(new Note('Channel Divinity: Read Thoughts', '', ''))
+                }
             break;
             case ClericDomain.Life:
 
@@ -680,6 +685,14 @@ export class ClericDetails {
                     }
                     if (this.level > 16) {
                         ret.push(new Note('Visions of the Past', '', ''));
+                    }
+                break;
+                case ClericDomain.Life:
+                    ret.push(new Note('Life Domain', 'You can now wear Heavy Armor', 'You can now wear Heavy Armor'));
+                    ret.push(new Note('Life Domain: Disciple of Life', 'Add +2 to add heals spells', ''));
+
+                    if (this.level > 1) {
+                        
                     }
                 break;
             }
