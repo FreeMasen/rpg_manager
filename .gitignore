@@ -6,3 +6,4 @@ node_modules
 /dist
 /favicon.ico
 index.html
+Character Files/*
