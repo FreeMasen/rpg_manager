@@ -7,7 +7,7 @@ import { SkillKind, Skill } from './skills';
 import {
     ClassDetails, BarbarianDetails,
     BardDetails, BardCollege,
-    ClericDetails, RogueDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, SorcererDetails, WarlockDetails, WizardDetails,
+    ClericDetails, RogueDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, SorcererDetails, WarlockDetails, WizardDetails, RoguishArchType,
 } from './classDetails';
 import { Data } from '../services/data';
 
@@ -34,6 +34,7 @@ export class Class {
     public availableSkills: SkillKind[] = [];
     public classDetails: ClassDetails;
     public miscProfs: string[] = [];
+    isCaster: boolean = false;
     constructor(
         public name: ClassKind,
         public _level: number,
@@ -129,6 +130,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Charisma];
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Charisma,
             AbilityKind.Dexterity,
@@ -157,6 +159,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Wisdom];
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -183,6 +186,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Wisdom];
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Intelligence  
@@ -286,6 +290,7 @@ export class Class {
             AbilityKind.Charisma,
         ];
         this.numberOfPrimaryAbilities = 2;
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -319,6 +324,9 @@ export class Class {
             AbilityKind.Wisdom,
         ];
         this.numberOfPrimaryAbilities = 2;
+        if (this._level > 1) {
+            this.isCaster = true;
+        }
         this.savingThrows = [
             AbilityKind.Strength,
             AbilityKind.Dexterity,
@@ -358,7 +366,7 @@ export class Class {
             ArmorWeight.Medium,
         ];
         this.canUseShield = true;
-
+        this.isCaster = details.archType === RoguishArchType.ArcaneTrickster;
         this.weaponProfs = [
             WeaponKind.Simple,
             StdWeaponName.HandCrossbow,
@@ -386,6 +394,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 6;
         this.primaryAbility = [AbilityKind.Charisma];
+        this.isCaster = true;
         this.savingThrows =[
             AbilityKind.Constitution,
             AbilityKind.Charisma,
@@ -412,6 +421,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Charisma];
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -438,6 +448,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 6;
         this.primaryAbility = [AbilityKind.Intelligence];
+        this.isCaster = true;
         this.savingThrows = [
             AbilityKind.Intelligence,
             AbilityKind.Wisdom,
