@@ -37,66 +37,83 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
     }
 
     render() {
-        return (
-            <div className="character-sheet">
-                <CharacterName
-                    name={this.props.character.name}
-                    inspiration={this.props.character.inspiration}
-                    inspirationChanged={newValue => this.props.adjustInspiration(newValue)}
-                />
-                <CharacterDescription
-                    race={this.props.character.race.name}
-                    name={this.props.character.characterClass.name}
-                    level={this.props.character.level}
-                    alignment={this.props.character.alignment}
-                    background={this.props.character.background}
-                    experience={this.props.character.experience}
-                    expToNextLevel={this.props.character.expToNextLevel}
-                    needsLevelUp={this.props.character.needsLevelUp()}
-                    adjustExperience={newExp => this.props.adjustExp(newExp)}
-                />
-                <AbilitiesColumn
-                    scores={this.props.character.modifiedAbilityScores()}
-                    updateScores={scores => this.props.adjustScores(scores)}
-                />
-                <Proficiency
-                    proficiency={this.props.character.proficiency}
-                    languages={this.props.character.languages}
-                />
-                <Saves saves={this.props.character.saves} />
-                <SkillsList skills={this.props.character.rawSkills} />
-                <Defences
-                    armorClass={this.props.character.armorClass()}
-                    initiative={this.props.character.initiative}
-                    hitPoints={this.props.character.currentHealth()}
-                    tempHitPoints={this.props.character.tempHp}
-                    hitDice={this.props.character.characterClass}
-                    speed={this.props.character.speed}
-                    damage={this.props.character.damage}
-                    damageChanged={dmg => this.props.adjustDamage(dmg)}
-                    tempHPChanged={hp => this.props.adjustTempHP(hp)}
-                />
-                <Weapons
-                    weapons={this.props.character.weapons}
-                    adjustWeapons={newWeapons => this.props.adjustWeapons(newWeapons)}
-                />
-                <Money
-                    wealth={this.props.character.wealth}
-                    adjustMoney={wealth => this.props.adjustMoney(wealth)}
-                />
-                <Notes
-                    notes={this.props.character.notes.concat((this.props.character.characterClass.classDetails as RogueDetails).notes().map(n => n.toString()))}
-                />
-                <ItemsList
-                    magicItems={this.props.character.magicItems}
-                    expendables={this.props.character.expendables}
-                    adjustExpendables={newExpendables => this.props.adjustExpendables(newExpendables)}
-                    adjustMagics={newMagics => this.props.adjustMagics(newMagics)}
-                />
+        let children = [
+            <CharacterName
+                key="character-name"
+                name={this.props.character.name}
+                inspiration={this.props.character.inspiration}
+                inspirationChanged={newValue => this.props.adjustInspiration(newValue)}
+            />,
+            <CharacterDescription
+                key="character-desc"
+                race={this.props.character.race.name}
+                name={this.props.character.characterClass.name}
+                level={this.props.character.level}
+                alignment={this.props.character.alignment}
+                background={this.props.character.background}
+                experience={this.props.character.experience}
+                expToNextLevel={this.props.character.expToNextLevel}
+                needsLevelUp={this.props.character.needsLevelUp()}
+                adjustExperience={newExp => this.props.adjustExp(newExp)}
+            />,
+            <AbilitiesColumn
+                key="abilities-column"
+                scores={this.props.character.modifiedAbilityScores()}
+                updateScores={scores => this.props.adjustScores(scores)}
+            />,
+            <Proficiency
+                key="proficiency"
+                proficiency={this.props.character.proficiency}
+                languages={this.props.character.languages}
+            />,
+            <Saves key="saves" saves={this.props.character.saves} />,
+            <SkillsList key="skills-list" skills={this.props.character.rawSkills} />,
+            <Defences
+                key="defences"
+                armorClass={this.props.character.armorClass()}
+                initiative={this.props.character.initiative}
+                hitPoints={this.props.character.currentHealth()}
+                tempHitPoints={this.props.character.tempHp}
+                hitDice={this.props.character.characterClass}
+                speed={this.props.character.speed}
+                damage={this.props.character.damage}
+                damageChanged={dmg => this.props.adjustDamage(dmg)}
+                tempHPChanged={hp => this.props.adjustTempHP(hp)}
+            />,
+            <Weapons
+                key="weapons"
+                weapons={this.props.character.weapons}
+                adjustWeapons={newWeapons => this.props.adjustWeapons(newWeapons)}
+            />,
+            <Money
+                key="money"
+                wealth={this.props.character.wealth}
+                adjustMoney={wealth => this.props.adjustMoney(wealth)}
+            />,
+            <Notes
+                key="notes"
+                notes={this.props.character.notes.concat((this.props.character.characterClass.classDetails as RogueDetails).notes().map(n => n.toString()))}
+            />,
+            <ItemsList
+                key="items-list"
+                magicItems={this.props.character.magicItems}
+                expendables={this.props.character.expendables}
+                adjustExpendables={newExpendables => this.props.adjustExpendables(newExpendables)}
+                adjustMagics={newMagics => this.props.adjustMagics(newMagics)}
+            />,
+        ];
+        if (this.props.character.characterClass.isCaster) {
+            children.push(
                 <SpellsList
+                    key="spells-list"
                     title={`${this.props.character.characterClass.name} Spells`}
                     spells={this.props.spellList}
                 />
+            );
+        }
+        return (
+            <div className="character-sheet">
+                {children}
             </div>
         )
     }
