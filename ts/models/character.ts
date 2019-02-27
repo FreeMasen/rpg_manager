@@ -8,8 +8,6 @@ import { Skills, SkillKind } from './skills';
 import { Range } from './range';
 export class Character {
     private static counter = 0;
-    public shield?: Armor;
-    public armor?: Armor;
     public id?: number;
     constructor(
         public name: string = Character.nextName(),
@@ -23,8 +21,8 @@ export class Character {
         public weight: number = 160,
         public eyeColor: string = 'grey',
         public inspiration: number = 0,
-        armor: Armor = null,
-        shield: Armor = null,
+        public armor: Armor = null,
+        public shield: Armor = null,
         public skills: Skills = new Skills(),
         public weapons: Weapon[] = [new Weapon()],
         public wealth: Wealth = new Wealth(),
@@ -35,8 +33,6 @@ export class Character {
         public magicItems: MagicItem[] = [],
         public expendables: ExpendableItem[] = [],
     ) { 
-        this.shield = shield;
-        this.armor = armor;
         this.background.skills.map(s => {
             this.skills.set(s, true);
         });
@@ -160,7 +156,7 @@ export class Character {
     }
 
     public armorClass(): number {
-        let dex = this.abilityScores.modifier(AbilityKind.Dexterity);
+        let dex = this.modifiedAbilityScores().modifier(AbilityKind.Dexterity);
         let bonus = 0;
         if (this.armor) {
             bonus = this.armor.bonus;
@@ -426,18 +422,16 @@ export class Save {
 }
 
 export class Armor {
-    public dexLimit?: number;
     constructor(
         public name: ArmorName,
         public kind: ArmorWeight,
         public bonus: number,
-        dexLimit: number = null,
-    ) {
-        this.dexLimit = dexLimit;
-    }
+        public dexLimit?: number,
+    ) { }
     public static fromJson(json: any): Armor {
         if (!json) return null;
         return new Armor(
+            json.name,
             json.kind,
             json.bonus,
             json.dexLimit,
