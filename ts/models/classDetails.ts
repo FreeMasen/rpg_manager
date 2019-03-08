@@ -313,6 +313,16 @@ export class BardDetails {
         return 12;
     }
 
+    get expertiseCount(): number {
+        if (this.level > 2) {
+            return 2;
+        } if (this.level > 9) {
+            return 4;
+        }
+        return 0;
+
+    }
+
     get magicalSecrets(): number {
         let ret = 0;
         if (this.level > 5 && this.bardCollege === BardCollege.Lore) {
@@ -845,12 +855,89 @@ export class FighterDetails {
     constructor(
         public level: number,
         public fightingStyle: FighterStyle,
+        public combatArchtype?: CombatArchtype,
     ) { }
 
     public notes(): Note[] {
         let ret = [];
 
         return ret;
+    }
+
+    public get maneuversCount(): number {
+        if (this.level < 3 || this.combatArchtype === CombatArchtype.BattleMaster) {
+            return 0;
+        }
+        if (this.level < 7) {
+            return 3
+        }
+        if (this.level < 10) {
+            return 5;
+        }
+        if (this.level < 15) {
+            return 7;
+        }
+        return 9;
+    }
+
+    public get cantripCount(): number {
+        if (this.level < 3 ||this.combatArchtype !== CombatArchtype.BattleMaster) {
+            return 0;
+        }
+        if (this.level < 10) {
+            return 2;
+        }
+        return 3;
+    }
+    public get indomitableCount(): number {
+        if (this.level < 9) {
+            return 0;
+        }
+
+        if (this.level < 13) {
+            return 1;
+        }
+        
+        if (this.level < 17) {
+            return 2;
+        }
+        return 3;
+    }
+
+    public get actionSurges(): number {
+        if (this.level < 2) {
+            return 0;
+        }
+        if (this.level < 17) {
+            return 1;
+        }
+        return 2;
+    }
+
+    public get attacks(): number {
+        if (this.level < 5) {
+            return 1;
+        }
+        if (this.level < 11) {
+            return 2;
+        }
+        return 3;
+    }
+
+    public get critStart(): number {
+        if (this.level < 3 || this.combatArchtype !== CombatArchtype.Champion) {
+            return 20;
+        }
+        if (this.level < 15) {
+            return 19;
+        }
+        return 18;
+    }
+
+    public get superiorityDie(): number {
+        if (this.level < 2 || this.combatArchtype === CombatArchtype.BattleMaster) {
+            return 0;
+        }
     }
 
     public static fromJson(json: any) {
@@ -870,6 +957,12 @@ export enum FighterStyle {
     TwoWeapon = 'Two Weapon Fighting',
 }
 
+export enum CombatArchtype {
+    BattleMaster,
+    Champion,
+    EldrichKnight,
+}
+
 export class MonkDetails {
     constructor(
         public level: number,
@@ -879,6 +972,41 @@ export class MonkDetails {
         let ret = [];
 
         return ret;
+    }
+
+    public get kiPoints(): number {
+        if (this.level < 1) {
+            return 0
+        }
+        return this.level;
+    }
+
+    public get attacks(): number {
+        if (this.level < 5) {
+            return 1
+        }
+        if (this.level < 0) {
+            return 2;
+        }
+    }
+    get martialArtsDie(): string {
+        if (this.level < 5) {
+            return 'd4';
+        }
+        if (this.level < 0) {
+            return 'd6';
+        }
+        return 'd10';
+    }
+
+    get movementBonus(): number {
+        if (this.level < 5) {
+            return 10;
+        }
+        if (this.level < 18) {
+            return 15;
+        }
+        return 20;
     }
 
     public static fromJson(json: any): MonkDetails {
@@ -899,6 +1027,13 @@ export class PaladinDetails {
         let ret = [];
 
         return ret;
+    }
+
+    get bonusAttacks(): number {
+        if (this.level < 5) {
+            return 1;
+        }
+        return 2;
     }
 
     public static fromJson(json: any): PaladinDetails {
@@ -933,6 +1068,30 @@ export class RangerDetails {
         let ret = [];
 
         return ret;
+    }
+
+    get attacks(): number {
+        if (this.level < 5) {
+            return 1;
+        }
+        return 2;
+    }
+
+    get favoredTerrainCount(): number {
+        if (this.level < 6) {
+            return 1;
+        }
+        if (this.level < 14) {
+            return 2;
+        }
+        return 3;
+    }
+
+    get favoredEnemyCount(): number {
+        if (this.level < 6) {
+            return 1;
+        }
+        return 2;
     }
 
     public static fromJson(json: any): RangerDetails {
@@ -1094,6 +1253,13 @@ export class RogueDetails {
         }
         return 12;
     }
+    get expertiseCount(): number {
+        if (this.level > 5) {
+            return 4;
+        }
+        return 2;
+
+    }
     public static fromJson(json: any): RogueDetails {
         return new RogueDetails(
             json.level,
@@ -1115,6 +1281,26 @@ export class SorcererDetails {
         let ret = [];
 
         return ret;
+    }
+
+    get sorceryPoints(): number {
+        if (this.level < 2) {
+            return 0;
+        }
+        return this.level;
+    }
+
+    get metaMagicCount(): number {
+        if (this.level < 3) {
+            return 0
+        }
+        if (this.level < 10) {
+            return 2;
+        }
+        if (this.level < 17) {
+            return 3;
+        }
+        return 4;
     }
 
     public static fromJson(json: any): SorcererDetails {
@@ -1152,6 +1338,44 @@ export class WarlockDetails {
         let ret = [];
 
         return ret;
+    }
+
+    get eldrichInvocationCount(): number {
+        if (this.level < 2) {
+            return 0;
+        }
+        if (this.level < 5) {
+            return 2
+        }
+        if (this.level < 9) {
+            return 3;
+        }
+        if (this.level < 12) {
+            return 4;
+        }
+        if (this.level < 15) {
+            return 5;
+        }
+        if (this.level < 18) {
+            return 6;
+        }
+        return 7;
+    }
+
+    get mysticArcanumSpells(): number[] {
+        if (this.level < 11) {
+            return [];
+        }
+        if (this.level < 13) {
+            return [6];
+        }
+        if (this.level < 15) {
+            return [6, 7];
+        }
+        if (this.level < 17) {
+            return [6, 7, 8];
+        }
+        return [6,7,8,9];
     }
 
     public static fromJson(json: any): WarlockDetails {

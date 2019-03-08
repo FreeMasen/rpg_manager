@@ -1,15 +1,10 @@
-const fs = require('fs');
-
-
-async function readFile(path) {
-    return new Promise((r, j) => {
-        fs.readFile(path, 'utf8', (err, data) => {
-            if (err) return j(err);
-            return r(data);
-        })
-    })
+const { readFile,
+    removeFile,
+    _append } = require('./fileHelper.js');
+const FILE_PATH = 'spellBook.json';
+async function append(text) {
+    await _append(text, FILE_PATH);
 }
-
 async function convertSpells() {
     console.log('reading json');
     let text = await readFile('spells.json');
@@ -39,13 +34,9 @@ async function convertSpells() {
         } else {
             mat = '';
         }
-        let duration = 'null';
         if (s.duration) {
             duration = s.duration;
         }
-        let range = 'null';
-        // let formattedName = formatSpellName(s.name);
-        // acc.enum.push(`${formattedName} = "${s.name}"`);
         let ret = {
             name: s.name,
             level: s.level,
@@ -55,7 +46,8 @@ async function convertSpells() {
             castingTime: s.time,
             desc: s.desc,
             duration: s.duration,
-        }//`new Spell(SpellName.${formattedName}, ${s.level}, ${ver}, ${som}, ["${mat}"], "${s.time}", "${s.desc}", "${duration}", ${range})`;
+            classKinds: []
+        }
         if (s.range) {
             let val;
             if (s.range.length == 1) {
@@ -65,45 +57,37 @@ async function convertSpells() {
             }
         }
         if (s.classes.indexOf('Bard') > -1) {
-            acc.bard.push(ret);
+            ret.classKinds.push('Bard');
         }
         if (s.classes.indexOf('Cleric') > -1) {
-            acc.cleric.push(ret);
+            ret.classKinds.push('Cleric');
         }
         if (s.classes.indexOf('Druid') > -1) {
-            acc.druid.push(ret);
+            ret.classKinds.push('Druid');
+        }
+        if (s.classes.indexOf('Fighter') > -1) {
+            ret.classKinds.push('Fighter');
         }
         if (s.classes.indexOf('Paladin') > -1) {
-            acc.paladin.push(ret);
+            ret.classKinds.push('Paladin');
         }
         if (s.classes.indexOf('Ranger') > -1) {
-            acc.ranger.push(ret);
+            ret.classKinds.push('Ranger');
         }
         if (s.classes.indexOf('Rogue') > -1) {
-            acc.rogue.push(ret);
+            ret.classKinds.push('Rogue');
         }
         if (s.classes.indexOf('Sorcerer') > -1) {
-            acc.sorcerer.push(ret);
+            ret.classKinds.push('Sorcerer');
         }
         if (s.classes.indexOf('Warlock') > -1) {
-            acc.warlock.push(ret);
+            ret.classKinds.push('Warlock');
         }
         if (s.classes.indexOf('Wizard') > -1) {
-            acc.wizard.push(ret);
+            ret.classKinds.push('Wizard');
         }
-        return acc;
-    }, {
-        // enum: [],
-        bard: [],
-        cleric: [],
-        druid: [],
-        paladin: [],
-        ranger: [],
-        rogue: [],
-        sorcerer: [],
-        warlock: [],
-        wizard: [],
-    });
+        return acc.concat([ret]);
+    }, []);
 }
 /**
  * 
@@ -130,7 +114,7 @@ function formatSpellName(name) {
     }
     return ret;
 }
-const FILE_PATH = 'spellBook.json';
+
 async function write(lists) {
     console.log('removing old file');
     try {
@@ -158,32 +142,9 @@ async function write(lists) {
     // }
 }
 
-async function append(text) {
-    return new Promise((r, j) => {
-        fs.appendFile(FILE_PATH, text, err => {
-            if (err) return j(err);
-            return r();
-        });
-    });
-}
-
-async function removeFile(path) {
-    return new Promise((r, j) => {
-        fs.unlink(path, err => {
-            if (err) return j(err);
-            return r()
-        });
-    });
-}
-
 async function main() {
-    let lists = await convertSpells();
-    await write(lists);
+    let spells = await convertSpells();
+    await write(spells);
 }
 
-main().then(() => {
-    
-    console.log('done');
-}).catch(e => {
-    console.error('error from main', e);
-})
+main().then(() => console.log('done')).catch(e => console.error('error in main', e));
