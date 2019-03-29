@@ -29,17 +29,19 @@ export class _ClassDetails<T> {
         }
         if (!selectedFeatures || selectedFeatures.size == 0) {
             this.selectedFeatures = new Map();
-            this.mapFeatures(features, this.selectedFeatures);
         }
+        this.mapFeatures(features, this.selectedFeatures);
     }
 
     private mapFeatures(features: ClassFeature[], map: Map<string, {idx: number, minLevel: number}>) {
         for (let feat of features) {
             if (feat.options && feat.options.length > 0) {
-                map.set(feat.name,{idx: -1, minLevel: feat.level});
-                for (let opt of feat.options) {
-                    if (opt.features && opt.features.length > 0) {
-                        this.mapFeatures(opt.features, map);
+                if (!map.has(feat.name)) {
+                    map.set(feat.name,{idx: -1, minLevel: feat.level});
+                    for (let opt of feat.options) {
+                        if (opt.features && opt.features.length > 0) {
+                            this.mapFeatures(opt.features, map);
+                        }
                     }
                 }
             }
@@ -82,6 +84,10 @@ export class _ClassDetails<T> {
         return this.features.reduce((acc: ClassFeature[], f: ClassFeature) => {
             if (f.options && f.options.length > 0) {
                 let selection = this.selectedFeatures.get(f.name);
+                if (!selection) {
+                    selection = {idx: -1, minLevel: f.level};
+                    this.selectedFeatures.set(f.name, selection);
+                }
                 if (selection.idx > -1) {
                     acc.push(f);
                     acc.push(...f.options[selection.idx].features);
