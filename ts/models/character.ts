@@ -251,7 +251,7 @@ export class Character {
         let totalScores = this.abilityScores.reduce((acc, s) => acc + s.value, 0);
         let baseScores = 8 * 6;
         let currentBonusPoints = Data.getAbilityScoreBonusCountFor(this.characterClass.name, this.level);
-        return (baseScores + currentBonusPoints) - totalScores
+        return totalScores - (baseScores + currentBonusPoints);
     }
 
     public static fromJson(json: any): Character {

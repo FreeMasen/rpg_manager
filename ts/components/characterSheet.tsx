@@ -369,9 +369,11 @@ export class AbilitiesColumn extends React.Component<IAbilitiesColumnProps, IAbi
 
     render() {
         return (
-            <Box
-                className="ability-scores-column"
-                padding="5px"
+            <div
+                className="ability-scores-column box"
+                style={{
+                    padding: "5px",
+                }}
             >
                 {this.props.scores.map((score) => {
                     return (
@@ -384,8 +386,9 @@ export class AbilitiesColumn extends React.Component<IAbilitiesColumnProps, IAbi
                 })}
                 <button
                     style={{
-                        padding: '0px',
+                        color: this.props.pendingBonuses > 0 ? 'red' : 'black',
                     }}
+                    title={this.props.pendingBonuses > 0 ? `${this.props.pendingBonuses} additional ability score values available` : 'adjust ability scores'}
                     onClick={() => this.editScores()}
                 >edit</button>
                 {this.state.editingScores
@@ -396,7 +399,7 @@ export class AbilitiesColumn extends React.Component<IAbilitiesColumnProps, IAbi
                     )
                     : null
                 }
-            </Box>
+            </div>
         );
     }
 
@@ -440,22 +443,24 @@ export class AbilityScoreAdjustor extends React.Component<IAbilityScoreAdjustorP
                 }}
                 horizontalAlignment="center"
             >
-                <Box className="scores-list">
+                <div className="scores-list box">
                     {this.state.abilityScores.map(score => {
                         return (
-                            <Box key={`adjusting-score-${score.kind}`} className={`input-group ${score.kind.toLowerCase()}`}>
-                                <Label style={{ textAlign: "center" }}>{score.kind}</Label>
+                            <div 
+                                key={`adjusting-score-${score.kind}`} 
+                                className={`box input-group ${score.kind.toLowerCase()}`}>
+                                <span style={{ textAlign: "center" }}>{score.kind}</span>
                                 <TextInput
                                     focusRing={false}
                                     value={score.value.toString()}
                                     type="number"
                                     onChange={ev => this.updateAbilities(score.kind, ev.currentTarget.valueAsNumber)}
                                 />
-                            </Box>
+                            </div>
                         );
                     })
                     }
-                </Box>
+                </div>
                 <div>
                     <button
                         style={{
