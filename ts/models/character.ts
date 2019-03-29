@@ -247,6 +247,13 @@ export class Character {
         return this.race.speed;
     }
 
+    abilityScoreModNeeded(): number {
+        let totalScores = this.abilityScores.reduce((acc, s) => acc + s.value, 0);
+        let baseScores = 8 * 6;
+        let currentBonusPoints = Data.getAbilityScoreBonusCountFor(this.characterClass.name, this.level);
+        return (baseScores + currentBonusPoints) - totalScores
+    }
+
     public static fromJson(json: any): Character {
         let ret = new Character(
             json.name,

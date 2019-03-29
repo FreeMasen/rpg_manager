@@ -209,6 +209,37 @@ export class Data {
         }
         return new Wealth(0,0,0,gp * mul,0);
     }
+
+    public static getAbilityScoreBonusCountFor(cls: ClassKind, level: number): number {
+        let ret = 0;
+        if (level > 3) {
+            ret += 2;
+        }
+        if (level > 7) {
+            ret += 2;
+        }
+        if (level > 11) {
+            ret += 2;
+        }
+        if (level > 15) {
+            ret += 2;
+        }
+        if (level > 18) {
+            ret += 2;
+        }
+        if (cls === ClassKind.Rogue && level > 9) {
+            ret += 2;
+        }
+        if (cls === ClassKind.Fighter) {
+            if (level > 5) {
+                ret += 2;
+            }
+            if (level > 13) {
+                ret += 2;
+            }
+        }
+        return ret;
+    }
 }
 
 export interface ISeed {

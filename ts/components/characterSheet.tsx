@@ -65,6 +65,7 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 key="abilities-column"
                 scores={this.props.character.modifiedAbilityScores()}
                 updateScores={scores => this.props.adjustScores(scores)}
+                pendingBonuses={this.props.character.abilityScoreModNeeded()}
             />,
             <Proficiency
                 key="proficiency"
@@ -354,6 +355,7 @@ export class ExperienceAdjuster extends React.Component<IExperienceAdjusterProps
 
 interface IAbilitiesColumnProps {
     scores: AbilityScores;
+    pendingBonuses: number;
     updateScores: (scores: AbilityScores) => void;
 }
 interface IAbilitiesColumnState {
