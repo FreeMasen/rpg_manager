@@ -5,18 +5,19 @@ import {
 } from '../models/character';
 import { Range } from '../models/range';
 import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore';
-import { Box, Text, Button, Label, TextInput, 
-        Dialog, Radio, ListView, ListViewSection, 
-        ListViewSectionHeader, ListViewRow, Checkbox,
-        ListViewHeader,
+import { Box, Label, TextInput, 
+        Dialog, 
+        ListViewSectionHeader, Checkbox,
 } from 'react-desktop';
+
+import { ListView, ListViewHeader, ListViewRow } from './common/ListView';
+import { SkillRadio as Radio } from './common/radio';
 import { Class, ClassKind } from '../models/class';
 import { Background } from '../models/background';
 import { SkillKind } from '../models/skills';
 import { SpellsList } from './spellsList';
 import { IClassFeature, ClassFeature } from '../services/data';
 import { Spell } from '../models/spells';
-import { notEqual } from 'assert';
 import { ClassDetails } from '../models/classDetails';
 
 interface ICharacterSheetProps {
@@ -142,27 +143,34 @@ export class CharacterName extends React.Component<ICharacterNameProps, {}> {
             <Box
                 className="character-name-container"
             >
-                <Text
-                    className="character-name-text"
-                    bold={true}
-                    size={24}
-                >{this.props.name}</Text>
+                <span
+                    className="character-name-span"
+                    style={{
+                        fontWeight: 'bold',
+                        fontSize: '18pt',
+                    }}
+                >{this.props.name}</span>
                 <div className="inspiration-container">
-                    <Text
+                    <span
                         style={{
                             fontSize: 16,
                         }}
-                    >{`Inspiration ${this.props.inspiration}`}</Text>
-                    <Button
+                    >{`Inspiration ${this.props.inspiration}`}</span>
+                    <button
                         onClick={() => this.props.inspirationChanged(this.props.inspiration + 1)}
                         className="up"
-                        padding="0px"
+                        style={{
+                            padding: '0px'
+                        }}
                     >
                         <i style={{ fontFamily: 'Material Icons', lineHeight: 1 }}>expand_less</i>
-                    </Button>
-                    <Button padding="0px" onClick={() => this.props.inspirationChanged(this.props.inspiration - 1)} className="down">
+                    </button>
+                    <button style={{
+                            padding: '0px'
+                        }} 
+                    onClick={() => this.props.inspirationChanged(this.props.inspiration - 1)} className="down">
                         <i style={{ fontFamily: 'Material Icons', lineHeight: 1 }}>expand_more</i>
-                    </Button>
+                    </button>
                 </div>
             </Box>
         );
@@ -193,79 +201,68 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
     }
     render() {
         let ret = [
-            <Box
-                className="character-description"
-                padding={0}
+            <div
+                className="character-description box"
                 key="character-desc"
             >
                 <div className="character-class desc-part">
-                    <Text 
+                    <span 
                         className="character-class-value desc-value"
-                        style={{
-                            paddingTop: 5,
-                            lineHeight: 1,
-                        }}
-                    >{this.props.name}</Text>
+                    >{this.props.name}</span>
                     <hr className="desc-divider" />
-                    <Label
+                    <span
                         color="rgba(0,0,0,0.5)"
                         className="character-class-label desc-label"
-                    >class</Label>
+                    >class</span>
                 </div>
                 <div className="class-level desc-part">
-                    <Text className={`class-level-value desc-value`}
-                    style={{
-                        paddingTop: 5,
-                        lineHeight: 1,
-                    }}>{this.props.level.toString()}</Text>
+                    <span className={`class-level-value desc-value`}>{this.props.level.toString()}</span>
                     <hr className="desc-divider" />
-                    <Label
-                        color="rgba(0,0,0,0.5)" className="class-level-label desc-label">level</Label>
+                    <span
+                        style={{
+                            color: "rgba(0,0,0,0.5)"
+                         }} 
+                         className="class-level-label desc-label"
+                    >level</span>
                 </div>
                 <div className="character-background desc-part">
-                    <Text className="background-value desc-value"
-                    style={{
-                        paddingTop: 5,
-                        lineHeight: 1,
-                    }}>{this.props.background.kind}</Text>
+                    <span className="background-value desc-value" >{this.props.background.kind}</span>
                     <hr className="desc-divider" />
-                    <Label
-                        color="rgba(0,0,0,0.5)" className="background-label desc-label">background</Label>
+                    <span
+                        style={{
+                            color: "rgba(0,0,0,0.5)"
+                         }} 
+                        className="background-label desc-label">background</span>
                 </div>
                 <div className="character-race desc-part">
-                    <Text className="race-value desc-value"
-                    style={{
-                        paddingTop: 5,
-                        lineHeight: 1,
-                    }}>{this.props.race}</Text>
+                    <span className="race-value desc-value" >{this.props.race}</span>
                     <hr className="desc-divider" />
-                    <Label
-                        color="rgba(0,0,0,0.5)" className="race-label desc-label">race</Label>
+                    <span
+                        style={{
+                            color: "rgba(0,0,0,0.5)"
+                         }} 
+                        className="race-label desc-label">race</span>
                 </div>
                 <div className="character-alignment desc-part">
-                    <Text className="alignment-value desc-value"
-                    style={{
-                        paddingTop: 5,
-                        lineHeight: 1,
-                    }}>{this.props.alignment.toString()}</Text>
+                    <span className="alignment-value desc-value" >{this.props.alignment.toString()}</span>
                     <hr className="desc-divider" />
-                    <Label
-                        color="rgba(0,0,0,0.5)" className="alignment-label desc-label">alignment</Label>
+                    <span
+                        style={{
+                            color: "rgba(0,0,0,0.5)"
+                         }}  className="alignment-label desc-label">alignment</span>
                 </div>
                 <div className="character-experience desc-part"
                     onClick={() => this.adjustExperience()}
                     title={`next level in ${this.props.expToNextLevel} more exp`}
                 >
-                    <Text className="experience-value desc-value"
-                    style={{
-                        paddingTop: 5,
-                        lineHeight: 1,
-                    }}>{this.props.experience.toString()}</Text>
+                    <span className="experience-value desc-value" >{this.props.experience.toString()}</span>
                     <hr className="desc-divider" />
-                    <Label
-                        color="rgba(0,0,0,0.5)" className="experience-label desc-label">experience</Label>
+                    <span
+                        style={{
+                            color: "rgba(0,0,0,0.5)"
+                         }} className="experience-label desc-label">experience</span>
                 </div>
-            </Box>
+            </div>
         ];
         if (this.state.adjustingExperience) {
             ret.push(<ExperienceAdjuster
@@ -331,8 +328,8 @@ export class ExperienceAdjuster extends React.Component<IExperienceAdjusterProps
                     onChange={ev => this.setState({ currentExp: parseInt(ev.currentTarget.value), newExp: 0 })}
                 />
                 <div className="button-container">
-                    <Button onClick={() => this.props.onComplete(this.state.currentExp + this.state.newExp)}>Save</Button>
-                    <Button onClick={() => this.props.onComplete(this.props.currentExp)}>Cancel</Button>
+                    <button onClick={() => this.props.onComplete(this.state.currentExp + this.state.newExp)}>Save</button>
+                    <button onClick={() => this.props.onComplete(this.props.currentExp)}>Cancel</button>
                 </div>
             </Dialog>
         );
@@ -385,9 +382,12 @@ export class AbilitiesColumn extends React.Component<IAbilitiesColumnProps, IAbi
                         />
                     )
                 })}
-                <Button
+                <button
+                    style={{
+                        padding: '0px',
+                    }}
                     onClick={() => this.editScores()}
-                >edit</Button>
+                >edit</button>
                 {this.state.editingScores
                     ? (
                         <AbilityScoreAdjustor
@@ -457,12 +457,18 @@ export class AbilityScoreAdjustor extends React.Component<IAbilityScoreAdjustorP
                     }
                 </Box>
                 <div>
-                    <Button
+                    <button
+                        style={{
+                            padding: '0px',
+                        }}
                         onClick={() => this.props.scoresSaved(this.state.abilityScores)}
-                    >Save</Button>
-                    <Button
+                    >Save</button>
+                    <button
+                        style={{
+                            padding: '0px',
+                        }}
                         onClick={() => this.props.scoresSaved(null)}
-                    >Cancel</Button>
+                    >Cancel</button>
                 </div>
             </Dialog>
         );
@@ -513,9 +519,9 @@ export class AbilityScoreContainer extends React.Component<IAbilityScoreContaine
                 className="ability-score-container"
                 padding={5}
             >
-                <Label bold={true} className="ability-score-name">{this.props.name.substr(0, 3).toUpperCase()}</Label>
-                <Text className="ability-score-value">{this.props.score.value}</Text>
-                <Text className="ability-modifier-value">{this.props.score.modifier}</Text>
+                <Label style={{lineHeight: '1'}} bold={true} className="ability-score-name">{this.props.name.substr(0, 3).toUpperCase()}</Label>
+                <span style={{lineHeight: '1'}} className="ability-score-value">{this.props.score.value}</span>
+                <span style={{lineHeight: '1'}} className="ability-modifier-value">{this.props.score.modifier}</span>
             </Box>
         )
     }
@@ -528,15 +534,13 @@ interface ISavesProps {
 export class Saves extends React.Component<ISavesProps, {}> {
     render() {
         return (
-            <Box className="saves-list"
-                padding="0"
-            >
+            <div className="saves-list box">
                 {this.props.saves.map(save => {
                     return (
                         <SkillContainer key={save.kind} name={save.kind} score={save.value} enabled={save.enabled} />
                     )
                 })}
-            </Box>
+            </div>
         )
     }
 }
@@ -548,13 +552,12 @@ interface ISkillsListProps {
 export class SkillsList extends React.Component<ISkillsListProps, {}> {
     render() {
         return (
-            <Box className="skills-list"
-                padding="0"
+            <div className="skills-list box"
             >
                 {this.props.skills.map(skill => {
                     return (<SkillContainer key={`skill-${skill[0]}`} name={skill[0]} score={skill[1]} enabled={skill[2]} />)
                 })}
-            </Box>
+            </div>
         )
     }
 }
@@ -569,12 +572,13 @@ export class SkillContainer extends React.Component<ISkillContainerProps, {}> {
     render() {
         return (
             <div className="skill-container">
-                <Radio className="skill-flag"
-                    defaultChecked={this.props.enabled}
-                    disabled
+                <Radio 
+                    label={`${this.props.score} ${this.props.name}`}
+                    checked={this.props.enabled}
+                    disabled={false}
+                    title={this.props.name}
+                    onClick={() => {}}
                 />
-                <Text className="skill-value">{this.props.score}</Text>
-                <Text className="skill-name">{this.props.name}</Text>
             </div>
         )
     }
@@ -599,7 +603,7 @@ export class PassiveWisdom extends React.Component<IPassiveWisdomProps, IPassive
                 padding="1px"
                 className="passive-wisdom"
             >
-                <Text>{this.props.value}</Text><Text>passive perception</Text>
+                <span>{this.props.value}</span><span>passive perception</span>
             </Box>
         );
     }
@@ -627,9 +631,8 @@ export class Defences extends React.Component<IDefencesProps, IDefencesState> {
     }
     render() {
         return (
-            <Box
-                className="defences"
-                padding="8px 0"
+            <div
+                className="defences box"
             >
                 <DefenceContainer name="Armor Class" value={this.props.armorClass} />
                 <DefenceContainer name="Initiative" value={this.props.initiative} />
@@ -646,7 +649,7 @@ export class Defences extends React.Component<IDefencesProps, IDefencesState> {
                     valueChanged={newValue => this.props.damageChanged(newValue)}
                 />
                 <HitDieDefenceContainer characterClass={this.props.hitDice} />
-            </Box>
+            </div>
         );
     }
 }
@@ -668,35 +671,34 @@ export class DefenceContainer extends React.Component<IDefenceContainerProps, ID
     render() {
         let cls = formatClass(this.props.name);
         return (
-            <Box
-                className={`defence-container ${cls}`}
-                padding="8px"
+            <div
+                className={`defence-container box ${cls}`}
             >
-                <Label className={`defence-name ${cls}`}>{this.props.name}</Label>
+                <span className={`defence-name ${cls}`}>{this.props.name}</span>
                 {this.props.valueChanged ?
                     <div className="adjustable-inner">
-                        <Text className={`defence-value ${cls}`}>{this.props.value}</Text>
-                        <Button
+                        <span className={`defence-value ${cls}`}>{this.props.value}</span>
+                        <button
                             className="adjust-up"
                             onClick={() => this.props.valueChanged(this.props.value + 1)}
-                            padding="0px"
                             style={{
                                 fontFamily: 'Material Icons',
                                 lineHeight: 1,
+                                padding: '0px',
                             }}
-                        >expand_less</Button>
-                        <Button
+                            >expand_less</button>
+                        <button
                             className="adjust-down"
                             onClick={() => this.props.valueChanged(this.props.value - 1)}
                             style={{
                                 fontFamily: 'Material Icons',
+                                padding: '0px',
                                 lineHeight: 1,
                             }}
-                            padding="0px"
-                        >expand_more</Button>
+                        >expand_more</button>
                     </div>
-                    : <Text className={`defence-value ${cls}`}>{this.props.value}</Text>}
-            </Box>
+                    : <span className={`defence-value ${cls}`}>{this.props.value}</span>}
+            </div>
         );
     }
 }
@@ -722,7 +724,7 @@ export class HitDieDefenceContainer extends React.Component<IHidDieDefenceContai
             >
                 <Label className="defence-name">Hit Dice</Label>
                 <div className="defence-value" key={`hit-die-${c.name}-${c.level}`}>
-                    <Text>{`d${c.hitDie}`}:</Text><Text>{c.level}</Text>
+                    <span>{`d${c.hitDie}`}:</span><span>{c.level}</span>
                 </div>
             </Box>
         );
@@ -747,10 +749,9 @@ export class Weapons extends React.Component<IWeaponsProps, IWeaponsState> {
     }
     render() {
         let ret = [
-            <Box
+            <div
                 key="weapons"
-                className="weapons"
-                padding="0px"
+                className="weapons box"
                 style={{
                     display: 'flex',
                     flexFlow: 'column',
@@ -760,7 +761,7 @@ export class Weapons extends React.Component<IWeaponsProps, IWeaponsState> {
                     className="weapon-list"
                 >
                     <ListViewHeader>
-                        <Text>Weapons</Text>
+                        <span>Weapons</span>
                     </ListViewHeader>
                     {this.props.weapons.map((w, i) => (<WeaponContainer
                         key={`weapon-${i}`}
@@ -768,11 +769,14 @@ export class Weapons extends React.Component<IWeaponsProps, IWeaponsState> {
                         onDeleteClicked={() => this.removeWeapon(i)}
                     />))}
                 </ListView>
-                <Button
+                <button
+                style={{
+                    padding: '0px',
+                }}
                     onClick={() => this.setState({ addingWeapon: true })}
-                >add</Button>
+                >add</button>
 
-            </Box>,
+            </div>,
         ];
         if (this.state.addingWeapon) {
             ret.push(<NewWeapon
@@ -812,29 +816,28 @@ export class WeaponContainer extends React.Component<IWeaponContainerProps, IWea
     render() {
         return (
             <ListViewRow className="weapon-container"
-                padding="0px"
-                height={20}
                 style={{
                     flex: '0',
                     background: 'rgba(0,0,0,0.04)',
                     display: 'grid',
                     gridTemplateRows: '',
                     justifyContent: 'space-between',
+                    height: 20,
                 }}
             >
-                <Text className="weapon-name">{this.props.weapon.name}</Text>
-                <Text className="weapon-dmg">{`${this.props.weapon.hitDie[0]}d${this.props.weapon.hitDie[1]}`}</Text>
-                <Text className="weapon-misc">{this.props.weapon.miscString()}</Text>
-                <Button
+                <span className="weapon-name">{this.props.weapon.name}</span>
+                <span className="weapon-dmg">{`${this.props.weapon.hitDie[0]}d${this.props.weapon.hitDie[1]}`}</span>
+                <span className="weapon-misc">{this.props.weapon.miscString()}</span>
+                <button
                     onClick={() => this.props.onDeleteClicked()}
-                    padding="0px"
                     style={{
+                        padding: "0px",
                         height: 19,
                         width: 19,
                     }}
                 >
                     <i style={{ fontFamily: 'Material Icons' }}>delete</i>
-                </Button>
+                </button>
             </ListViewRow>
         );
     }
@@ -988,12 +991,18 @@ export class NewWeapon extends React.Component<INewWeaponProps, INewWeaponState>
                     />
                 </div>
                 <div>
-                    <Button
+                    <button
+                    style={{
+                        padding: '0px',
+                    }}
                         onClick={() => this.props.onComplete(this.state.weapon)}
-                    >Save</Button>
-                    <Button
+                    >Save</button>
+                    <button
+                    style={{
+                        padding: '0px',
+                    }}
                         onClick={() => this.props.onComplete(null)}
-                    >Cancel</Button>
+                    >Cancel</button>
                 </div>
             </Dialog>
         );
@@ -1046,14 +1055,14 @@ export class Money extends React.Component<IMoneyProps, IMoneyState> {
                 padding="0"
             >
                 <ListView
-                    padding="0px"
+                    // padding="0px"
                 >
                     <ListViewHeader>
-                        <Text
+                        <span
                             style={{
                                 fontWeight: 'bold',
                             }}
-                        >Money</Text>
+                        >Money</span>
                     </ListViewHeader>
                     <MoneyRow
                         name="copper"
@@ -1079,10 +1088,13 @@ export class Money extends React.Component<IMoneyProps, IMoneyState> {
                         name="platinum"
                         value={this.props.wealth.platinum}
                     />
-                    <Button
+                    <button
+                    style={{
+                        padding: '0px',
+                    }}
                         onClick={() => this.updateMoney()}
                     >edit
-                    </Button>
+                    </button>
                 </ListView>
             </Box>
         ];
@@ -1124,7 +1136,6 @@ export class MoneyRow extends React.Component<IMoneyRowProps, IMoneyRowState> {
     render() {
         return (
             <ListViewRow className="money-unit"
-                padding={2}
                 style={{
                     background: 'rgba(0,0,0,0.04)'
                 }}
@@ -1304,9 +1315,15 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                 </Box>
                 <div className="buttons">
                     <button
+                    style={{
+                        padding: '0px',
+                    }}
                         onClick={() => this.props.onComplete(this.state.currentWealth.add(this.state.updatedWealth.mul(this.state.updatedWealthMul)))}
                     >Save</button>
                     <button
+                    style={{
+                        padding: '0px',
+                    }}
                         onClick={() => this.props.onComplete(this.props.currentWealth)}
                     >Cancel</button>
                 </div>
@@ -1371,30 +1388,28 @@ export class Proficiency extends React.Component<IProficiencyProps, IProficiency
     }
     render() {
         return (
-            <Box className="proficiency" padding="0px">
+            <div className="proficiency box">
                 <ListView>
-                    <ListViewSection
-                        header={<ListViewSectionHeader>
-                            <Label bold>Proficiency</Label>
-                        </ListViewSectionHeader>}
-
-                    >
+                    <div>
+                        <ListViewHeader>
+                            Proficiency
+                        </ListViewHeader>
                         {this.props.proficiency.map((s, i) => {
                             return (
-                                <ListViewRow key={`prof-${i}`} padding="0px"><Text className="prof-value" >{s}</Text></ListViewRow>
+                                <ListViewRow key={`prof-${i}`}><span className="prof-value" >{s}</span></ListViewRow>
                             )
                         })}
-                    </ListViewSection>
-                    <ListViewSection
-                        header={<ListViewSectionHeader>
-                            <Label bold>Languages</Label>
-                        </ListViewSectionHeader>}
+                    </div>
+                    <div
                     >
-                        {this.props.languages.map((l, i) => (<ListViewRow padding="0px" key={`lang-${i}`}><Text>{l}</Text></ListViewRow>))
+                    <ListViewHeader>
+                        Languages
+                    </ListViewHeader>
+                        {this.props.languages.map((l, i) => (<ListViewRow key={`lang-${i}`}><span>{l}</span></ListViewRow>))
                         }
-                    </ListViewSection>
+                    </div>
                 </ListView>
-            </Box>
+            </div>
         );
     }
 }
@@ -1457,7 +1472,7 @@ export class NoteList extends React.Component<INoteListProps, INoteListState> {
         return (
             <ListView>
                     <ListViewHeader>
-                        <Text className="notes-header">Notes</Text>
+                        <span className="notes-header">Notes</span>
                     </ListViewHeader>
                     {features.map((n, i) => {
                         let selection = this.props.classDetails.selectedFeatures.get(n.name);
@@ -1471,33 +1486,26 @@ export class NoteList extends React.Component<INoteListProps, INoteListState> {
                         return (
                             <ListViewRow 
                                 key={`note-${i}`} 
-                                style={{
-                                    borderBottom: '1px solid rgba(0,0,0,0.3)',
-                                }} 
-                                padding="0"
-                                padding-left="5"
                                 onClick={() => this.props.noteSelected(i)}
                                 title={needsSelection ? 'Select an option' : ''}
+                                className="note-value"
                             >
-                                <Text className="note-value">
-                                    <span
-                                        style={{
-                                            fontWeight: 'bold',
-                                            marginRight: 5,
-                                            color: needsSelection ? 'red' : 'inherit',
-                                        }}
+                                <span
+                                    style={{
+                                        fontWeight: 'bold',
+                                        marginRight: 5,
+                                        color: needsSelection ? 'red' : 'inherit',
+                                    }}
                                     >
-                                        {n.name}
-                                    </span>
-                                    <span
-                                        style={{
-                                            marginRight: 5,
-                                        }}
+                                    {n.name}
+                                </span>
+                                <span
+                                    style={{
+                                        marginRight: 5,
+                                    }}
                                     >-</span>
-                                    <span>{desc}</span>
-                                </Text>
-                            </ListViewRow>
-                            );
+                                <span>{desc}</span>
+                            </ListViewRow>)
                         })}
                     </ListView>
         );
@@ -1520,19 +1528,19 @@ export class NoteInfo extends React.Component<INoteInfoProps, INoteInfoState> {
     }
     render() {
         let inner = [
-            <ListViewSection
+            <div
                 key="main-note-info"
             >
                     <ListViewSectionHeader>
-                        <Button
+                        <button
                             onClick={() => this.props.onBack()}
                             style={{
                                 marginRight: 5,
                                 textAlign: 'center',
                                 height: 20,
                                 width: 20,
+                                padding: '0 0 0 3px',
                             }}
-                            padding="0 0 0 3px"
                         >
                             <i style={{
                                 fontFamily: 'Material Icons',
@@ -1540,65 +1548,56 @@ export class NoteInfo extends React.Component<INoteInfoProps, INoteInfoState> {
                                 lineHeight: 1,
                             }}
                             >arrow_back_ios</i>
-                        </Button>
-                        <Text className="notes-header">Notes</Text>
+                        </button>
+                        <span className="notes-header">Notes</span>
                     </ListViewSectionHeader>
                     <ListViewRow
                         style={{
                             borderBottom: '1px solid rgba(0,0,0,0.3)',
                         }} 
-                        padding="0"
-                        padding-left="5"
                     >
-                        <Text
+                        <span
                             style={{
                                 fontWeight: 'bold',
 
                             }}
                         >
                         {this.props.note.name}
-                        </Text>
+                        </span>
                     </ListViewRow>
                     <ListViewRow 
-                        padding="0"
-                        padding-left="5"
                     >
-                        <Text 
+                        <span 
                             className="note-value"
                         >
                             {this.props.note.shortDesc}
-                        </Text>
+                        </span>
                     </ListViewRow>
                     <ListViewRow
-                        padding="0"
-                        padding-left="5"
                     >
-                        <Text>
+                        <span>
                             {this.props.note.longDesc}
-                        </Text>
+                        </span>
                     </ListViewRow>
-                </ListViewSection>
+                </div>
         ];
         if (this.props.note.options) {
             inner.push(
-                <ListViewSection
+                <div
                     key="feature-option-list"
                 >
                     <ListViewSectionHeader>
-                        <Text>Choose an Option</Text>
+                        <span>Choose an Option</span>
                     </ListViewSectionHeader>
                     {this.props.note.options.map((o, i) => {
                         return (
                             <ListViewRow
                                 key={`note-option${o.name}-${i}`}
-                                padding="0px"
-                                padding-left="5"
+                                style={{
+                                    paddingBottom: 5,
+                                }}
                             >
-                                <Text
-                                    style={{
-                                        borderBottom: '1px solid rgba(0,0,0,0.3)'
-                                    }}
-                                >
+                                
                                     <p
                                         style={{
                                             padding: 0,
@@ -1624,14 +1623,13 @@ export class NoteInfo extends React.Component<INoteInfoProps, INoteInfoState> {
                                     >
                                         {o.longDesc}
                                     </p>
-                                </Text>
-                                <Button
+                                <button
                                     onClick={() => this.props.optionsSelected(this.props.note.name, i)}
-                                >Choose</Button>
+                                >Choose</button>
                             </ListViewRow>
                         );
                     })}
-                </ListViewSection> 
+                </div> 
             );
         }
         return (
@@ -1662,82 +1660,81 @@ export class ItemsList extends React.Component<IItemsListProps, IItemsListState>
     }
     render() {
         let ret = [
-            <Box 
-                className="items-list"
+            <div 
+                className="items-list box"
                 key="items-list"
                 style={{
-
+                    padding: "0px",
                 }}
-                padding="0px"
             >
             <ListView>
-                    <ListViewSection className="magic-list item-list">
-                        <ListViewSectionHeader>
-                            <Label bold>Magic Items</Label>
-                        </ListViewSectionHeader>
-                        {this.props.magicItems.map((item, i) => {
-                            return <ListViewRow padding={0} key={`magic-item-${i}`} className="magic-list-item">
-                                <Text><span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.buf}`}</Text>
-                                <Button
-                                    onClick={() => this.removeItem(i, true)}
-                                    padding="0px"
-                                    width={19}
-                                    height={19}
-                                    style={{
-                                        lineHeight: '14px',
-                                        color: 'red',
-                                    }}
-                                >
-                                    <i style={{ fontFamily: 'Material Icons' }}>delete</i>
-                                </Button>
-                            </ListViewRow>
-                        })}
-                    </ListViewSection>
-                <ListViewSection className="expendable-list item-list">
-                        <ListViewSectionHeader>
-                            <Label bold>Expendable Items</Label>
-                        </ListViewSectionHeader>
-                        {this.props.expendables.map((item, i) => {
-                            return <ListViewRow padding={0} key={`expendable-item-${i}`} className="magic-list-item">
-                                <Text padding="0px">{`${item.quantity}x`}<span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.desc}`}</Text>
-                                <Button
-                                    onClick={() => this.adjustExpendables(i, item.quantity + 1)}
-                                    padding="0px"
-                                    width={19}
-                                    height={19}
-                                    style={{
-                                        lineHeight: '14px'
-                                    }}
-                                >+</Button>
-                                <Button
-                                    onClick={() => this.adjustExpendables(i, item.quantity - 1)}
-                                    padding="0px"
-                                    width={19}
-                                    height={19}
-                                    style={{
-                                        lineHeight: '14px'
-                                    }}
-                                >-</Button>
-                                <Button
-                                    onClick={() => this.removeItem(i, false)}
-                                    padding="0px"
-                                    width={19}
-                                    height={19}
-                                    style={{
-                                        lineHeight: '14px',
-                                        color: 'red',
-                                    }}
-                                >
-                                    <i style={{ fontFamily: 'Material Icons' }}>delete</i>
-                                </Button>
-                            </ListViewRow>
-                        })}
-                    </ListViewSection>
+                <div className="magic-list item-list">
+                    <ListViewHeader>
+                        Magic Items
+                    </ListViewHeader>
+                    {this.props.magicItems.map((item, i) => {
+                        return <ListViewRow key={`magic-item-${i}`} className="magic-list-item">
+                            <span><span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.buf}`}</span>
+                            <button
+                                onClick={() => this.removeItem(i, true)}
+                                style={{
+                                    width: 19,
+                                    height: 19,
+                                    padding: "0px",
+                                    lineHeight: '14px',
+                                    color: 'red',
+                                }}
+                            >
+                                <i style={{ fontFamily: 'Material Icons' }}>delete</i>
+                            </button>
+                        </ListViewRow>
+                    })}
+                </div>
+                <div className="expendable-list item-list">
+                    <ListViewHeader>
+                        Expendable Items
+                    </ListViewHeader>
+                    {this.props.expendables.map((item, i) => {
+                        return <ListViewRow key={`expendable-item-${i}`} className="magic-list-item">
+                            <span>{`${item.quantity}x`}<span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.desc}`}</span>
+                            <button
+                                onClick={() => this.adjustExpendables(i, item.quantity + 1)}
+                                style={{
+                                    padding: "0px",
+                                    width: 19,
+                                    height: 19,
+                                    lineHeight: '14px'
+                                }}
+                            >+</button>
+                            <button
+                                onClick={() => this.adjustExpendables(i, item.quantity - 1)}
+                                style={{
+                                    padding: "0px",
+                                    width: 19,
+                                    height: 19,
+                                    lineHeight: '14px'
+                                }}
+                            >-</button>
+                            <button
+                                onClick={() => this.removeItem(i, false)}
+                                style={{
+                                    padding: "0px",
+                                    width: 19,
+                                    height: 19,
+                                    lineHeight: '14px',
+                                    color: 'red',
+                                }}
+                            >
+                                <i style={{ fontFamily: 'Material Icons' }}>delete</i>
+                            </button>
+                        </ListViewRow>
+                    })}
+                </div>
             </ListView>
-            <Button
+            <button
                 onClick={() => this.setState({ addingItem: true })}
-            >add</Button>
-        </Box>];
+            >add</button>
+        </div>];
         if (this.state.addingItem) {
             ret.push(<NewItem
                 key="new-item"
@@ -1867,12 +1864,12 @@ export class NewItem extends React.Component<INewItemProps, INewItemState> {
                             />
                         </div>
                 }
-                <Button
+                <button
                     onClick={() => this.save()}
-                >Save</Button>
-                <Button
+                >Save</button>
+                <button
                     onClick={() => this.props.newItemComplete(null)}
-                >Cancel</Button>
+                >Cancel</button>
             </Dialog>
         );
     }

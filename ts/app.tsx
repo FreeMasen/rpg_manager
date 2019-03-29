@@ -51,6 +51,7 @@ export class App extends React.Component<{}, IAppState> {
                         style={{
                             display: `${this.state.currentView == View.CharacterPicker ? 'none' : 'block'}`,
                             textAlign: 'center',
+                            padding: '0px',
                         }}
                     ><i style={{
                         fontFamily: 'Material Icons',

@@ -19,5 +19,5 @@
     "exclude": [
         "node_modules"
     ],
-    "include": ["./ts/**/*.ts"]
+    "include": ["./ts/**/*.ts", "ts/components/common/ListView.tsx"]
 }
