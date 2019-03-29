@@ -684,3 +684,7 @@ input[type="number"] {
 .spell-list-entry + .spell-list-entry {
     border-top: 1px solid rgba(0,0,0,0.2);
 }
+
+.unit-value {
+    margin-right: 5px;
+}

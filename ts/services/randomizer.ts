@@ -7,11 +7,14 @@ import { Background, ALL_BACKGROUNDS } from '../models/background';
 import { Skills } from '../models/skills';
 
 export class Randomizer {
-    public static randomCharacter(): Character {
+    public static async randomCharacter(): Promise<Character> {
+        let data = new Data();
         let raceKind = Randomizer.randomRace();
         let subRace = Randomizer.randomSubRace(raceKind);
         let race = new Race(raceKind, subRace);
-        let cls = new Class(Randomizer.randomClassKind(), 1, []);
+        let classKind = Randomizer.randomClassKind();
+        let details = await data.getClassDetails(classKind, 1);
+        let cls = new Class(classKind, 1, details,);
         let bkgnd = Randomizer.randomBackground();
         let ret = new Character(
             Character.nextName(),
@@ -31,7 +34,6 @@ export class Randomizer {
             [],
             new Wealth(),
             race.languages.concat(bkgnd.languages),
-            [],
             0,
             0,
             [],

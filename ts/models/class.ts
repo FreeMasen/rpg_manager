@@ -7,7 +7,12 @@ import { SkillKind, Skill } from './skills';
 import {
     ClassDetails, BarbarianDetails,
     BardDetails, BardCollege,
-    ClericDetails, RogueDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, SorcererDetails, WarlockDetails, WizardDetails, RoguishArchType,
+    ClericDetails, RogueDetails, 
+    DruidDetails, FighterDetails, 
+    MonkDetails, PaladinDetails, 
+    RangerDetails, SorcererDetails, 
+    WarlockDetails, WizardDetails, 
+    RoguishArchetype,
 } from './classDetails';
 import { Data } from '../services/data';
 
@@ -32,50 +37,50 @@ export class Class {
     public features = [];
     public numberOfSkills = 0;
     public availableSkills: SkillKind[] = [];
-    public classDetails: ClassDetails;
     public miscProfs: string[] = [];
     isCaster: boolean = false;
     constructor(
         public name: ClassKind,
         public _level: number,
+        public classDetails: ClassDetails,
         public bonusAbilityScores: [AbilityKind, number][] = DEFAULT_BONUS_ABILITY_SCORES,
         public selectedSkills: SkillKind[] = [],
     ) {
         switch (name) {
             case ClassKind.Barbarian:
-                this.barbarianCtor();
+                this.barbarianCtor(classDetails as BarbarianDetails);
             break;
             case ClassKind.Bard:
-                this.bardCtor();
+                this.bardCtor(classDetails as BardDetails);
             break;
             case ClassKind.Cleric:
-                this.clericCtor();
+                this.clericCtor(classDetails as ClericDetails);
             break;
             case ClassKind.Druid:
-                this.druidCtor();
+                this.druidCtor(classDetails as DruidDetails);
             case ClassKind.Fighter:
-                this.fighterCtor();
+                this.fighterCtor(classDetails as FighterDetails);
             break;
             case ClassKind.Monk:
-                this.monkCtor();
+                this.monkCtor(classDetails as MonkDetails);
             break;
             case ClassKind.Paladin:
-                this.paladinCtor();
+                this.paladinCtor(classDetails as PaladinDetails);
             break;
             case ClassKind.Ranger:
-                this.rangerCtor();
+                this.rangerCtor(classDetails as RangerDetails);
             break;
             case ClassKind.Rogue:
-                this.rogueCtor();
+                this.rogueCtor(classDetails as RogueDetails);
             break;
             case ClassKind.Sorcerer:
-                this.sorcererCtor();
+                this.sorcererCtor(classDetails as SorcererDetails);
             break;
             case ClassKind.Warlock:
-                this.warlockCtor();
+                this.warlockCtor(classDetails as WarlockDetails);
             break;
             case ClassKind.Wizard:
-                this.wizardCtor();
+                this.wizardCtor(classDetails as WizardDetails);
             break;
         }
     }
@@ -95,7 +100,7 @@ export class Class {
         return Data.proficiencyBonusFor(this.level);
     }
 
-    barbarianCtor(details: BarbarianDetails = new BarbarianDetails(this._level, null, null)) {
+    barbarianCtor(details: BarbarianDetails) {
         this.desc = 'A fierce warrior of primitive background who can enter a battle rage';
         this.classDetails = details;
         this.hitDie = 12;
@@ -147,14 +152,14 @@ export class Class {
         ];
         this.numberOfSkills = 3;
         this.availableSkills = Object.getOwnPropertyNames(SkillKind).map(n => SkillKind[n]);
-        if ((this.classDetails as BardDetails).bardCollege === BardCollege.Valor && this._level > 2) {
+        if (this.classDetails && (this.classDetails as BardDetails).archetype === BardCollege.Valor && this._level > 2) {
             this.weaponProfs.push(WeaponKind.Martial);
             this.armorProfs.push(ArmorWeight.Medium);
             this.canUseShield = true;
         }
         this.miscProfs = ['Musical Instrument'];
     }
-    clericCtor(details: ClericDetails = new ClericDetails(this._level, null)) {
+    clericCtor(details: ClericDetails) {
         this.desc = 'A priestly champion who wields divine magic in service of a higher power';
         this.classDetails = details;
         this.hitDie = 8;
@@ -181,7 +186,7 @@ export class Class {
         ];
         this.canUseShield = true;
     }
-    druidCtor(details: DruidDetails = new DruidDetails(this._level, null)) {
+    druidCtor(details: DruidDetails) {
         this.desc = 'A priest of the Old Faith, wielding lhe powers of nature-moonlight and plant growth, fire and lightning-and adopting animal forms';
         this.classDetails = details;
         this.hitDie = 8;
@@ -219,7 +224,7 @@ export class Class {
         ];
         this.canUseShield = true;
     }
-    fighterCtor(details: FighterDetails = new FighterDetails(this._level, null)) {
+    fighterCtor(details: FighterDetails) {
         this.desc = 'A master of martial combat, skilled with a variety of weapons and armor';
         this.classDetails = details;
         this.hitDie = 10;
@@ -253,7 +258,7 @@ export class Class {
         ];
         this.canUseShield = true;
     }
-    monkCtor(details: MonkDetails = new MonkDetails(this._level)) {
+    monkCtor(details: MonkDetails) {
         this.desc = 'An master of martial arts, harnessing the power of lhe body in pursuit of physical and spiritual perfection';
         this.classDetails = details;
         this.hitDie = 8;
@@ -281,7 +286,7 @@ export class Class {
             SkillKind.Stealth,
         ];
     }
-    paladinCtor(details: PaladinDetails = new PaladinDetails(this._level, null, null)) {
+    paladinCtor(details: PaladinDetails) {
         this.desc = 'A holy warrior bound to a sacred oath';
         this.classDetails = details;
         this.hitDie = 10;
@@ -315,7 +320,7 @@ export class Class {
             SkillKind.Religion,
         ];
     }
-    rangerCtor(details: RangerDetails = new RangerDetails(this._level, null)) {
+    rangerCtor(details: RangerDetails) {
         this.desc = 'A warrior who uses martial prowess and nature magic lo combat threats on lhe edges of civilization';
         this.classDetails = details;
         this.hitDie = 10;
@@ -352,21 +357,21 @@ export class Class {
             SkillKind.Survival,
         ];
     }
-    rogueCtor(details: RogueDetails = new RogueDetails(this.level, null, [])) {
+    rogueCtor(details: RogueDetails) {
         this.desc = 'A scoundrel who uses stealth and trickery to overcome obstacles and enemies';
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Dexterity];
         this.savingThrows = [
-            AbilityKind.Strength,
             AbilityKind.Dexterity,
+            AbilityKind.Intelligence,
         ];
         this.armorProfs = [
             ArmorWeight.Light,
             ArmorWeight.Medium,
         ];
         this.canUseShield = true;
-        this.isCaster = details.archType === RoguishArchType.ArcaneTrickster;
+        this.isCaster = details && details.archetype === RoguishArchetype.ArcaneTrickster;
         this.weaponProfs = [
             WeaponKind.Simple,
             StdWeaponName.HandCrossbow,
@@ -389,7 +394,7 @@ export class Class {
             SkillKind.Stealth,
         ];
     }
-    sorcererCtor(details: SorcererDetails = new SorcererDetails(this._level, null, null)) {
+    sorcererCtor(details: SorcererDetails) {
         this.desc = 'A spell caster who draws on inherent magic from a gift or bloodline';
         this.classDetails = details;
         this.hitDie = 6;
@@ -416,7 +421,7 @@ export class Class {
             SkillKind.Religion,
         ];
     }
-    warlockCtor(details: WarlockDetails = new WarlockDetails(this._level, null)) {
+    warlockCtor(details: WarlockDetails) {
         this.desc = 'A wielder of magic that is derived from a bargain with an extra-planar entity';
         this.classDetails = details;
         this.hitDie = 8;
@@ -443,7 +448,7 @@ export class Class {
             SkillKind.Religion,
         ];
     }
-    wizardCtor(details: WizardDetails = new WizardDetails(this._level, null)) {
+    wizardCtor(details: WizardDetails) {
         this.desc = 'A scholarly magic-user capable of manipulating lhe structures of reality';
         this.classDetails = details;
         this.hitDie = 6;
@@ -480,6 +485,7 @@ export class Class {
             json._level,
             json.bonusAbilityScores,
             json.availableSkills,
+            json.selectedSkills || [],
         );
         ret.name = json.name;
         switch (json.name) {

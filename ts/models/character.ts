@@ -13,7 +13,7 @@ export class Character {
         public name: string = Character.nextName(),
         public abilityScores: AbilityScores = new AbilityScores(),
         public race: Race = new Race(),
-        public characterClass: Class = new Class(ClassKind.Fighter, 1),
+        public characterClass: Class,
         public background: Background = new Background(BackgroundKind.Criminal),
         public alignment: Alignment = Alignment.ChaoticGood(),
         public experience: number = 0,
@@ -27,7 +27,6 @@ export class Character {
         public weapons: Weapon[] = [new Weapon()],
         public wealth: Wealth = new Wealth(),
         public languages: Language[] = [NormalLanguage.Common],
-        public notes: string[] = [],
         public damage: number = 0,
         public tempHp: number = 0,
         public magicItems: MagicItem[] = [],
@@ -226,28 +225,6 @@ export class Character {
                 return 355000 - this.experience;
         }
     }
-    
-    needsLevelUp(): boolean {
-        return (this.level ===  1 && this.experience >    300)
-            || (this.level ===  2 && this.experience >    900)
-            || (this.level ===  3 && this.experience >   2700)
-            || (this.level ===  4 && this.experience >   6500)
-            || (this.level ===  5 && this.experience >  14000)
-            || (this.level ===  6 && this.experience >  23000)
-            || (this.level ===  7 && this.experience >  34000)
-            || (this.level ===  8 && this.experience >  48000)
-            || (this.level ===  9 && this.experience >  64000)
-            || (this.level === 10 && this.experience >  85000)
-            || (this.level === 10 && this.experience > 100000)
-            || (this.level === 11 && this.experience > 120000)
-            || (this.level === 12 && this.experience > 140000)
-            || (this.level === 13 && this.experience > 165000)
-            || (this.level === 15 && this.experience > 195000)
-            || (this.level === 16 && this.experience > 225000)
-            || (this.level === 17 && this.experience > 265000)
-            || (this.level === 18 && this.experience > 305000)
-            || (this.level === 19 && this.experience > 355000)
-    }
 
     hitPoints(): number {
         let con = this.abilityScores.modifier(AbilityKind.Constitution);
@@ -289,7 +266,6 @@ export class Character {
             json.weapons.map(Weapon.fromJson),
             Wealth.fromJson(json.wealth),
             json.languages,
-            json.notes,
             json.damage,
             json.tempHp,
             json.magicItems.map(MagicItem.fromJson),
@@ -639,19 +615,19 @@ export class Wealth {
     }
 
     private roundDown() {
-        while (this.copper < -100) {
+        while (this.copper < 0) {
             this.silver--;
             this.copper += 100;
         }
-        while (this.silver < -100) {
+        while (this.silver < 0) {
             this.electrum--;
             this.silver += 100;
         }
-        while (this.electrum < -100) {
+        while (this.electrum < 0) {
             this.gold--;
             this.electrum += 100;
         }
-        while(this.gold < -100) {
+        while(this.gold < 0) {
             this.platinum--;
             this.gold += 100;
         }

@@ -16,6 +16,7 @@ import { Tool } from '../models/tools';
 import { AbilityScores } from '../models/abilityScore';
 import { Skills, SkillKind } from '../models/skills';
 interface ICharacterCreatorProps {
+    data: Data;
     onSave: (ch: Character) => void;
 }
 
@@ -35,13 +36,24 @@ export class CharacterCreator extends React.Component<ICharacterCreatorProps, IC
     constructor(props) {
         super(props);
         this.state = {
-            character: Randomizer.randomCharacter(),
+            character: null,
             selectedTab: 0,
         };
         this.allClasses = Data.getAllClasses();
         this.allBackgrounds = Data.getAllBackground();
     }
+    componentDidMount() {
+        Randomizer.randomCharacter().then(ch => {
+            this.setState({character: ch});
+        }, e => console.error('failed to get random character', e))
+        .catch(e => {
+            console.error('failed to get random character', e);
+        });
+    }
     render() {
+        if (!this.state.character) {
+            return <div></div>
+        }
         return (
             <div className="character-creator">
                 <TitleBar 
@@ -126,6 +138,7 @@ export class CharacterCreator extends React.Component<ICharacterCreatorProps, IC
                         classes={this.allClasses}
                         onClassChange={c => this.valueChanged('characterClass', c)}
                         characterClass={this.state.character.characterClass}
+                        data={this.props.data}
                     />);
             case 3:
                 return (
@@ -560,6 +573,7 @@ interface IClassInfoProps {
     classes: ClassKind[];
     onClassChange: (c: Class) => void;
     characterClass: Class;
+    data: Data;
 }
 
 interface IClassInfoState {
@@ -576,7 +590,6 @@ export class ClassInfo extends React.Component<IClassInfoProps, IClassInfoState>
                 <ClassSelector
                     classes={this.props.classes}
                     onClassChange={v => this.classChanged(v)}
-                    onLevelChange={v => this.levelChanged(v)}
                     selectedClassKind={this.props.characterClass.name}
                 />
                 <ClassDetailsComponent
@@ -588,11 +601,10 @@ export class ClassInfo extends React.Component<IClassInfoProps, IClassInfoState>
         );
     }
     classChanged(kind: ClassKind) {
-        this.props.onClassChange(new Class(kind, this.props.characterClass.level));
-    }
-    levelChanged(lvl: number) {
-        let newClass = Object.assign(this.props.characterClass, {level: lvl});
-        this.props.onClassChange(newClass);
+        this.props.data.getClassDetails(kind, 1).then(details => {
+            this.props.onClassChange(new Class(kind, 1, details));
+        });
+        // this.props.onClassChange(new Class(kind, this.props.characterClass.level));
     }
 }
 
@@ -600,7 +612,6 @@ interface IClassSelectorProps {
     classes: ClassKind[];
     selectedClassKind: ClassKind;
     onClassChange: (ck: ClassKind) => void;
-    onLevelChange: (lvl: number) => void;
 }
 
 interface IClassSelectorState {
@@ -678,7 +689,7 @@ export class ClassDetailsComponent extends React.Component<IClassDetailsProps, I
                     <ListViewSectionHeader>
                         <Text>Benefits at 1st Level</Text>
                     </ListViewSectionHeader>
-                    {this.props.details.notes().map((n, i) => {
+                    {this.props.details.features.map((n, i) => {
                         return (
                             <ListViewRow 
                                 key={`class-detail-note-${i}`}
@@ -693,7 +704,7 @@ export class ClassDetailsComponent extends React.Component<IClassDetailsProps, I
                                                 style={{
                                                     marginLeft: i === 0 ? 0 : 5,
                                                 }}
-                                                key={`long-desc-line-${n.name}-${l}`}
+                                                key={`long-desc-line-${n.name}-${i}`}
                                             >{i === 0 ? `${n.name}: ${l}` : l}</Text>)
                                     })}
                                 </div>

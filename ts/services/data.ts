@@ -1,9 +1,11 @@
 import { Character, Wealth } from "../models/character";
 import { RaceKind, SubRace, Elf, Dwarf, Gnome, Halfling, Dragon } from '../models/race';
 import { ClassKind } from '../models/class';
+import { Range } from '../models/range';
 import { Background } from "../models/background";
-import { Spell } from "../models/spells";
+import { Spell, SpellName, SpellSave } from "../models/spells";
 import Dexie from 'dexie';
+import { BardCollege, ClericDomain, DruidCircle, CombatArchetype, PrimalPath, Totem, FighterStyle, CombatSuperiority, MonasticTradition, PaladinStyle, PaladinOath, RangerStyle, RoguishArchetype, RangerArchetype, BarbarianDetails, BardDetails, ClericDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, RogueDetails, SorcererDetails, WarlockDetails, WizardDetails } from "../models/classDetails";
 
 export class Data {
     private db = new Database();
@@ -18,8 +20,8 @@ export class Data {
         await this.db.addCharacter(ch);
     }
 
-    async saveCharacter(ch: Character): Promise<void> {
-        await this.db.saveCharacters([ch]);
+    async saveCharacter(ch: Character): Promise<Character> {
+        return this.db.saveCharacter(ch);
     }
 
     async saveCharacters(characters: Character[]): Promise<void> {
@@ -31,6 +33,10 @@ export class Data {
 
     async getSpellsForClass(cls: ClassKind): Promise<Spell[]> {
         return this.db.spellsForClass(cls);
+    }
+
+    async getClassDetails(cls: ClassKind, level: number) {
+        return this.db.getClassDetails(cls, level);
     }
 
     static getAllClasses(): ClassKind[] {
@@ -205,31 +211,128 @@ export class Data {
     }
 }
 
-export interface IStorable<T> {
-    id?: number;
-    data: T
-}
-
 export interface ISeed {
     id?: number;
     when: string;
+    version: number;
 }
 
+export interface IClassFeature {
+    id?: number;
+    optionId?: number;
+    level: number;
+    classKind: ClassKind;
+    name: string;
+    shortDesc: string;
+    longDesc: string;
+}
+
+export interface IClassFeatureOption {
+    id?: number;
+    featId: number;
+    name: string;
+    shortDesc: string;
+    longDesc: string;
+}
+
+export class ClassFeature {
+    id?: number;
+    constructor(
+        public classKind: ClassKind,
+        public level: number,
+        public name: string,
+        public shortDesc: string,
+        public longDesc: string,
+        public options?: ClassFeatureOption[],
+        id?: number,
+    ) {
+        if (id) {
+            this.id = id;
+        }
+    }
+
+    static fromJson(json: any): ClassFeature {
+        let ret = new ClassFeature(
+            json.classKind,
+            json.level,
+            json.name,
+            json.shortDesc,
+            json.longDesc,
+        );
+        if (json.options) {
+            ret.options = json.options.map(j => ClassFeatureOption.fromJson(j, j.features));
+        }
+        if (json.id) {
+            ret.id = json.id;
+        }
+        return ret;
+    }
+
+    toString(): string {
+        return `${this.name} - ${this.shortDesc}`;
+    }
+}
+
+export class ClassFeatureOption {
+    id?: number;
+    constructor(
+        public name: string,
+        public shortDesc: string,
+        public longDesc: string,
+        public features?: ClassFeature[],
+        id?: number
+    ) { 
+        if (id) {
+            this.id = id;
+        }
+    }
+
+    static fromJson(json: IClassFeatureOption, features?: IClassFeature[]): ClassFeatureOption {
+        let ret = new ClassFeatureOption(
+            json.name,
+            json.shortDesc,
+            json.longDesc,
+        );
+        if (features) {
+            ret.features = features.map(ClassFeature.fromJson);
+        }
+        if (json.id) {
+            ret.id = json.id;
+        }
+        return ret;
+    }
+}
+export interface ISpell {
+    id?: number;
+    name: SpellName;
+    level: number;
+    verbalRequirement: boolean;
+    somaticRequirement: boolean;
+    materialRequirement: string[];
+    castingTime: string;
+    desc: string;
+    duration?: string;
+    range?: Range;
+    save?: SpellSave;
+    classKinds: ClassKind[];
+}
+
+function formatClassKind(s: string) {
+    let ret = '';
+    ret += s[0].toLocaleUpperCase();
+    ret += s.substr(1);
+    return ret;
+}
 export class Database extends Dexie {
     public seeds: Dexie.Table<ISeed, number>;
     public characters: Dexie.Table<Character, number>;
-    public bardSpells: Dexie.Table<Spell, number>;
-    public clericSpells: Dexie.Table<Spell, number>;
-    public druidSpells: Dexie.Table<Spell, number>;
-    public paladinSpells: Dexie.Table<Spell, number>;
-    public rangerSpells: Dexie.Table<Spell, number>;
-    public rogueSpells: Dexie.Table<Spell, number>;
-    public sorcererSpells: Dexie.Table<Spell, number>;
-    public warlockSpells: Dexie.Table<Spell, number>;
-    public wizardSpells: Dexie.Table<Spell, number>;
+    public spells: Dexie.Table<ISpell, number>;
+    public classFeatures: Dexie.Table<IClassFeature, number>;
+    public classFeatureOptions: Dexie.Table<IClassFeatureOption, number>;
     public ready = false;
     constructor() {
         super("DnDCharacterManager");
+        (window as any).db = this;
         this.version(1).stores({
             seeds: "++id",
             characters: "++id,name",
@@ -243,13 +346,49 @@ export class Database extends Dexie {
             warlockSpells: "++id,name",
             wizardSpells: "++id,name",
         });
+        this.version(2).stores({
+            seeds: "++id",
+            characters: "++id,name",
+            spells: "++id,name,*classKinds",
+            classFeatures: "++id,classKind,level,optionId",
+            classFeatureOptions: "++id,featId"
+        }).upgrade((t) => {
+            console.info('upgrading to v2');
+            this.upgradeToTwo(t).then(() => {
+                console.info('update complete');
+            });
+        });
+    }
+
+    private async upgradeToTwo(t: Dexie.Transaction) {
+        for (let table in t.tables) {
+            let idx = table.indexOf('Spells')
+            if (idx > -1) {
+                let classKind = formatClassKind(table.substring(0, idx)) as ClassKind;
+                let rows: Spell[] = await t.table(table).toArray();
+                for (let row of rows) {
+                    let spell: ISpell = await t.table('spells').where('name').equals(row.name).first();
+                    if (spell) {
+                        spell.classKinds.push(classKind);
+                        await t.table('spells').put(spell);
+                    } else {
+                        delete row.id;
+                        (row as ISpell).classKinds = [classKind];
+                        await t.table('spells').add(row);
+                    }
+                }
+            }
+        }
     }
 
     public async init() {
         console.info('checking for seeds');
-        if (await this.seeds.count() === 0) {
+        let lastSeed = await this.seeds.orderBy('id').reverse().first();
+        if (!lastSeed) {
             console.info('no seeds... seeding');
             await this.seed();
+        } else {
+            console.info('last seeded version', lastSeed.version || 1,'at', lastSeed.when);
         }
         this.ready = true;
     }
@@ -277,6 +416,25 @@ export class Database extends Dexie {
         }
     }
 
+    async saveCharacter(ch: Character): Promise<Character> {
+        console.log('saveCharacter', ch);
+        try {
+            let dbCh = Character.fromJson(await this.characters.get(ch.id));
+            if (dbCh.level < ch.level) { // Level up!
+                for (let i = 0; i < ch.level - dbCh.level;i++) {
+                    let newFeatures = await this.getSingleLevelFeatures(ch.characterClass.name, dbCh.level + i + 1);
+                    ch.characterClass.classDetails.features.push(...newFeatures);
+                }
+                ch.characterClass._level = ch.level;
+                ch.characterClass.classDetails.level = ch.level;
+                await this.characters.put(ch);
+            } 
+        } catch (e) {
+            console.error(e);
+        }
+        return ch;
+    }
+
     async saveCharacters(chs: Character[]): Promise<void> {
         try {
             await this.characters.bulkPut(chs);
@@ -287,32 +445,96 @@ export class Database extends Dexie {
 
     async spellsForClass(cls: ClassKind): Promise<Spell[]> {
         try {
-
-            switch (cls) {
-                case ClassKind.Bard:
-                    return (await this.bardSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Cleric:
-                    return (await this.clericSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Druid:
-                    return (await this.druidSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Paladin:
-                    return (await this.paladinSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Ranger:
-                    return (await this.rangerSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Rogue:
-                    return (await this.rogueSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Sorcerer:
-                    return (await this.sorcererSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Warlock:
-                    return (await this.warlockSpells.toArray()).map(Spell.fromJson);
-                case ClassKind.Wizard:
-                    return (await this.wizardSpells.toArray()).map(Spell.fromJson);
-                default:
-                    return [];
-            }
+            let dbSpells = await this.spells.where('classKinds').equals(cls).toArray();
+            return dbSpells.map(s => new Spell(s.name, s.level, s.verbalRequirement, s.somaticRequirement, s.materialRequirement, s.castingTime, s.desc, s.duration, s.range, s.save))
         } catch (e) {
             console.error('failed to get spells for ', cls, e);
+            throw e;
+        }
+    }
+    async getClassDetails(cls: ClassKind, level: number) {
+        let features = await this.getClassFeatures(cls, level);
+        switch (cls) {
+            case ClassKind.Barbarian:
+                return new BarbarianDetails(level, features);
+            case ClassKind.Bard:
+                return new BardDetails(level, features);
+            case ClassKind.Cleric:
+                return new ClericDetails(level, features);
+            case ClassKind.Druid:
+                return new DruidDetails(level, features);
+            case ClassKind.Fighter:
+                return new FighterDetails(level, features);
+            case ClassKind.Monk:
+                return new MonkDetails(level, features);
+            case ClassKind.Paladin:
+                return new PaladinDetails(level, features);
+            case ClassKind.Ranger:
+                return new RangerDetails(level, features);
+            case ClassKind.Rogue:
+                return new RogueDetails(level, features);
+            case ClassKind.Sorcerer:
+                return new SorcererDetails(level, features);
+            case ClassKind.Warlock:
+                return new WarlockDetails(level, features);
+            case ClassKind.Wizard:
+                return new WizardDetails(level, features);
         }
     }
 
+    async getClassFeatures(cls: ClassKind, level: number, optionId: number = undefined) {
+        let dbFeats = await this.classFeatures.where('classKind')
+                                                .equals(cls)
+                                                .and(f => f.level <= level && f.optionId == optionId)
+                                                .toArray();
+        let ret: ClassFeature[] = new Array(dbFeats.length);
+        for (let i = 0; i < dbFeats.length; i++) {
+            let dbFeat = dbFeats[i];
+            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.id);
+            let dbOpts = await this.getOptionsForClassFeature(dbFeats[i].id);
+            if (dbOpts && dbOpts.length > 0) {
+                let options = new Array(dbOpts.length);
+                for (let j = 0; j < dbOpts.length;j++) {
+                    let dbOpt = dbOpts[j];
+                    let feats = await this.getClassFeatures(cls, level, dbOpt.id);
+                    options[j] = new ClassFeatureOption(dbOpt.name, dbOpt.shortDesc, dbOpt.longDesc, feats, dbOpt.id);
+                }
+                feature.options = options;
+            }
+            ret[i] = feature;
+        }
+        return ret;
+    }
+
+    async getSingleLevelFeatures(cls: ClassKind, level: number, optionId: number = undefined) {
+        let dbFeats = await this.classFeatures.where('classKind')
+                                                .equals(cls)
+                                                .and(f => f.level === level && f.optionId == optionId)
+                                                .toArray();
+        let ret: ClassFeature[] = new Array(dbFeats.length);
+        for (let i = 0; i < dbFeats.length; i++) {
+            let dbFeat = dbFeats[i];
+            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.id);
+            let dbOpts = await this.getOptionsForClassFeature(dbFeats[i].id);
+            if (dbOpts && dbOpts.length > 0) {
+                let options = new Array(dbOpts.length);
+                for (let j = 0; j < dbOpts.length;j++) {
+                    let dbOpt = dbOpts[j];
+                    let feats = await this.getClassFeatures(cls, level, dbOpt.id);
+                    options[j] = new ClassFeatureOption(dbOpt.name, dbOpt.shortDesc, dbOpt.longDesc, feats, dbOpt.id);
+                }
+                feature.options = options;
+            }
+            ret[i] = feature;
+        }
+        return ret;
+    }
+
+    async getOptionsForClassFeature(featId: number) {
+        return await this.classFeatureOptions.where('featId').equals(featId).toArray();
+    }
+
+    async getFeaturesForOption(optId: number) {
+        return await this.classFeatures.where('optionId').equals(optId).toArray()
+    } 
 }

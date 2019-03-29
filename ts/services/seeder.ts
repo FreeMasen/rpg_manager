@@ -1,5 +1,5 @@
-import { Database } from './data';
-import { RoguishArchType, RogueDetails } from '../models/classDetails';
+import { Database, IClassFeature, IClassFeatureOption } from './data';
+import { RoguishArchetype, RogueDetails } from '../models/classDetails';
 import { SkillKind, Skills } from '../models/skills';
 import { ExpendableItem, MagicItem, Wealth, Weapon, Character, Alignment, Height, Armor, LightArmor, ArmorWeight, WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness, NormalLanguage } from '../models/character';
 import { Range } from '../models/range'
@@ -11,34 +11,60 @@ import { MiscTools, GamingSet } from '../models/tools';
 
 export async function seed(db: Database) { 
     let spellBooks = await fetch(window.location.href + 'spellBook.json')
-        .then(res => res.text())
-        .then(text => JSON.parse(text));
-
+        .then(res => res.json())
+    console.info('seeding spells');
+    await db.spells.bulkPut(spellBooks);
+    let classInfo = await fetch(window.location.href + 'classes.json')
+        .then(res => res.json());
+    console.info('seeding class info');
+    await seedClassInfo(db, classInfo);
     console.info('seeding characters');
-    await db.characters.bulkPut(seedCharacters());
-    console.info('seeding bard spells');
-    await db.clericSpells.bulkPut(spellBooks.bard);
-    console.info('seeding cleric spells');
-    await db.clericSpells.bulkPut(spellBooks.cleric);
-    console.info('seeding druid spells');
-    await db.druidSpells.bulkPut(spellBooks.druid);
-    console.info('seeding paladin spells');
-    await db.paladinSpells.bulkPut(spellBooks.paladin);
-    console.info('seeding ranger spells');
-    await db.rangerSpells.bulkPut(spellBooks.ranger);
-    console.info('seeding rogue spells');
-    await db.rogueSpells.bulkPut(spellBooks.rogue);
-    console.info('seeding sorcerer spells');
-    await db.sorcererSpells.bulkPut(spellBooks.sorcerer);
-    console.info('seeding warlock spells');
-    await db.warlockSpells.bulkPut(spellBooks.warlock);
-    console.info('seeding wizard spells');
-    await db.wizardSpells.bulkPut(spellBooks.wizard);
-    console.info('seeding seeds')
-    await db.seeds.put({when: new Date().toISOString()});
+    let chs = await seedCharacters(db);
+    await db.characters.bulkPut(chs);
+    console.info('seeding seeds');
+    await db.seeds.put({when: new Date().toISOString(), version: db.verno});
 }
 
-function seedCharacters(): Character[] {
+async function seedClassInfo(db: Database, info: any) {
+    for (let cls in info) {
+        for (let feat of info[cls].features) {
+            await insertFeature(db, cls as ClassKind, feat);
+        }
+    }
+}
+
+async function insertFeature(db: Database, cls: ClassKind, feat: any, optId?: number) {
+    let dbFeat: IClassFeature = {
+        classKind: cls as ClassKind,
+        name: feat.name,
+        level: feat.level,
+        shortDesc: feat.shortDesc,
+        longDesc: feat.longDesc,
+    };
+    if (optId) {
+        dbFeat.optionId = optId;
+    }
+    let featId = await db.classFeatures.put(dbFeat);
+    if (feat.options) {
+        for (let opt of feat.options) {
+            let dbOpt: IClassFeatureOption = {
+                featId,
+                name: opt.name,
+                shortDesc: opt.shortDesc,
+                longDesc: opt.longDesc,
+            }
+            let optId = await db.classFeatureOptions.put(dbOpt);
+            if (opt.features) {
+                for (let subFeat of opt.features) {
+                    await insertFeature(db, cls, subFeat, optId);
+                }
+            }
+        }
+    }
+}
+
+async function seedCharacters(db: Database): Promise<Character[]> {
+    let details = await db.getClassDetails(ClassKind.Rogue, 4);
     let d = new Character('Daggers', 
                 new AbilityScores([
                     new AbilityScore(8, AbilityKind.Strength),
@@ -49,16 +75,20 @@ function seedCharacters(): Character[] {
                     new AbilityScore(8+7, AbilityKind.Charisma),
                 ]), 
                 new Race(RaceKind.Human), 
-                new Class(ClassKind.Rogue, 4, 
+                new Class(
+                    ClassKind.Rogue, 
+                    4, 
+                    details,
                     [
-                    [AbilityKind.Strength, 0],
-                    [AbilityKind.Dexterity, 2],
-                    [AbilityKind.Constitution, 0],
-                    [AbilityKind.Intelligence, 0],
-                    [AbilityKind.Wisdom, 0],
-                    [AbilityKind.Charisma, 0],
+                        [AbilityKind.Strength, 0],
+                        [AbilityKind.Dexterity, 2],
+                        [AbilityKind.Constitution, 0],
+                        [AbilityKind.Intelligence, 0],
+                        [AbilityKind.Wisdom, 0],
+                        [AbilityKind.Charisma, 0],
                     ],
-                    [SkillKind.Acrobatics, SkillKind.SleightOfHand, SkillKind.Persuasion, SkillKind.Perception,]
+                    [SkillKind.Acrobatics, SkillKind.SleightOfHand, 
+                        SkillKind.Persuasion, SkillKind.Perception,]
                 ),
                 new Background(BackgroundKind.Criminal,
                     [SkillKind.Stealth, SkillKind.Deception],
@@ -100,7 +130,6 @@ function seedCharacters(): Character[] {
                 ],
                 new Wealth(0, 0, 0, 3450, 0),
                 [NormalLanguage.Common],
-                [],
                 0,
                 0,
                 [
@@ -109,8 +138,7 @@ function seedCharacters(): Character[] {
                 ],
                 [new ExpendableItem(1, 'Health Pot.', 'heal 2d4+2 Damage')],
     );
-    let details = d.characterClass.classDetails as RogueDetails;
-    details.archType = RoguishArchType.Thief;
-    details.expertise.push(SkillKind.Deception, SkillKind.Stealth);
+    (d.characterClass.classDetails as RogueDetails).archetype = RoguishArchetype.Thief;
+    (d.characterClass.classDetails as RogueDetails).expertise.push(SkillKind.Deception, SkillKind.Stealth);
     return [d];
 } 
