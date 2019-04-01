@@ -327,13 +327,13 @@ export class CharacterInfo extends React.Component<ICharacterInfoProps, ICharact
                             <input 
                                 className="height-part height-feet"
                                 type="number" 
-                                defaultValue={this.props.height.feet.toString()}
+                                value={this.props.height.feet.toString()}
                                 onChange={ev => this.props.valueChanged('height', new Height(parseInt(ev.currentTarget.value), this.props.height.inches))}
                             />
                             <input 
                                 className="height-part height-inches"
                                 type="number" 
-                                defaultValue={this.props.height.inches.toString()} 
+                                value={this.props.height.inches.toString()} 
                                 onChange={ev => this.props.valueChanged('height', new Height(this.props.height.feet, parseInt(ev.currentTarget.value)))}
                             />
                         </div>
@@ -645,10 +645,12 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                         value={this.state.backgroundIdx}
                         onChange={(ev) => this.backgroundSelected(ev)}
                     >
+                        <option hidden value={-1} disabled></option>
                         {this.props.backgrounds.map((b, i) => (<option key={`${b.kind}`} value={i}>{b.kind}</option>))}
                     </select>
                 </div>
-                <ListView
+                {this.state.backgroundIdx > -1 
+                ? <ListView
                     className="background-desc"
                 >
                     <ListViewHeader>Skills</ListViewHeader>
@@ -662,6 +664,7 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                     {this.renderLanguages(this.props.characterBackground.languages)}
                     {this.renderTools(this.props.characterBackground.toolProficiencies, this.props.characterBackground.toolOptions)}
                 </ListView>
+                : null }
             </div>
         )
     }
@@ -678,9 +681,11 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
                         >
                         <span>Choose a Language</span>
                         <select
+                            className="language-select"
                             onChange={ev => this.languageSelected(i, ev)}
                             value={l || ''}
                         >
+                            <option value="" disabled hidden></option>
                             {this.props.languages.map(o => {
                                 return <option key={`${o}-${i}`} value={o}>{o}</option>
                             })}
@@ -722,9 +727,11 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
             <ListViewRow key={`${tool}-${position}`}>
                 <span>Choose a Tool</span>
                 <select
+                    className="tool-select"
                     value={tool || ''}
                     onChange={ev => this.toolSelected(position, ev)}
                 >
+                    <option value="" disabled hidden></option>
                     {options.map((t, i) => 
                         <option key={`tool-${position}-${i}`} value={t}>{t}</option>)}
                 </select>

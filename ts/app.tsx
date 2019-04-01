@@ -51,16 +51,10 @@ export class App extends React.Component<{}, IAppState> {
                         className="back-button"
                         onClick={() => this.goBack()}
                         style={{
-                            display: `${this.state.currentView == View.CharacterPicker ? 'none' : 'block'}`,
-                            textAlign: 'center',
-                            padding: '0px',
+                            display: `${this.state.currentView == View.CharacterPicker ? 'none' : 'initial'}`,
+                            lineHeight: 1.45,
                         }}
-                    ><i style={{
-                        fontFamily: 'Material Icons',
-                        fontSize: 18,
-                        lineHeight: 2,
-                        
-                    }}>arrow_back_ios</i></button>
+                    ><i style={{lineHeight: 1.45}}>arrow_back_ios</i></button>
                     <span 
                         className="top-bar-title"
                         style={{

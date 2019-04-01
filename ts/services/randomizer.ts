@@ -35,7 +35,7 @@ export class Randomizer {
             cls.canUseShield && Math.random() > 0.5 ? new Armor('Shield', ArmorWeight.Heavy, 2, null) : null,
             new Skills(),
             [],
-            new Wealth(),
+            Data.startingWealthFor(cls.name),
             race.languages.concat(bkgnd.languages),
             0,
             0,

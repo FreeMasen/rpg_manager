@@ -96,7 +96,8 @@ button.alert {
     display: grid;
     grid-template-rows: 50px;
     grid-template-columns: 75px auto 75px;
-    grid-template-areas: 'back title x'
+    grid-template-areas: 'back title x';
+    background: var(--tint-background);
 }
 
 .back-button {
@@ -105,8 +106,10 @@ button.alert {
     height: 45px;
     font-size: 24pt;
     border: 0;
-    border-radius: 50%;
+    border-radius: 5px;
     text-align: center;
+    background: var(--tint-background);
+    margin-left: 5px;
 }
 
 
@@ -857,6 +860,11 @@ input[type="number"] {
 
 .background-list {
     width: 250px;
+}
+
+.tool-select,
+.language-select {
+    margin-left: 5px;
 }
 
 .spell-list-entry + .spell-list-entry {
