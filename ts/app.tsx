@@ -5,7 +5,7 @@ import { CharacterPicker } from './components/characterPicker';
 import { Character, Wealth, ExpendableItem, MagicItem, Weapon } from './models/character';
 import { Data } from './services/data';
 import { CharacterCreator } from './components/newCharacter';
-import { AbilityScores, AbilityScore, AbilityKind } from './models/abilityScore';
+import { AbilityScore, AbilityKind } from './models/abilityScore';
 import { Spell } from './models/spells';
 import { SkillKind } from './models/skills';
 

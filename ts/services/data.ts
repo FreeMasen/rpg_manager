@@ -5,7 +5,7 @@ import { Range } from '../models/range';
 import { Background } from "../models/background";
 import { Spell, SpellName, SpellSave } from "../models/spells";
 import Dexie from 'dexie';
-import { BardCollege, ClericDomain, DruidCircle, CombatArchetype, PrimalPath, Totem, FighterStyle, CombatSuperiority, MonasticTradition, PaladinStyle, PaladinOath, RangerStyle, RoguishArchetype, RangerArchetype, BarbarianDetails, BardDetails, ClericDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, RogueDetails, SorcererDetails, WarlockDetails, WizardDetails } from "../models/classDetails";
+import { BarbarianDetails, BardDetails, ClericDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, RogueDetails, SorcererDetails, WarlockDetails, WizardDetails } from "../models/classDetails";
 
 export class Data {
     private db = new Database();

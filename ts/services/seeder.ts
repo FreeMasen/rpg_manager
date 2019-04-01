@@ -1,13 +1,13 @@
 import { Database, IClassFeature, IClassFeatureOption } from './data';
-import { RoguishArchetype, RogueDetails } from '../models/classDetails';
 import { SkillKind, Skills } from '../models/skills';
-import { ExpendableItem, MagicItem, Wealth, Weapon, Character, Alignment, Height, Armor, LightArmor, ArmorWeight, WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness, NormalLanguage, AlignmentMajor, AlignmentMinor } from '../models/character';
+import { Wealth, Weapon, Character, Alignment, Height, Armor, 
+    LightArmor, ArmorWeight, WeaponType, WeaponKind, WeaponDamageKind, 
+    WeaponWeight, WeaponHandedness, NormalLanguage } from '../models/character';
 import { Range } from '../models/range'
 import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore';
 import { RaceKind, Race } from '../models/race';
 import { ClassKind, Class, DEFAULT_BONUS_ABILITY_SCORES } from '../models/class';
-import { Background, BackgroundKind } from '../models/background';
-import { MiscTools, GamingSet } from '../models/tools';
+import { Background } from '../models/background';
 
 export async function seed(db: Database) { 
     let spellBooks = await fetch(window.location.href + 'spellBook.json')
