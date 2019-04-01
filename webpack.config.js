@@ -1,12 +1,11 @@
 const path = require('path');
-const webpack = require('webpack');
 
 module.exports = function config(env) {
     let opts = {
         entry: {
             main: path.join(__dirname, 'ts', 'app.tsx'),
             seeder: path.join(__dirname, 'ts', 'services', 'seeder.ts'),
-            serviceWorker: path.join(__dirname, 'ts', 'serviceWorker.ts'),
+            serviceWorker: path.join(__dirname, 'ts', 'serviceWorker.ts')        
         },
         output: {
             filename: '[name].js',
@@ -17,17 +16,14 @@ module.exports = function config(env) {
             extensions: ['.wasm', '.mjs', '.js', '.json', '.tsx', '.ts', '.jsx']
           },
         module: {
-            rules: [{
-                exclude: /node_modules/,
-                test: /\.tsx?$/,
-                use: 'ts-loader'
-            }]
+            rules: [
+                {
+                    exclude: /node_modules/,
+                    test: /\.tsx?$/,
+                    use: 'ts-loader'
+                },
+            ]
         },
-        // optimization: {
-        //     splitChunks: {
-        //         chunks: 'all'
-        //     },
-        // }
     };
     opts.devtool = 'source-map';
     if (env === 'prod') {

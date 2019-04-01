@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dexie": "^2.0.4",
+    "lite-server": "^2.4.0",
     "material-design-icons": "^3.0.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0"
