@@ -39,6 +39,15 @@ export class AbilityScores {
     public modifier(kind: AbilityKind): number {
         return this.scores.find(k => k.kind == kind).modifier;
     }
+
+    public value(kind: AbilityKind): number {
+        return this.scores.find(k => k.kind == kind).value;
+    }
+
+    public diff(other: AbilityScores): [AbilityKind, number][] {
+        let ret = Object.getOwnPropertyNames(AbilityKind).map((k: AbilityKind) => [k, other.value(k) - this.value(k)]) as [AbilityKind, number][];
+        return ret;
+    }
     public clone(): AbilityScores {
         return AbilityScores.fromJson(this);
     }
@@ -60,6 +69,10 @@ export class AbilityScores {
         ]);
     }
 
+    public totalCost(): number {
+        return this.scores.reduce((acc, s) => acc + s.cost(), 0);
+    }
+
     public static fromJson(json: any): AbilityScores {
         return new AbilityScores(
             json.scores.map(AbilityScore.fromJson),
@@ -76,6 +89,17 @@ export class AbilityScore {
     get modifier() {
         return Math.floor((this.value - 10) / 2);
     }
+    /**
+     * Calculate the cost during build time
+     */
+    cost(): number {
+        
+        if (this.value < 14) {
+            return this.value - 8;
+        }
+        return ((this.value - 13) * 2) + 5
+    }
+
     public static fromJson(json: any): AbilityScore {
         return new AbilityScore(
             json.value,
@@ -91,4 +115,8 @@ export enum AbilityKind {
     Intelligence = 'Intelligence',
     Wisdom = 'Wisdom',
     Charisma = 'Charisma',
+}
+
+function zip<T, U>(arr1: T[], arr2: U[]): Array<[T, U]> {
+    return arr1.map((e, i) => [e, arr2[i]] as [T, U])
 }

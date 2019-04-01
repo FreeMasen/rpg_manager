@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, ListView, ListViewHeader, ListViewRow, ListViewSection, ListViewSectionHeader, Box, TitleBar, Button} from 'react-desktop';
+import { ListView, ListViewHeader, ListViewRow } from './common/ListView';
 import { Spell } from '../models/spells';
 
 interface ISpellsListProps {
@@ -14,13 +14,8 @@ interface ISpellsListState {
 }
 
 export class SpellsList extends React.Component<ISpellsListProps, ISpellsListState> {
-    private spellLists: Spell[][];
     constructor(props: ISpellsListProps) {
         super(props);
-        this.spellLists = this.props.spells.reduce((acc, spell) => {
-            acc[spell.level].push(spell);
-            return acc;
-        }, [[],[],[],[],[],[],[],[],[],[]]);
         this.state = {
             selectedSpell: -1,
             selectedSpellLevel: -1,
@@ -38,52 +33,41 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
     }
     render() {
         return (
-            <Box
+            <div className="box"
                 style={{
                     gridArea: 'spells',
                     marginLeft: 5,
                     marginTop: 5,
                     borderRadius: 5,
                 }}
-                padding="0px"
             >
                 {this.renderInner()}
-            </Box>
+            </div>
         );
     }
 
     renderInner() {
         if (this.state.selectedSpell === -1) {
             return (
-                <ListView>
-                    <ListViewHeader
-                            background='rgba(0,0,0,0.2)'
-                    >
-                        <Text bold={true}>
-                            {this.props.title}
-                        </Text>
-                    </ListViewHeader>
+                <ListView
+                    headerText={this.props.title}
+                >
                     {this.state.spells.map((list: Spell[], level: number) => {
-                        return (
-                            <ListViewSection key={`spell-level-list-${level}`}>
-                                <ListViewSectionHeader
-                                    background="rgba(0,0,0,0.1)"
-                                >
-                                    <Text>{`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}</Text>
-                                </ListViewSectionHeader>
-                                {list.map((s: Spell, i: number) => {
-                                    return (
-                                        <ListViewRow
-                                            className="spell-list-entry"
-                                            padding="0 0 0 5px"
-                                            key={`spell-list-entry-${i}`}
-                                            onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
-                                        >
-                                            <Text>{`${s.name}`}</Text>
-                                        </ListViewRow>
-                                    );
-                                })}
-                            </ListViewSection>
+                        return ([<ListViewHeader>
+                                    {`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}
+                                </ListViewHeader>].concat(
+                                    list.map((s: Spell, i: number) => {
+                                        return (
+                                            <ListViewRow
+                                                className="spell-list-entry"
+                                                key={`spell-list-entry-${i}`}
+                                                onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
+                                            >
+                                                <span>{`${s.name}`}</span>
+                                            </ListViewRow>
+                                        );
+                                    })
+                                )
                         );
                     })}
                 </ListView>
@@ -109,27 +93,26 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                 }
             }
             return [
-                <TitleBar
+                <ListViewHeader
                     key="spell-desc-title-bar"
                 >
-                <Button 
+                <button 
                     onClick={() => this.setState({selectedSpell: -1, selectedSpellLevel: -1})}
                     style={{
                         marginRight: 5,
-                        textAlign: 'center',
+                        spanAlign: 'center',
                         height: 20,
                         width: 20,
                     }}
-                    padding="0 0 0 3px"
                 >
                     <i style={{
                         fontFamily: 'Material Icons',
                         fontSize: 10,
                         lineHeight: 1,
                     }}
-                    >arrow_back_ios</i></Button>
-                    <Text>{selectedSpell.name}</Text>
-                </TitleBar>,
+                    >arrow_back_ios</i></button>
+                    <span>{selectedSpell.name}</span>
+                </ListViewHeader>,
                 <SpellDescPart
                     key="spell-desc-components"
                     title="Components"
@@ -180,16 +163,16 @@ export class SpellDescPart extends React.Component<ISpellDescPartProps, ISpellDe
                     this.props.value.split('\n').map((line, i) => {
                         let key = `desc-line${i}`;
                     if (i === 0) {
-                        return <Text
+                        return <span
                             key={key}
-                        >{`${this.props.title}: ${line}`}</Text>
+                        >{`${this.props.title}: ${line}`}</span>
                     } else {
-                        return <Text 
+                        return <span 
                             key={key}
-                            style={{marginLeft: 5}}>{line}</Text>
+                            style={{marginLeft: 5}}>{line}</span>
                     }
                 })
-                : <Text>{`${this.props.title}: ${this.props.value}`}</Text>}
+                : <span>{`${this.props.title}: ${this.props.value}`}</span>}
             </div>
         );
     }

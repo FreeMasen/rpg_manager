@@ -5,9 +5,9 @@ import { CharacterPicker } from './components/characterPicker';
 import { Character, Wealth, ExpendableItem, MagicItem, Weapon } from './models/character';
 import { Data } from './services/data';
 import { CharacterCreator } from './components/newCharacter';
-import { AbilityScores } from './models/abilityScore';
-import { TitleBar, Text, Button, Box, ProgressCircle } from 'react-desktop';
+import { AbilityScores, AbilityScore, AbilityKind } from './models/abilityScore';
 import { Spell } from './models/spells';
+import { SkillKind } from './models/skills';
 
 interface IAppState {
     currentView: View,
@@ -31,13 +31,15 @@ export class App extends React.Component<{}, IAppState> {
     }
 
     componentDidMount() {
-        this.data.getCharacters().then(characters => this.setState({characters}));
+        this.data.getCharacters().then(characters => {
+            this.setState({characters})
+        });
     }
 
     render() {
         return (
             <div className="app-container">
-                <TitleBar 
+                <div 
                     style={{
                         display: 'flex',
                         flexFlow: 'row',
@@ -45,7 +47,7 @@ export class App extends React.Component<{}, IAppState> {
                     }}
                     className="top-bar"
                 >
-                    <Button 
+                    <button 
                         className="back-button"
                         onClick={() => this.goBack()}
                         style={{
@@ -58,8 +60,8 @@ export class App extends React.Component<{}, IAppState> {
                         fontSize: 18,
                         lineHeight: 2,
                         
-                    }}>arrow_back_ios</i></Button>
-                    <Text 
+                    }}>arrow_back_ios</i></button>
+                    <span 
                         className="top-bar-title"
                         style={{
                             width: 'calc(90% - 50px)',
@@ -69,8 +71,8 @@ export class App extends React.Component<{}, IAppState> {
                         }}
                     >
                         DnD Character Manager
-                    </Text>
-                </TitleBar>
+                    </span>
+                </div>
                 { this.renderView() }
             </div>
         );
@@ -82,9 +84,7 @@ export class App extends React.Component<{}, IAppState> {
                 return (<CharacterPicker 
                     characters={this.state.characters}
                     characterSelected={i => this.switchView(View.CharacterSheet, i)}
-                    newCharacterClicked={() => {
-                        this.switchView(View.CharacterCreator)
-                    }}
+                    newCharacterClicked={() => this.switchView(View.CharacterCreator)}
                 />)
             case View.CharacterSheet:
                 let ch = this.state.characters[this.state.selectedCharacter];
@@ -99,16 +99,18 @@ export class App extends React.Component<{}, IAppState> {
                             adjustMagics={magics => this.adjustCharacterMagicItems(magics)}
                             adjustWeapons={newWeapons => this.adjustCharacterWeapons(newWeapons)}
                             adjustInspiration={async newValue => await this.adjustCharacterInspiration(newValue)}
+                            adjustClassSkills={async newSkills => await this.adjustClassSkills(newSkills)}
                             classFeatureOptionSelected={async (name, idx) => await this.updateCharacterFeature(name, idx)}
                             spellList={this.state.spellList}
                         />);
             case View.CharacterCreator:
                     return (<CharacterCreator 
                             onSave={ch => this.newCharacter(ch)}
+                            onCancel={() => this.switchView(View.CharacterPicker)}
                             data={this.data}
                         />)
             case View.Loading:
-                    return (<Box width="100%" height="100%"><ProgressCircle size={100}/></Box>)
+                    return (<div style={{width: "100%", height: "100%"}}></div>)
         }
     }
 
@@ -198,11 +200,17 @@ export class App extends React.Component<{}, IAppState> {
             await this.data.saveCharacter(ch);
         });
     }
-    adjustCharacterScores(scores: AbilityScores) {
+    adjustCharacterScores(scores: AbilityScore[]) {
         let ch: Character;
         this.setState((prev, props) => {
             ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
-            ch.abilityScores = ch.abilityScores.add(scores);
+            ch.characterClass.bonusAbilityScores = ch.characterClass.bonusAbilityScores.map((s, i) => {
+                let newValue = scores.find(a => a.kind === s[0]);
+                if (newValue) {
+                    return [newValue.kind, newValue.value] as [AbilityKind, number];
+                }
+                return s;
+            })
             return {characters: prev.characters.map(c => {
                 if (c.id === ch.id) {
                     return ch;
@@ -273,12 +281,12 @@ export class App extends React.Component<{}, IAppState> {
             await this.data.saveCharacter(ch);
         });
     }
-
-    async updateCharacterFeature(name: string, idx: number) {
+ 
+    async adjustClassSkills(newSkills: SkillKind[]) {
         let ch: Character;
         this.setState((prev, props) => {
-            ch = Character.fromJson(prev.characters[this.state.selectedCharacter]);
-            ch.characterClass.classDetails.chooseFeatureOption(name, idx);
+            ch = this.state.characters[this.state.selectedCharacter];
+            ch.characterClass.selectedSkills.push(...newSkills);
             return {characters: prev.characters.map(c => {
                 if (c.id === ch.id) {
                     return ch;
@@ -287,6 +295,20 @@ export class App extends React.Component<{}, IAppState> {
             })}
         }, async () => {
             await this.data.saveCharacter(ch);
+        })
+    }
+
+    async updateCharacterFeature(name: string, idx: number) {
+        let ch = this.state.characters[this.state.selectedCharacter];
+        ch.characterClass.classDetails.chooseFeatureOption(name, idx);
+        ch = await this.data.saveCharacter(ch);
+        this.setState((prev, props) => {
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
         });
     }
 

@@ -13,6 +13,8 @@ import {
     RangerDetails, SorcererDetails, 
     WarlockDetails, WizardDetails, 
     RoguishArchetype,
+    CombatArchetype,
+    ClericDomain,
 } from './classDetails';
 import { Data } from '../services/data';
 
@@ -38,7 +40,6 @@ export class Class {
     public numberOfSkills = 0;
     public availableSkills: SkillKind[] = [];
     public miscProfs: string[] = [];
-    isCaster: boolean = false;
     constructor(
         public name: ClassKind,
         public _level: number,
@@ -135,7 +136,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Charisma];
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Charisma,
             AbilityKind.Dexterity,
@@ -151,6 +152,9 @@ export class Class {
             ArmorWeight.Light,
         ];
         this.numberOfSkills = 3;
+        if (this.level > 2) {
+            this.numberOfSkills += 2;
+        }
         this.availableSkills = Object.getOwnPropertyNames(SkillKind).map(n => SkillKind[n]);
         if (this.classDetails && (this.classDetails as BardDetails).archetype === BardCollege.Valor && this._level > 2) {
             this.weaponProfs.push(WeaponKind.Martial);
@@ -164,7 +168,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Wisdom];
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -177,6 +181,10 @@ export class Class {
             ArmorWeight.Medium,
         ];
         this.numberOfSkills = 2;
+        if (this.classDetails.archetype === ClericDomain.Knowledge 
+            || this.classDetails.archetype === ClericDomain.Nature) {
+            this.numberOfSkills += 2;
+        }
         this.availableSkills = [
             SkillKind.History, 
             SkillKind.Insight, 
@@ -191,7 +199,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Wisdom];
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Intelligence  
@@ -295,7 +303,7 @@ export class Class {
             AbilityKind.Charisma,
         ];
         this.numberOfPrimaryAbilities = 2;
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -330,7 +338,7 @@ export class Class {
         ];
         this.numberOfPrimaryAbilities = 2;
         if (this._level > 1) {
-            this.isCaster = true;
+
         }
         this.savingThrows = [
             AbilityKind.Strength,
@@ -371,7 +379,6 @@ export class Class {
             ArmorWeight.Medium,
         ];
         this.canUseShield = true;
-        this.isCaster = details && details.archetype === RoguishArchetype.ArcaneTrickster;
         this.weaponProfs = [
             WeaponKind.Simple,
             StdWeaponName.HandCrossbow,
@@ -379,7 +386,7 @@ export class Class {
             StdWeaponName.Rapier,
             StdWeaponName.ShortSword,
         ];
-        this.numberOfSkills = 4;
+        this.numberOfSkills = 4 + 2; //expertise at level 1;
         this.availableSkills = [
             SkillKind.Acrobatics, 
             SkillKind.Athletics,
@@ -399,7 +406,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 6;
         this.primaryAbility = [AbilityKind.Charisma];
-        this.isCaster = true;
+
         this.savingThrows =[
             AbilityKind.Constitution,
             AbilityKind.Charisma,
@@ -426,7 +433,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 8;
         this.primaryAbility = [AbilityKind.Charisma];
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Wisdom,
             AbilityKind.Charisma,
@@ -453,7 +460,7 @@ export class Class {
         this.classDetails = details;
         this.hitDie = 6;
         this.primaryAbility = [AbilityKind.Intelligence];
-        this.isCaster = true;
+
         this.savingThrows = [
             AbilityKind.Intelligence,
             AbilityKind.Wisdom,
@@ -479,12 +486,47 @@ export class Class {
     addLevel() {
         this.level += 1;
     }
+    get isCaster(): boolean {
+        return this.name == ClassKind.Bard 
+            || this.name == ClassKind.Cleric 
+            || this.name == ClassKind.Druid 
+            || (this.name == ClassKind.Paladin 
+                && this.level > 1)
+            || this.name == ClassKind.Ranger
+            || this.name == ClassKind.Sorcerer
+            || this.name == ClassKind.Warlock
+            || this.name == ClassKind.Wizard
+            || (this.name == ClassKind.Fighter 
+                && this.classDetails.archetype == CombatArchetype.EldrichKnight)
+            || (this.name == ClassKind.Rogue 
+                && this.classDetails.archetype == RoguishArchetype.ArcaneTrickster)
+    }
+
+    bonusAbilityCount(): number {
+        return this.bonusAbilityScores.reduce((acc, s) => acc + s[1], 0);
+    }
+
+    unselectedAvailableSkills() {
+        if ((this.name === ClassKind.Bard && this._level > 2)
+            || this.name === ClassKind.Rogue) {
+            return this.availableSkills.filter(s => !this.selectedSkills.includes(s));
+        }
+        if (this.name === ClassKind.Cleric) {
+            if (this.classDetails.archetype === ClericDomain.Knowledge) {
+                return [SkillKind.Arcana, SkillKind.History, SkillKind.Nature, SkillKind.Religion].filter(s => this.selectedSkills.includes(s))
+            }
+            if (this.classDetails.archetype === ClericDomain.Nature) {
+                return [SkillKind.AnimalHandling, SkillKind.Nature, SkillKind.Survival].filter(s => this.selectedSkills.includes(s))
+            }
+        }
+        return [];
+    }
     public static fromJson(json: any): Class {
         let ret = new Class(
             null,
             json._level,
+            null,
             json.bonusAbilityScores,
-            json.availableSkills,
             json.selectedSkills || [],
         );
         ret.name = json.name;

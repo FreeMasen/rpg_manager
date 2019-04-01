@@ -9,7 +9,9 @@ export interface IProps {
 }
 
 export interface IListViewProps extends IProps {
-
+    headerText?: string;
+    headerStyle?: React.CSSProperties;
+    listStyle?: React.CSSProperties;
 }
 
 export interface IListViewState {
@@ -25,7 +27,17 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
                 title={this.props.title}
                 onClick={this.props.onClick}
             >
-                {this.props.children}
+                {this.props.headerText && this.props.headerText != '' 
+                ? <ListViewHeader
+                    style={this.props.headerStyle}
+                >{this.props.headerText}</ListViewHeader>
+                : null}
+                <div 
+                    className="common-list-view-list"
+                    style={this.props.listStyle}
+                >
+                    {this.props.children}
+                </div>
             </div>
         )
     }

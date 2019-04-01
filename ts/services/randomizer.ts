@@ -1,4 +1,7 @@
-import {Alignment, AlignmentMajor, AlignmentMinor, Character, Height, ArmorWeight, Armor, Wealth, HeavyArmor, LightArmor, MediumArmor} from '../models/character';
+import { Alignment, AlignmentMajor, 
+    AlignmentMinor, Character, Height, ArmorWeight, 
+    Armor, Wealth, HeavyArmor, LightArmor, MediumArmor
+} from '../models/character';
 import { RaceKind, Race, SubRace } from '../models/race';
 import { ClassKind, Class } from '../models/class';
 import { AbilityScores, AbilityKind } from '../models/abilityScore';
@@ -39,25 +42,6 @@ export class Randomizer {
             [],
             [],
         );
-        let points = 15;
-        let ct = 8;
-        for (let abi of cls.primaryAbility) {
-            ret.abilityScores.set(abi, 8 + 4);
-            points -= 4;
-            ct -= 1;
-        }
-        let each = Math.floor(points / ct);
-        ret.abilityScores = new AbilityScores(ret.abilityScores.map(s => {
-            if (s.value > 8) {
-                return s;
-            }
-            s.value += each;
-            points -= each;
-            return s;
-        }));
-        if (points > 0) {
-            ret.abilityScores.set(AbilityKind.Charisma, 8 + each + points);
-        }
         return ret;
     }
     public static randomClassKind(): ClassKind {

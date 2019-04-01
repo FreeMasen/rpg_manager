@@ -35,12 +35,18 @@ export class Skills {
     public map<U>(cb: (skill: Skill) => U): U[] {
         return this.skills.map(cb)
     }
+
     public set(skillKind: SkillKind, enabled: boolean) {
         let skillIdx = this.skills.findIndex(s => s.kind == skillKind);
         if (skillIdx > -1) {
             this.skills[skillIdx].enabled = enabled;
         }
     }
+
+    public enabledCount() {
+        return this.skills.filter(s => s.enabled).length;
+    }
+
     public static fromJson(json: any): Skills {
         return new Skills(
             json.skills.map(Skill.fromJson),

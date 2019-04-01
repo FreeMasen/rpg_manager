@@ -448,7 +448,6 @@ export class Database extends Dexie {
     }
 
     async saveCharacter(ch: Character): Promise<Character> {
-        console.log('saveCharacter', ch);
         try {
             let dbCh = Character.fromJson(await this.characters.get(ch.id));
             if (dbCh.level < ch.level) { // Level up!
@@ -458,8 +457,8 @@ export class Database extends Dexie {
                 }
                 ch.characterClass._level = ch.level;
                 ch.characterClass.classDetails.level = ch.level;
-                await this.characters.put(ch);
             } 
+            await this.characters.put(ch);
         } catch (e) {
             console.error(e);
         }
@@ -470,7 +469,8 @@ export class Database extends Dexie {
         try {
             await this.characters.bulkPut(chs);
         } catch (e) {
-            console.error('Failed to save characters', e, chs,)
+            console.error('Failed to save characters', e, chs,);
+            throw e;
         }
     }
 

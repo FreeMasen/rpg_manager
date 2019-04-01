@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Character } from '../models/character';
 import { Class, ClassKind } from '../models/class';
-import { Text, ListView, ListViewHeader, ListViewRow } from 'react-desktop/macOs';
-import {Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, NewCharacter } from './icons';
+import { ListView, ListViewRow} from './common/ListView';
+import {Barbarian, Bard, Cleric, Druid, Fighter, Monk, 
+        Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, 
+        NewCharacter } from './icons';
 
 interface ICharacterPickerProps {
     characters: Character[];
@@ -22,14 +24,8 @@ export class CharacterPicker extends React.Component<ICharacterPickerProps, ICha
         return (
             <ListView
                 className="character-picker"
+                headerText="Choose Your Character"
             >
-            <ListViewHeader
-                    background='rgba(0,0,0,0.33)'
-            >
-                <Text>
-                    Choose Your Character
-                </Text>
-            </ListViewHeader>
                 {this.props.characters.map((c, i) => {
                     return (
                         <CharacterPickerEntry 
@@ -76,22 +72,25 @@ export class CharacterPickerEntry extends React.Component<ICharacterPickerEntryP
             <ListViewRow
                 style={{
                     borderBottom: '1px solid rgba(0,0,0,0.2)',
+                    background: this.state.hover ? 'blue' : 'white',
+                    paddingBottom: 5,
+                    cursor: 'default',
                 }}
-                background={this.state.hover ? 'blue' : 'white'}
                 onClick={() => this.props.onClick()}
             >
-                
                 <CharacterClassIcon 
                     classKind={this.props.characterClass && this.props.characterClass.name} 
                     fill={this.state.hover ? 'white' : null}
                 />
-                <Text 
-                    marginLeft={5}
-                    style={{lineHeight: '25px'}}
-                    size={24}
+                <span 
+                    style={{
+                        lineHeight: '25px',
+                        marginLeft: 5,
+                        fontSize: 24,
+                        color: this.state.hover ? 'white' : null
+                    }}
                     title={`${this.props.name}\n${chClass.split('/').join('\n')}`}
-                    color={this.state.hover ? 'white' : null}
-                >{`${this.props.name} ${this.characterClassString()}`}</Text>
+                >{`${this.props.name} ${this.characterClassString()}`}</span>
             </ListViewRow>
         );
     }

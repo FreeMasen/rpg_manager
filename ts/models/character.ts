@@ -2,9 +2,9 @@ import { AbilityScores, AbilityKind, AbilityScore } from "./abilityScore";
 import { Data } from "../services/data";
 import { Race } from './race';
 import { Class, ClassKind } from './class';
-import { RogueDetails } from './classDetails';
+import { RogueDetails, DruidCircle, ClericDomain } from './classDetails';
 import { Background, BackgroundKind } from "./background";
-import { Skills, SkillKind } from './skills';
+import { Skills, SkillKind, Skill } from './skills';
 import { Range } from './range';
 export class Character {
     private static counter = 0;
@@ -32,13 +32,6 @@ export class Character {
         public magicItems: MagicItem[] = [],
         public expendables: ExpendableItem[] = [],
     ) { 
-        this.background.skills.map(s => {
-            this.skills.set(s, true);
-        });
-    }
-
-    public resetSkills() {
-        this.skills = new Skills();
         this.background.skills.map(s => {
             this.skills.set(s, true);
         });
@@ -130,20 +123,19 @@ export class Character {
         });
     }
 
-    public modifiedAbilityScores(): AbilityScores {
-        let updated = this.abilityScores.map(score => {
-            let {kind, value} = score;
-            let racialMod = this.race.abilityModifiers.find(m => m[0] == kind);
+    public modifiedAbilityScores(): AbilityScore[] {
+        return this.abilityScores.map(s => {
+            let bonus = 0;
+            let racialMod = this.race.abilityModifiers.find(m => m[0] == s.kind);
             if (racialMod) {
-                value += racialMod[1];
+                bonus += racialMod[1];
             }
-            let classMod = this.characterClass.bonusAbilityScores.find(m => m[0] == kind);
+            let classMod = this.characterClass.bonusAbilityScores.find(m => m[0] == s.kind);
             if (classMod) {
-                value += classMod[1];
+                bonus += classMod[1];
             }
-            return new AbilityScore(value, kind);
+            return new AbilityScore(bonus + s.value, s.kind);
         });
-        return new AbilityScores(updated);
     }
 
     public get passiveWisdom(): number {
@@ -151,11 +143,11 @@ export class Character {
     }
 
     public get initiative(): number {
-        return this.abilityScores.modifier(AbilityKind.Dexterity);
+        return this.modifiedAbilityScores().find(s => s.kind === AbilityKind.Dexterity).modifier;
     }
 
     public armorClass(): number {
-        let dex = this.modifiedAbilityScores().modifier(AbilityKind.Dexterity);
+        let dex = this.modifiedAbilityScores().find(a => a.kind === AbilityKind.Dexterity).modifier;
         let bonus = 0;
         if (this.armor) {
             bonus = this.armor.bonus;
@@ -248,11 +240,17 @@ export class Character {
     }
 
     abilityScoreModNeeded(): number {
-        let totalScores = this.abilityScores.reduce((acc, s) => acc + s.value, 0);
-        let baseScores = 8 * 6;
         let currentBonusPoints = Data.getAbilityScoreBonusCountFor(this.characterClass.name, this.level);
-        return totalScores - (baseScores + currentBonusPoints);
+        return currentBonusPoints - this.characterClass.bonusAbilityCount();
     }
+
+    skillsModNeeded(): number {
+        return this.characterClass.numberOfSkills - this.characterClass.selectedSkills.length;
+    }
+
+    availableSkillsToAdd(): SkillKind[] {
+        return this.characterClass.unselectedAvailableSkills().filter(s => !this.background.skills.includes(s));
+    } 
 
     public static fromJson(json: any): Character {
         let ret = new Character(

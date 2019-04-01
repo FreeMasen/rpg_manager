@@ -1,9 +1,14 @@
 :root {
     --tint-background: rgba(0,0,0,0.05);
+    --highlight: rgb(30, 91, 201);
+    --alert: rgb(220, 101, 85);
+    --alert-hover: rgba(220, 101, 85, 0.5);
 }
 
 i {
     font-style: normal;
+    font-family: Material Icons;
+    line-height: 1;
 }
 
 html, body {
@@ -11,20 +16,22 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
 * {
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-span {
-    font-size: 10.5pt;
+span,
+input {
+    font-size: 11pt;
 }
 
 button {
     border: 0;
     padding: 0 10px;
     margin: 0;
-    background: var(--tint-background);
+    background-color: rgba(0,0,0,0.2);
     border-radius: 8px;
 }
 
@@ -33,33 +40,54 @@ button:hover {
 }
 
 button:active {
-    background: rgba(0,0,255,0.25);
+    background: var(--highlight);
+}
+
+button.alert {
+    border-color: var(--alert)
 }
 
 .common-list-view {
+    height: 100%;
+}
+
+.common-list-view-list {
     display: flex;
     flex-flow: column;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 100%;
+    height: calc(100% - 17px)
 }
 
 .common-list-view-header {
     font-weight: bold;
     flex-grow: 0;
     flex-shrink: 0;
-    background-color: var(--tint-background);
+    background-color: rgba(0,0,0,0.1);
+    display: block;
+    padding-left: 5px;
 }
 
 .common-list-view-row {
     flex-grow: 0;
     flex-shrink: 0;
     border-bottom: 1px solid var(--tint-background);
+    padding: 0 5px;
 }
 
 .box {
     background: var(--tint-background);
-    border: 1px solid rgba(0, 0, 0, 0.07) rgba(0, 0, 0, 0.035) rgba(0, 0, 0, 0.027);
+    border-color: rgba(0, 0, 0, 0.07) rgba(0, 0, 0, 0.035) rgba(0, 0, 0, 0.027);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.common-modal {
+    position: absolute;
+    z-index: 10000;
+    background: #f2f2f2;
+    box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.5);
 }
 
 .top-bar {
@@ -248,10 +276,8 @@ button:active {
     top: 100px;
     display: flex;
     flex-flow: column;
-    background: lightgrey;
     border-radius: 5px;
     width: 175px;
-    box-shadow: 1px 1px 1px 1px grey;
 }
 
 .desc-part {
@@ -283,23 +309,31 @@ button:active {
     grid-area: abi;
     display: flex;
     flex-flow: column;
-    justify-content: space-around;
     align-items: center;
     align-content: flex-start;
     margin: 5px 0 0 5px;
 }
 
-.ability-score-container > span {
-    height: 17px;
+.ability-scores-column > .ability-score-container + .ability-score-container {
+    margin-top: 5px;
+}
+
+.ability-scores-column.alert {
+    border: 1px solid var(--alert);
+}
+
+.ability-score-container {
+    display: grid;
+    grid-template-rows: 1fr 17px 17px;
+    height: 50px;
+    
 }
 
 .ability-score-adjustor {
-    background: lightgrey;
     border-radius: 5px;
     position: absolute;
     left: 50px;
-    top: -74px;
-    box-shadow: 1px 1px 1px 1px grey;
+    top: 274px;
 }
 
 .ability-score-adjustor > .scores-list > .input-group {
@@ -313,12 +347,11 @@ button:active {
 }
 
 .ability-score-container {
-    margin: 5px;
     display: flex;
     flex-flow: column;
     align-items: center;
     align-content: flex-start;
-    padding: 0px;
+    padding: 5px;
     height: 71px;
     justify-content: flex-start;
 }
@@ -351,8 +384,27 @@ button:active {
     padding-top: 5px;
 }
 
-.skill-container {
+.skills-list.alert {
+    border-color: var(--alert);
+}
 
+.skills-adjustor {
+    position: absolute;
+    left: 100px;
+    top: 250px;
+    padding: 5px;
+}
+
+.skills-adjustor > .skill-adjustor-option {
+    display: block;
+    background: var(--tint-background);
+    margin: 5px 5px 0;
+    padding: 5px;
+    cursor: default;
+}
+
+.skill-adjustor-option.selected {
+    background: var(--highlight);
 }
 
 .skill-name {
@@ -385,8 +437,9 @@ button:active {
 
 .defences {
     grid-area: def;
-    display: grid;
     margin: 5px 0 0 5px;
+    border-radius: 5px;
+    display: grid;
     grid-template-rows: 60px 60px 60px;
     grid-template-columns: 125px 125px 125px;
     grid-template-areas: 
@@ -501,9 +554,7 @@ button:active {
     position: absolute;
     left: 260px;
     top: 343px;
-    background: lightgrey;
     border-radius: 5px;
-    box-shadow: 1px 1px 1px 1px grey;
 }
 
 .new-weapon > div {
@@ -523,7 +574,7 @@ button:active {
 
 .money-unit {
     display: grid;
-    grid-template-columns: 25px 125px;
+    grid-template-columns: 35px 125px;
     grid-template-areas: 
         'value unit';
     height: 25px;
@@ -541,19 +592,11 @@ button:active {
 }
 
 .money-adjuster {
-    position: absolute;
-    top: 550px;
-    left: 313px;
+    top: 730px;
+    left: 200px;
     border-radius: 5px;
-    box-shadow: 1px 1px 1px 1px grey;
-    background: lightgrey;
     display: flex;
     flex-flow: column;
-}
-
-.money-adjuster > .inputs {
-    display: flex;
-    flex-flow: row;
 }
 
 .input-pair {
@@ -612,23 +655,16 @@ button:active {
 }
 
 .new-item {
-    position: absolute;
     display: flex;
     flex-flow: row nowrap;
     left: 620px;
-    top: 650px;
-    background: lightgrey;
+    top: 765px;
     border-radius: 5px;
-    box-shadow: 1px 1px 1px 1px grey;
     padding: 5px;
 }
 
 .new-item > select {
     width: 100px;
-}
-
-.spells-list {
-    
 }
 
 input[type="number"] {
@@ -641,37 +677,108 @@ input[type="number"] {
 }
 
 .character-creator {
-    display: grid;
-    grid-template-rows: 50px auto;
-    grid-template-columns: 100%;
-    grid-template-areas: 'tab-bar' 'body';
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 800px;
+    margin: auto;
 }
 
-.character-creator-tab-bar {
-    grid-area: tab-bar;
+.character-creator select {
+    font-size: 11pt;
+}
+
+.character-creator > * {
+    width: 100%;
+}
+
+.character-creator > * + * {
+    margin-top: 10px;
+}
+
+.character-creator-title {
+    text-align: center;
+    background: var(--tint-background);
+    height: 50px;
+    font-size: 24pt;
+    position: relative;
+}
+.character-creator-title > button {
+    width: 90px;
+    font-size: 11pt;
+    left: calc(100% - 100px);
+    position: absolute;
+}
+.character-creator-title > .save {
+    top: 5px;
+}
+
+.character-creator-title > .save:hover {
+    background: var(--highlight);
+    color: white;
+}
+
+.character-creator-title > .cancel {
+    top: calc(100% - 23px);
+}
+
+.character-creator-title > .cancel:hover {
+    background: var(--alert);
+    color: white;
+}
+
+.race-selector-title {
+    margin-left: 5px;   
+}
+
+.race-selector-title > label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.error-messages {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
+    background: var(--alert);
+}
+
+.error-messages > .error-message {
+    color: white;
+    padding-left: 5px;
+    width: 100%;
+    border-bottom: 1px solid var(--tint-background);
 }
 
 .race-info {
-    display: flex;
-    flex-flow: row;
+    grid-area: race;
+    height: 350px;
 }
 
 .race-selector {
     display: flex;
     flex-flow: row;
-    max-width: 66%;
+    height: 25px;
 }
 
 .race-details {
-    max-width: 33%;
+    height: 325px
 }
 
-.race-option.selected {
-    background: #007bfa;
-    color: white;
+.basic-info {
+    display: flex;
+    flex-flow: row;
 }
+
+.basic-info > .input-pair {
+    margin-left: 5px;
+    height: 45px;
+}
+
+.basic-info > .input-pair > label {
+    font-weight: bold;
+}
+
 .height-inputs {
     display: flex;
     flex-flow: row;
@@ -680,9 +787,11 @@ input[type="number"] {
     width: 50px;
 }
 
+.alignment-inputs > * + * {
+    margin-left: 5px;
+}
+
 .class-info {
-    display: flex;
-    flex-flow: row;
 }
 
 .class-selector {
@@ -691,8 +800,36 @@ input[type="number"] {
 }
 
 .class-selector {
-    width: 100px;
+    width: 100%;
 }
+
+.class-selector > label {
+    font-weight: bold;
+}
+
+.class-selector > label {
+    margin-left: 5px;
+}
+
+.class-selector > select {
+    margin-left: 5px;
+}
+
+.class-feature-row {
+    cursor: default;
+    padding: 0 5px;
+    padding-top: 0;
+}
+
+.class-feature-row > span + span {
+    margin-left: 5px;
+}
+
+.class-feature-name {
+    font-weight: bold;
+}
+
+
 
 .levels-list {
     width: 20%;
@@ -709,9 +846,13 @@ input[type="number"] {
     color: white;
 }
 
-.background-info {
-    display: flex;
-    flex-flow: row;
+.background-info-title > label {
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.background-info-title > select {
+    margin-left: 5px;
 }
 
 .background-list {
@@ -724,4 +865,71 @@ input[type="number"] {
 
 .unit-value {
     margin-right: 5px;
+}
+
+.ability-score-selector-title {
+    display: block;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.ability-score-selector-remaining,
+.racial-ability-score-bonuses {
+    display: block;
+    padding-left: 5px;
+    width: 100%;
+    border-bottom: var(--tint-background);
+    margin-bottom: 5px;
+}
+
+.ability-score-values {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}
+
+.ability-score-value {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    padding: 5px
+}
+
+.ability-score-value.primary {
+    background-color: var(--highlight);
+    color: white;
+}
+
+.ability-score-value.primary > .ability-score-adjustor-buttons > button {
+    color: white;
+}
+
+.ability-score-value > .ability-score-name {
+    font-weight: bold;
+}
+
+.skill-selector-values {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 5px;
+}
+
+.skill-selector-value {
+    padding: 5px;
+    border-radius: 5px;
+    background: var(--tint-background);
+    margin: 2px;
+    cursor: default;
+    text-align: center;
+}
+.skill-selector-value > i {
+    margin-left: 5px;
+}
+
+
+.skill-selector-value.enabled {
+    background: var(--highlight);
+    color: white;
 }
