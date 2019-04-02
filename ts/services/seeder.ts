@@ -145,11 +145,11 @@ async function seedCharacters(db: Database): Promise<Character[]> {
         'Daggers',
         new AbilityScores([
             new AbilityScore(8, AbilityKind.Strength),
-            new AbilityScore(14, AbilityKind.Dexterity),
+            new AbilityScore(15, AbilityKind.Dexterity),
             new AbilityScore(10, AbilityKind.Constitution),
             new AbilityScore(10, AbilityKind.Intelligence),
             new AbilityScore(14, AbilityKind.Wisdom),
-            new AbilityScore(15, AbilityKind.Charisma),
+            new AbilityScore(14, AbilityKind.Charisma),
         ]),
         new Race(RaceKind.Human),
         new Class(
