@@ -24,7 +24,7 @@ html, body {
 
 span,
 input {
-    font-size: 11pt;
+    /*! font-size: 1em; */
 }
 
 button {
@@ -374,15 +374,10 @@ button.alert {
 }
 
 .skills-list {
-    display: flex;
-    flex-flow: column;
+    display: grid;
+    grid-template-rows: repeat(15, 1fr);
     grid-area: skills;
-    align-items: flex-end;
-    border-radius: 5px;
     margin: 5px 0 0 5px;
-    justify-content: flex-start;
-    align-content: flex-start;
-    align-items: flex-start;
     padding-left: 5px;
     padding-top: 5px;
 }

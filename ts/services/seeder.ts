@@ -2,7 +2,7 @@ import { Database, IClassFeature, IClassFeatureOption } from './data';
 import { SkillKind, Skills } from '../models/skills';
 import { Wealth, Weapon, Character, Alignment, Height, Armor, 
     LightArmor, ArmorWeight, WeaponType, WeaponKind, WeaponDamageKind, 
-    WeaponWeight, WeaponHandedness, NormalLanguage } from '../models/character';
+    WeaponWeight, WeaponHandedness, NormalLanguage, ExpendableItem, MagicItem } from '../models/character';
 import { Range } from '../models/range'
 import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore';
 import { RaceKind, Race } from '../models/race';
@@ -203,8 +203,11 @@ async function seedCharacters(db: Database): Promise<Character[]> {
         [NormalLanguage.Common, NormalLanguage.Draconic],
         0,
         0,
-        [],
-        []
-    )
+        [
+            new MagicItem('Cloak of Elvenkind', 'Hood up: Preception checks to see you have disadvantage, stealth checks have advantage'),
+            new MagicItem('Goggles of Night', 'Darkvision (60 feet)'),
+        ],
+        [new ExpendableItem(1, 'Health Pot.', 'heal 2d4+2 Damage')],
+)
     return [d];
 } 
