@@ -630,7 +630,7 @@ export class BackgroundInfo extends React.Component<IBackgroundInfoProps, IBackg
     constructor(props: IBackgroundInfoProps) {
         super(props);
         this.state = {
-            backgroundIdx: -1,
+            backgroundIdx: props.backgrounds.findIndex(b => b.kind === props.characterBackground.kind),
             pendingBackground: Background.fromJson(props.characterBackground),
         }
     }
@@ -794,7 +794,7 @@ export class AbilityScoreSelector extends React.Component<IAbilityScoreSelectorP
                                 <span className="ability-score-mod">{s.modifier}</span>
                                 <div className="ability-score-adjustor-buttons">
                                     <button
-                                        disabled={s.value > 14}
+                                        disabled={s.value > 14 || this.props.remaining <= 0}
                                         onClick={() => {
                                             let ret = AbilityScores.fromJson(this.props.scores);
                                             ret.set(s.kind, s.value + 1);
