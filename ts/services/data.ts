@@ -172,6 +172,7 @@ export class Data {
             case ClassKind.Druid:
             case ClassKind.Rogue:
             case ClassKind.Warlock:
+            case ClassKind.Monk:
                 return 5;
             case ClassKind.Sorcerer:
             case ClassKind.Wizard:
