@@ -30,6 +30,7 @@ interface ICharacterSheetProps {
     adjustInspiration: (newValue: number) => void;
     classFeatureOptionSelected: (name: string, idx: number) => void;
     adjustClassSkills: (newSkills: SkillKind[]) => void;
+    adjustExpertise: (newSkills: SkillKind[]) => void;
     spellList: Spell[];
 }
 
@@ -78,6 +79,8 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 newSkillsAvailable={this.props.character.skillsModNeeded()}
                 newSkillsOptions={this.props.character.availableSkillsToAdd()}
                 skillsUpdated={skills => this.props.adjustClassSkills(skills)}
+                expertiseRequired={this.props.character.characterClass.expertise.filter(s => !s).length}
+                expertiseUpdated={skills => this.props.adjustExpertise(skills)}
             />,
             <Defences
                 key="defences"
@@ -555,6 +558,8 @@ interface ISkillsListProps {
     newSkillsAvailable: number;
     newSkillsOptions: SkillKind[];
     skillsUpdated: (skills: SkillKind[]) => void;
+    expertiseUpdated: (skills: SkillKind[]) => void;
+    expertiseRequired: number;
 }
 
 interface ISkillsListState {
@@ -570,10 +575,26 @@ export class SkillsList extends React.Component<ISkillsListProps, ISkillsListSta
     }
     render() {
         let pendingSkills = this.props.newSkillsAvailable > 0;
+        let expertise = this.props.expertiseRequired > 0;
+        let title;
+        let options = [];
+        let max;
+        if (pendingSkills) {
+            title = 'You have new skills to choose';
+            options = this.props.newSkillsOptions;
+            max = this.props.newSkillsAvailable;
+        } else if (expertise) {
+            title = 'You have new expertise to select';
+            options = this.props.skills.filter(s => s[2]).map(s => s[0]);
+            max = this.props.expertiseRequired;
+        }
         return [
-            <div key="skills-list" className={`skills-list box ${pendingSkills ? 'alert' : ''}`}
+            <div 
+                key="skills-list" 
+                className={`skills-list box ${pendingSkills || expertise ? 'alert' : ''}`}
+                title={title}
                 onClick={() => {
-                    if (pendingSkills && !this.state.editingSkills) {
+                    if ((pendingSkills || expertise) && !this.state.editingSkills) {
                         this.setState({editingSkills: true});
                     }
                 }}
@@ -585,20 +606,23 @@ export class SkillsList extends React.Component<ISkillsListProps, ISkillsListSta
             this.state.editingSkills ? 
             <SkillAdjustor
                 key="skills-adjuster"
-                maxAdditional={this.props.newSkillsAvailable}
-                skills={this.props.newSkillsOptions}
-                onComplete={skills => this.skillsUpdated(skills)}
+                maxAdditional={max}
+                skills={options}
+                onComplete={skills => this.skillsUpdated(expertise, skills)}
+                expertise={expertise}
             />
             : null,
         ];
     }
 
-    skillsUpdated(skills?: SkillKind[]) {
+    skillsUpdated(expertise: boolean, skills?: SkillKind[]) {
         this.setState({editingSkills: false}, () => {
-            if (skills) {
+            if (expertise && skills) {
+                this.props.expertiseUpdated(skills);
+            } else if (skills) {
                 this.props.skillsUpdated(skills);
             }
-        })
+        });
     }
 }
 
@@ -628,6 +652,7 @@ interface ISkillAdjustorProps {
     maxAdditional: number;
     skills: SkillKind[];
     onComplete: (skills?: SkillKind[]) => void;
+    expertise: boolean;
 }
 
 interface ISkillAdjustorState {
@@ -673,8 +698,12 @@ export class SkillAdjustor extends React.Component<ISkillAdjustorProps, ISkillAd
         });
     }
     done(withValue: boolean) {
+        if (this.state.selected.size < this.props.maxAdditional) {
+            return;
+        }
         if (withValue) {
-            this.props.onComplete(Array.from(this.state.selected))
+            let arr = Array.from(this.state.selected);
+            this.props.onComplete(arr)
         } else {
             this.props.onComplete();
         }

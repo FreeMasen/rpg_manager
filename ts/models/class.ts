@@ -46,6 +46,7 @@ export class Class {
         public classDetails: ClassDetails,
         public bonusAbilityScores: [AbilityKind, number][] = DEFAULT_BONUS_ABILITY_SCORES,
         public selectedSkills: SkillKind[] = [],
+        public expertise: SkillKind[] = [],
     ) {
         switch (name) {
             case ClassKind.Barbarian:
@@ -152,9 +153,6 @@ export class Class {
             ArmorWeight.Light,
         ];
         this.numberOfSkills = 3;
-        if (this.level > 2) {
-            this.numberOfSkills += 2;
-        }
         this.availableSkills = Object.getOwnPropertyNames(SkillKind).map(n => SkillKind[n]);
         if (this.classDetails && (this.classDetails as BardDetails).archetype === BardCollege.Valor && this._level > 2) {
             this.weaponProfs.push(WeaponKind.Martial);
@@ -162,6 +160,9 @@ export class Class {
             this.canUseShield = true;
         }
         this.miscProfs = ['Musical Instrument'];
+        if (this._level > 2 && this.expertise.length < 2) {
+            this.expertise = [null, null];
+        }
     }
     clericCtor(details: ClericDetails) {
         this.desc = 'A priestly champion who wields divine magic in service of a higher power';
@@ -386,7 +387,7 @@ export class Class {
             StdWeaponName.Rapier,
             StdWeaponName.ShortSword,
         ];
-        this.numberOfSkills = 4 + 2; //expertise at level 1;
+        this.numberOfSkills = 4;
         this.availableSkills = [
             SkillKind.Acrobatics, 
             SkillKind.Athletics,
@@ -400,6 +401,9 @@ export class Class {
             SkillKind.SleightOfHand, 
             SkillKind.Stealth,
         ];
+        if (this.expertise.length < 2) {
+            this.expertise = [null, null];
+        }
     }
     sorcererCtor(details: SorcererDetails) {
         this.desc = 'A spell caster who draws on inherent magic from a gift or bloodline';
@@ -507,10 +511,6 @@ export class Class {
     }
 
     unselectedAvailableSkills() {
-        if ((this.name === ClassKind.Bard && this._level > 2)
-            || this.name === ClassKind.Rogue) {
-            return this.availableSkills.filter(s => !this.selectedSkills.includes(s));
-        }
         if (this.name === ClassKind.Cleric) {
             if (this.classDetails.archetype === ClericDomain.Knowledge) {
                 return [SkillKind.Arcana, SkillKind.History, SkillKind.Nature, SkillKind.Religion].filter(s => this.selectedSkills.includes(s))
@@ -528,6 +528,7 @@ export class Class {
             null,
             json.bonusAbilityScores,
             json.selectedSkills || [],
+            json.expertise || [],
         );
         ret.name = json.name;
         switch (json.name) {

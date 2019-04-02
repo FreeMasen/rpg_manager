@@ -94,6 +94,7 @@ export class App extends React.Component<{}, IAppState> {
                             adjustWeapons={newWeapons => this.adjustCharacterWeapons(newWeapons)}
                             adjustInspiration={async newValue => await this.adjustCharacterInspiration(newValue)}
                             adjustClassSkills={async newSkills => await this.adjustClassSkills(newSkills)}
+                            adjustExpertise={async skills => await this.adjustExpertise(skills)}
                             classFeatureOptionSelected={async (name, idx) => await this.updateCharacterFeature(name, idx)}
                             spellList={this.state.spellList}
                         />);
@@ -281,6 +282,21 @@ export class App extends React.Component<{}, IAppState> {
         this.setState((prev, props) => {
             ch = this.state.characters[this.state.selectedCharacter];
             ch.characterClass.selectedSkills.push(...newSkills);
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c
+            })}
+        }, async () => {
+            await this.data.saveCharacter(ch);
+        })
+    }
+    async adjustExpertise(skills: SkillKind[]) {
+        let ch: Character;
+        this.setState((prev, props) => {
+            ch = this.state.characters[this.state.selectedCharacter];
+            ch.characterClass.expertise = skills;
             return {characters: prev.characters.map(c => {
                 if (c.id === ch.id) {
                     return ch;

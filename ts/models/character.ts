@@ -107,16 +107,13 @@ export class Character {
             let enabled = skill.enabled 
                         || this.characterClass.selectedSkills.indexOf(skill.kind) > -1;
             if (enabled) {
-                bonus = this.proficiencyBonus;
+                if (this.characterClass.expertise.includes(skill.kind)) {
+                    bonus = this.proficiencyBonus * 2;
+                } else {
+                    bonus = this.proficiencyBonus;
+                }
             } else if (this.characterClass.name === ClassKind.Bard && this.level > 1) {
                 bonus = Math.floor(this.proficiencyBonus / 2);
-            }
-            if (this.characterClass.name == ClassKind.Rogue
-                || this.characterClass.name === ClassKind.Bard) {
-                let det = this.characterClass.classDetails as RogueDetails;
-                if (det.expertise.indexOf(skill.kind) > -1) {
-                    bonus *= 2;
-                }
             }
             let value = mod + bonus;
             return [skill.kind, value, enabled] as [SkillKind, number, boolean];
