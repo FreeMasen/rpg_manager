@@ -22,11 +22,6 @@ html, body {
     font-family: 'Roboto', sans-serif;
 }
 
-span,
-input {
-    /*! font-size: 1em; */
-}
-
 button {
     border: 0;
     padding: 0 10px;
@@ -185,7 +180,7 @@ button.alert {
     grid-template-columns: 55px 165px 387px 400px;
     grid-template-rows: 75px 120px 80px 270px 275px;
     grid-template-areas: 
-    'name name   meta meta  spells'
+    'name name   meta meta  daily'
     'abi  save   def  notes spells'
     'abi  skills def  notes spells'
     'abi  skills cmb  notes spells'
@@ -441,9 +436,9 @@ button.alert {
     grid-template-rows: 60px 60px 60px;
     grid-template-columns: 125px 125px 125px;
     grid-template-areas: 
-        'ac init speed'
-        'hp temp dmg'
-        'hd hd hd';
+        'ac  init speed'
+        'hp  temp dmg'
+        'etc hd misc';
 }
 
 
@@ -862,8 +857,61 @@ input[type="number"] {
     margin-left: 5px;
 }
 
-.spell-list-entry + .spell-list-entry {
-    border-top: 1px solid rgba(0,0,0,0.2);
+.daily-spells {
+    grid-area: daily;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.daily-spells-box-header {
+    width: 100%;
+    background: var(--tint-header);
+    text-align: center;
+    padding: 5px 0;
+}
+
+.daily-spells-table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+    border: 1px solid var(--tint-background);
+    table-layout: fixed;
+    margin: 0 5px;
+    border-radius: 5px;
+}
+
+.daily-spells-headers {
+    background: var(--tint-background);
+}
+
+.daily-spells-values {
+    border: 1px solid var(--tint-background);
+    
+}
+
+.daily-spells-table td,
+.daily-spells-table th {
+    border: 1px solid var(--tint-background);
+}
+
+.spell-list {
+    grid-area: spells;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.spell-list-header {
+    border-bottom: 1px solid var(--tint-background);
+}
+
+.spell-list-header,
+.spell-list-level-header,
+.spell-list-entry {
+    padding: 5px 5px 0 5px;
+}
+
+.spell-list-entry {
+    cursor: default;
 }
 
 .unit-value {

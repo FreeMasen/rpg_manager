@@ -1,4 +1,4 @@
-import { Database, IClassFeature, IClassFeatureOption } from './data';
+import { Database, IClassFeature, IClassFeatureOption, IClassSpellSlots } from './data';
 import { SkillKind, Skills } from '../models/skills';
 import { Wealth, Weapon, Character, Alignment, Height, Armor, 
     LightArmor, ArmorWeight, WeaponType, WeaponKind, WeaponDamageKind, 
@@ -8,7 +8,7 @@ import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore
 import { RaceKind, Race } from '../models/race';
 import { ClassKind, Class, DEFAULT_BONUS_ABILITY_SCORES } from '../models/class';
 import { Background } from '../models/background';
-
+import Dexie from 'dexie';
 export async function seed(db: Database) { 
     let spellBooks = await fetch(window.location.href + 'spellBook.json')
         .then(res => res.json())
@@ -24,7 +24,6 @@ export async function seed(db: Database) {
     console.info('seeding seeds');
     await db.seeds.put({when: new Date().toISOString(), version: db.verno});
 }
-
 async function seedClassInfo(db: Database, info: any) {
     for (let cls in info) {
         for (let feat of info[cls].features) {
@@ -32,7 +31,6 @@ async function seedClassInfo(db: Database, info: any) {
         }
     }
 }
-
 async function insertFeature(db: Database, cls: ClassKind, feat: any, optId?: number) {
     let dbFeat: IClassFeature = {
         classKind: cls as ClassKind,
@@ -62,7 +60,6 @@ async function insertFeature(db: Database, cls: ClassKind, feat: any, optId?: nu
         }
     }
 }
-
 async function seedCharacters(db: Database): Promise<Character[]> {
     // let details = await db.getClassDetails(ClassKind.Rogue, 4);
     // let d = new Character('Daggers', 
@@ -211,3 +208,221 @@ async function seedCharacters(db: Database): Promise<Character[]> {
 )
     return [d];
 } 
+export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, number>) {
+    let bard = [
+            [2],
+            [3],
+            [4, 2],
+            [4, 3],
+            [4, 3, 2],
+            [4, 3, 3],
+            [4, 3, 3, 1],
+            [4, 3, 3, 2],
+            [4, 3, 3, 3, 1],
+            [4, 3, 3, 3, 2],
+            [4, 3, 3, 3, 2],
+            [4, 3, 3, 3, 2, 1],
+            [4, 3, 3, 3, 2, 1, 1],
+            [4, 3, 3, 3, 2, 1, 1],
+            [4, 3, 3, 3, 2, 1, 1, 1],
+            [4, 3, 3, 3, 2, 1, 1, 1],
+            [4, 3, 3, 3, 2, 1, 1, 1, 1],
+            [4, 3, 3, 3, 3, 1, 1, 1, 1],
+            [4, 3, 3, 3, 3, 2, 1, 1, 1],
+            [4, 3, 3, 3, 3, 2, 2, 1, 1],
+    ];
+    let cleric = [
+        [2],
+        [3],
+        [4, 2],
+        [4, 3],
+        [4, 3, 2],
+        [4, 3, 3],
+        [4, 3, 3, 1],
+        [4, 3, 3, 2],
+        [4, 3, 3, 3, 1],
+        [4, 3, 3, 3, 2],
+        [4, 3, 3, 3, 2, 1],
+        [4, 3, 3, 3, 2, 1],
+        [4, 3, 3, 3, 2, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 3, 2, 2, 1, 1 ],
+    ]
+    let druid = [
+        [2, 2,],
+        [2, 3,],
+        [2, 4, 2,],
+        [3, 4, 3,],
+        [3, 4, 3, 2,],
+        [3, 4, 3, 3,],
+        [3, 4, 3, 3, 1,],
+        [3, 4, 3, 3, 2,],
+        [3, 4, 3, 3, 3, 1,],
+        [4, 4, 3, 3, 3, 2,],
+        [4, 4, 3, 3, 3, 2, 1,],
+        [4, 4, 3, 3, 3, 2, 1,],
+        [4, 4, 3, 3, 3, 2, 1, 1,],
+        [4, 4, 3, 3, 3, 2, 1, 1,],
+        [4, 4, 3, 3, 3, 2, 1, 1, 1,],
+        [4, 4, 3, 3, 3, 2, 1, 1, 1,],
+        [4, 4, 3, 3, 3, 2, 1, 1, 1, 1],
+        [4, 4, 3, 3, 3, 3, 1, 1, 1, 1],
+        [4, 4, 3, 3, 3, 3, 2, 1, 1, 1],
+        [4, 4, 3, 3, 3, 3, 2, 2, 1, 1],
+    ]
+    let paladin = [
+        [2,],
+        [3,],
+        [3,],
+        [4, 2,],
+        [4, 2,],
+        [4, 3,],
+        [4, 3,],
+        [4, 3, 2,],
+        [4, 3, 2,],
+        [4, 3, 3,],
+        [4, 3, 3,],
+        [4, 3, 3, 1,],
+        [4, 3, 3, 1,],
+        [4, 3, 3, 2,],
+        [4, 3, 3, 2,],
+        [4, 3, 3, 3, 1],
+        [4, 3, 3, 3, 1],
+        [4, 3, 3, 3, 2],
+        [4, 3, 3, 3, 2 ],
+    ];
+    let ranger = [
+        [],
+        [2],
+        [3],
+        [3],
+        [4, 2],
+        [4, 2],
+        [4, 3],
+        [4, 3],
+        [4, 3, 2],
+        [4, 3, 2],
+        [4, 3, 3],
+        [4, 3, 3],
+        [4, 3, 3, 1],
+        [4, 3, 3, 1],
+        [4, 3, 3, 2],
+        [4, 3, 3, 2],
+        [ 4, 3, 3, 3, 1,],
+        [ 4, 3, 3, 3, 1,],
+        [ 4, 3, 3, 3, 2,],
+        [ 4, 3, 3, 3, 2, ],
+    ];
+    let sorcerer = [
+    [2, ],
+    [3, ],
+    [4, 2, ],
+    [4, 3, ],
+    [4, 3, 2, ],
+    [4, 3, 3, ],
+    [4, 3, 3, 1, ],
+    [4, 3, 3, 2, ],
+    [4, 3, 3, 3, 1, ],
+    [4, 3, 3, 3, 2, ],
+    [4, 3, 3, 3, 2, 1, ],
+    [4, 3, 3, 3, 2, 1, ],
+    [4, 3, 3, 3, 2, 1, 1, ],
+    [4, 3, 3, 3, 2, 1, 1, ],
+    [4, 3, 3, 3, 2, 1, 1, 1, ],
+    [4, 3, 3, 3, 2, 1, 1, 1, ],
+    [4, 3, 3, 3, 2, 1, 1, 1, 1],
+    [4, 3, 3, 3, 3, 1, 1, 1, 1],
+    [4, 3, 3, 3, 3, 2, 1, 1, 1],
+    [4, 3, 3, 3, 3, 2, 2, 1, 1 ],
+    ];
+    let wizard = [
+        [2],
+        [3],
+        [4, 2],
+        [4, 3],
+        [4, 3, 2],
+        [4, 3, 3],
+        [4, 3, 3, 1],
+        [4, 3, 3, 2],
+        [4, 3, 3, 3, 1],
+        [4, 3, 3, 3, 2],
+        [4, 3, 3, 3, 2, 1],
+        [4, 3, 3, 3, 2, 1],
+        [4, 3, 3, 3, 2, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 3, 2, 2, 1, 1 ],
+    ];
+    let fighter = [
+        [],
+        [],
+        [2],
+        [3],
+        [3],
+        [3],
+        [4, 2],
+        [4, 2],
+        [4, 2],
+        [5, 4, 2],
+        [6, 4, 2],
+        [6, 4, 2],
+        [7, 4, 3],
+        [8, 4, 3],
+        [9, 4, 3, 2],
+        [10, 4, 3, 2],
+        [10, 4, 3, 2],
+        [11, 4, 3, 3],
+        [11, 4, 3, 3],
+        [11, 4, 3, 3],
+        [12, 4, 3, 3, 1],
+        [13, 4, 3, 3, 1],
+    ]
+    let rogue = [
+        {slots: [], cantrips: 0, spells: 0},
+        {slots: [], cantrips: 0, spells: 0},
+        {slots: [2], cantrips: 3, spells: 3,},
+        {slots: [3], cantrips: 3, spells: 4,},
+        {slots: [3], cantrips: 3, spells: 4,},
+        {slots: [3], cantrips: 3, spells: 4,},
+        {slots: [4, 2], cantrips: 3, spells: 5,},
+        {slots: [4, 2], cantrips: 4, spells: 6,},
+        {slots: [4, 2], cantrips: 4, spells: 6,},
+        {slots: [4, 3], cantrips: 4, spells: 7,},
+        {slots: [4, 3], cantrips: 4, spells: 8,},
+        {slots: [4, 3], cantrips: 4, spells: 8,},
+        {slots: [4, 3, 2], cantrips: 4, spells: 9,},
+        {slots: [4, 3, 2], cantrips: 4, spells: 10,},
+        {slots: [4, 3, 2], cantrips: 4, spells: 10,},
+        {slots: [4, 3, 3], cantrips: 4, spells: 11,},
+        {slots: [4, 3, 3], cantrips: 4, spells: 11,},
+        {slots: [4, 3, 3], cantrips: 4, spells: 11,},
+        {slots: [4, 3, 3, 1], cantrips: 4, spells: 12,},
+        {slots: [4, 3, 3, 1], cantrips: 4, spells: 13,},
+    ];
+    await t.bulkAdd([
+        {
+            classKind: ClassKind.Bard,
+            level: 1,
+            slots: [2]
+        },
+        {
+            classKind: ClassKind.Bard,
+            level: 1,
+            slots: [3]
+        },
+        {
+            classKind: ClassKind.Bard,
+            level: 1,
+            slots: [4, 2]
+        },
+    ]);
+}

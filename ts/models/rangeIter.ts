@@ -1,5 +1,3 @@
-import { array } from "prop-types";
-
 export class RangeIter {
     private arr: number[];
     constructor(

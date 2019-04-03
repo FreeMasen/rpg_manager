@@ -16,6 +16,7 @@ import { ClassFeature } from '../services/data';
 import { Spell } from '../models/spells';
 import { ClassDetails } from '../models/classDetails';
 import { Modal } from './common/Modal';
+import { SpellSlots } from './spellSlots';
 
 interface ICharacterSheetProps {
     character: Character;
@@ -119,6 +120,20 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
         ];
         if (this.props.character.characterClass.isCaster) {
             children.push(
+            //     <SpellSlots
+            //         dailyBreakdown={Array.of(
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20),
+            //             Math.floor(Math.random() * 20))}
+            //     />
+            // );
+            // children.push(
                 <SpellsList
                     key="spells-list"
                     title={`${this.props.character.characterClass.name} Spells`}

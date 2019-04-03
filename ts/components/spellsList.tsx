@@ -33,14 +33,7 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
     }
     render() {
         return (
-            <div className="box"
-                style={{
-                    gridArea: 'spells',
-                    marginLeft: 5,
-                    marginTop: 5,
-                    borderRadius: 5,
-                }}
-            >
+            <div className="box spell-list">
                 {this.renderInner()}
             </div>
         );
@@ -49,11 +42,12 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
     renderInner() {
         if (this.state.selectedSpell === -1) {
             return (
-                <ListView
-                    headerText={this.props.title}
-                >
+                <ListView>
+                    <ListViewHeader className="spell-list-header">
+                        {this.props.title}
+                    </ListViewHeader>
                     {this.state.spells.map((list: Spell[], level: number) => {
-                        return ([<ListViewHeader>
+                        return ([<ListViewHeader className="spell-list-level-header" key={`spell-entry-${level}`}>
                                     {`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}
                                 </ListViewHeader>].concat(
                                     list.map((s: Spell, i: number) => {

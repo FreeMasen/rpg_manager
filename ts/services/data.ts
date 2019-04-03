@@ -349,6 +349,13 @@ export interface ISpell {
     classKinds: ClassKind[];
 }
 
+export interface IClassSpellSlots {
+    id?: number;
+    classKind: ClassKind;
+    level: number;
+    slots: number[],
+}
+
 function formatClassKind(s: string) {
     let ret = '';
     ret += s[0].toLocaleUpperCase();
@@ -361,6 +368,7 @@ export class Database extends Dexie {
     public spells: Dexie.Table<ISpell, number>;
     public classFeatures: Dexie.Table<IClassFeature, number>;
     public classFeatureOptions: Dexie.Table<IClassFeatureOption, number>;
+    public classSpellSlots: Dexie.Table<IClassSpellSlots, number>;
     public ready = false;
     constructor() {
         super("DnDCharacterManager");
@@ -390,6 +398,21 @@ export class Database extends Dexie {
                 console.info('update complete');
             });
         });
+        // this.version(3).stores({
+        //     seeds: "++id",
+        //     characters: "++id,name",
+        //     spells: "++id,name,*classKinds",
+        //     classFeatures: "++id,classKind,level,optionId",
+        //     classFeatureOptions: "++id,featId",
+        //     classSpellSlots: "++id,classKind,level,classKind+level",
+        // }).upgrade(t => {
+        //     t.table('classSpellSlots').bulkAdd([
+        //         {
+        //             classKind: ClassKind.Cleric,
+        //             level: 0,
+        //         }
+        //     ])
+        // });
     }
 
     private async upgradeToTwo(t: Dexie.Transaction) {
@@ -484,6 +507,16 @@ export class Database extends Dexie {
             throw e;
         }
     }
+
+    async spellBreakdownFor(cls: ClassKind, level: number): Promise<number[]> {
+        try {
+            return Promise.reject("unimplemented");
+        } catch (e) {
+            console.error('failed to get spellBreakdown', cls, level);
+            throw e;
+        }
+    }
+
     async getClassDetails(cls: ClassKind, level: number) {
         let features = await this.getClassFeatures(cls, level);
         switch (cls) {
