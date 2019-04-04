@@ -249,6 +249,31 @@ export class Character {
         return this.characterClass.unselectedAvailableSkills().filter(s => !this.background.skills.includes(s));
     } 
 
+    castorAbilityModifier() {
+        let abilityKind: AbilityKind;
+        switch (this.characterClass.name) {
+            case ClassKind.Bard:
+            case ClassKind.Paladin:
+            case ClassKind.Sorcerer:
+            case ClassKind.Warlock:
+                abilityKind = AbilityKind.Charisma;
+                break;
+            case ClassKind.Cleric:
+            case ClassKind.Druid:
+            case ClassKind.Ranger:
+                abilityKind = AbilityKind.Wisdom;
+                break;
+            case ClassKind.Fighter:
+            case ClassKind.Rogue:
+            case ClassKind.Wizard:
+                abilityKind = AbilityKind.Intelligence
+                break;
+            default:
+                return 0;
+        }
+        return this.modifiedAbilityScores().find(a => a.kind === abilityKind).modifier;
+    }
+
     public static fromJson(json: any): Character {
         let ret = new Character(
             json.name,

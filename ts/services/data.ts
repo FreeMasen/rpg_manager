@@ -352,11 +352,10 @@ export interface ISpell {
 export interface IClassSpellSlots {
     id?: number;
     classKind: ClassKind;
-    level?: number;
-    slots: number[] | number;
+    level: number;
+    slots: number[];
     cantrips?: number;
     spells?: number;
-    invocations?: number;
 }
 
 function formatClassKind(s: string) {

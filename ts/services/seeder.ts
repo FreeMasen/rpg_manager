@@ -409,26 +409,26 @@ export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, numbe
         {slots: [4, 3, 3, 1], cantrips: 4, spells: 13,},
     ];
     let warlock = [
-        {slots: 1, cantrips: 2, spells: 2, level: 1,  invocations: 0},
-        {slots: 2, cantrips: 2, spells: 3, level: 1,  invocations: 2},
-        {slots: 2, cantrips: 2, spells: 4, level: 2,  invocations: 2},
-        {slots: 2, cantrips: 3, spells: 5, level: 2,  invocations: 2},
-        {slots: 2, cantrips: 3, spells: 6, level: 3,  invocations: 3},
-        {slots: 2, cantrips: 3, spells: 7, level: 3,  invocations: 3},
-        {slots: 2, cantrips: 3, spells: 8, level: 4,  invocations: 4},
-        {slots: 2, cantrips: 3, spells: 9, level: 4,  invocations: 4},
-        {slots: 2, cantrips: 3, spells: 10, level: 5, invocations: 5},
-        {slots: 2, cantrips: 4, spells: 10, level: 5, invocations: 5},
-        {slots: 2, cantrips: 4, spells: 11, level: 5, invocations: 5},
-        {slots: 2, cantrips: 4, spells: 11, level: 5, invocations: 6},
-        {slots: 2, cantrips: 4, spells: 12, level: 5, invocations: 6},
-        {slots: 2, cantrips: 4, spells: 12, level: 5, invocations: 6},
-        {slots: 2, cantrips: 4, spells: 13, level: 5, invocations: 7},
-        {slots: 2, cantrips: 4, spells: 13, level: 5, invocations: 7},
-        {slots: 2, cantrips: 4, spells: 14, level: 5, invocations: 7},
-        {slots: 2, cantrips: 4, spells: 14, level: 5, invocations: 8},
-        {slots: 2, cantrips: 4, spells: 15, level: 5, invocations: 8},
-        {slots: 2, cantrips: 4, spells: 15, level: 5, invocations: 8},
+        {slots: [1], cantrips: 2, spells: 2, },
+        {slots: [2], cantrips: 2, spells: 3, },
+        {slots: [null, 2], cantrips: 2, spells: 4, },
+        {slots: [null, 2], cantrips: 3, spells: 5, },
+        {slots: [null, null, 2], cantrips: 3, spells: 6, },
+        {slots: [null, null, 2], cantrips: 3, spells: 7, },
+        {slots: [null, null, null, 2], cantrips: 3, spells: 8, },
+        {slots: [null, null, null, 2], cantrips: 3, spells: 9, },
+        {slots: [null, null, null, null, 2], cantrips: 3, spells: 10},
+        {slots: [null, null, null, null, 2], cantrips: 4, spells: 10},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 11},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 11},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 12},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 12},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 13},
+        {slots: [null, null, null, null, 3], cantrips: 4, spells: 13},
+        {slots: [null, null, null, null, 4], cantrips: 4, spells: 14},
+        {slots: [null, null, null, null, 4], cantrips: 4, spells: 14},
+        {slots: [null, null, null, null, 4], cantrips: 4, spells: 15},
+        {slots: [null, null, null, null, 4], cantrips: 4, spells: 15},
     ];
     let classes = [
         {kind: ClassKind.Bard, items: bard},
@@ -443,25 +443,12 @@ export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, numbe
         {kind: ClassKind.Wizard, items: wizard},
     ];
     for (let set of classes) {
+        for (var i = 0; i < set.items.length; i++) {
+            let level = set.items[i];
+            t.add(Object.assign(level, {classKind: set.kind, level: i+1}))
+        }
         for (let level of set.items) {
             t.add(Object.assign(level, {classKind: set.kind}));
         }
     }
-    await t.bulkAdd([
-        {
-            classKind: ClassKind.Bard,
-            level: 1,
-            slots: [2]
-        },
-        {
-            classKind: ClassKind.Bard,
-            level: 1,
-            slots: [3]
-        },
-        {
-            classKind: ClassKind.Bard,
-            level: 1,
-            slots: [4, 2]
-        },
-    ]);
 }

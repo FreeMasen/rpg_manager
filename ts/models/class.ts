@@ -521,6 +521,7 @@ export class Class {
         }
         return [];
     }
+    
     public static fromJson(json: any): Class {
         let ret = new Class(
             null,
