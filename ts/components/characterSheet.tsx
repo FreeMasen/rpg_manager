@@ -12,14 +12,15 @@ import { Class, ClassKind, DEFAULT_BONUS_ABILITY_SCORES } from '../models/class'
 import { Background } from '../models/background';
 import { SkillKind } from '../models/skills';
 import { SpellsList } from './spellsList';
-import { ClassFeature } from '../services/data';
+import { ClassFeature, IClassSpellSlots, Data } from '../services/data';
 import { Spell } from '../models/spells';
 import { ClassDetails } from '../models/classDetails';
 import { Modal } from './common/Modal';
-import { SpellSlots } from './spellSlots';
+import { SpellsInfo } from './spellsInfo';
 
 interface ICharacterSheetProps {
     character: Character;
+    data?: Data; 
     adjustDamage: (newValue: number) => void;
     adjustTempHP: (newValue: number) => void;
     adjustExp: (newValue: number) => void;
@@ -36,11 +37,24 @@ interface ICharacterSheetProps {
 }
 
 interface ICharacterSheetState {
+    casterInfo: IClassSpellSlots;
 }
 
 export class CharacterSheet extends React.Component<ICharacterSheetProps, ICharacterSheetState> {
     constructor(props: ICharacterSheetProps) {
         super(props);
+        this.state = {
+            casterInfo: null,
+        }
+    }
+
+    async componentDidMount() {
+        this.props.data.getCasterInfoFor(
+            this.props.character.characterClass.name, 
+            this.props.character.characterClass.level
+        ).then(casterInfo => {
+            this.setState({casterInfo});
+        })
     }
 
     render() {
@@ -118,22 +132,20 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 adjustMagics={newMagics => this.props.adjustMagics(newMagics)}
             />,
         ];
-        if (this.props.character.characterClass.isCaster) {
+        if (this.props.character.characterClass.isCaster && this.state.casterInfo) {
             children.push(
-            //     <SpellSlots
-            //         dailyBreakdown={Array.of(
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20),
-            //             Math.floor(Math.random() * 20))}
-            //     />
-            // );
-            // children.push(
+                <SpellsInfo
+                    key="spells-info"
+                    abilityModifier={this.props.character.castorAbilityModifier()}
+                    cantripsKnown={this.state.casterInfo.cantrips}
+                    spellsKnown={this.state.casterInfo.spells}
+                    casterLevel={this.props.character.characterClass.level}
+                    classKind={this.props.character.characterClass.name}
+                    profBonus={this.props.character.proficiencyBonus}
+                    dcBase={8}
+                />
+            );
+            children.push(
                 <SpellsList
                     key="spells-list"
                     title={`${this.props.character.characterClass.name} Spells`}

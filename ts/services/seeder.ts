@@ -22,6 +22,7 @@ export async function seed(db: Database) {
     let chs = await seedCharacters(db);
     await db.characters.bulkPut(chs);
     console.info('seeding seeds');
+    await seedClassSpellSlots(db.classSpellSlots)
     await db.seeds.put({when: new Date().toISOString(), version: db.verno});
 }
 async function seedClassInfo(db: Database, info: any) {
@@ -443,12 +444,11 @@ export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, numbe
         {kind: ClassKind.Wizard, items: wizard},
     ];
     for (let set of classes) {
+        console.log('seeding class', set.kind);
         for (var i = 0; i < set.items.length; i++) {
+            console.log('seeding level',i+1);
             let level = set.items[i];
             t.add(Object.assign(level, {classKind: set.kind, level: i+1}))
-        }
-        for (let level of set.items) {
-            t.add(Object.assign(level, {classKind: set.kind}));
         }
     }
 }

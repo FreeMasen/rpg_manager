@@ -84,6 +84,7 @@ export class App extends React.Component<{}, IAppState> {
                 let ch = this.state.characters[this.state.selectedCharacter];
                 return (<CharacterSheet 
                             character={ch} 
+                            data={this.data}
                             adjustDamage={newDmg => this.adjustSelectedCharacterDamage(newDmg)}
                             adjustTempHP={newHp => this.adjustSelectedCharacterTempHP(newHp)}
                             adjustExp={newExp => this.adjustCharacterExperience(newExp)}
@@ -105,7 +106,7 @@ export class App extends React.Component<{}, IAppState> {
                             data={this.data}
                         />)
             case View.Loading:
-                    return (<div style={{width: "100%", height: "100%"}}></div>)
+                    return (<div className="box" style={{width: "100%", height: "100%"}}></div>)
         }
     }
 

@@ -181,7 +181,7 @@ button.alert {
     grid-template-rows: 75px 120px 80px 270px 275px;
     grid-template-areas: 
     'name name   meta meta  daily'
-    'abi  save   def  notes spells'
+    'abi  save   def  notes daily'
     'abi  skills def  notes spells'
     'abi  skills cmb  notes spells'
     'prof  prof  mon  items spells';
@@ -667,6 +667,51 @@ input[type="number"] {
 .expendable-list-title,
 .magic-list-title {
     font-weight: bold;
+}
+
+.spells-info {
+    grid-area: daily;
+    margin-left: 5px;
+    margin-top: 5px;
+    display: grid;
+    grid-template-rows: 25px 75px 75px;
+    grid-template-columns: 75px auto;
+    grid-template-areas: 
+        'header header '
+        'dc     x'
+        'ab     x';
+}
+
+.spells-info > .box {
+    margin-left: 5px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.spells-info-header {
+    grid-area: header;
+    width: 100%;
+    font-weight: bold;
+    background: var(--tint-background);
+    text-align: center;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.spells-dc {
+    grid-area: dc;
+}
+
+.spells-attack-bonus {
+    grid-area: ab;
+}
+
+.spells-dc,
+.spells-attack-bonus {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .character-creator {

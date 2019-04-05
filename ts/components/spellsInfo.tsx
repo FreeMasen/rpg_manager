@@ -31,6 +31,9 @@ export class SpellsInfo extends React.Component<ISpellsInfoProps, ISpellsInfoSta
         }
         return (
             <div className="spells-info box">
+                <span className="spells-info-header">
+                    Caster Info
+                </span>
                 <div className="spells-dc box">
                     <span>DC</span>
                     <span>{dc}</span>

@@ -38,6 +38,10 @@ export class Data {
     async getClassDetails(cls: ClassKind, level: number) {
         return this.db.getClassDetails(cls, level);
     }
+    
+    async getCasterInfoFor(cls: ClassKind, level: number) {
+        return this.db.getCasterInfoFor(cls, level);
+    }
 
     static getAllClasses(): ClassKind[] {
         return Object.getOwnPropertyNames(ClassKind).map(n => ClassKind[n]);
@@ -400,21 +404,22 @@ export class Database extends Dexie {
                 console.info('update complete');
             });
         });
-        // this.version(3).stores({
-        //     seeds: "++id",
-        //     characters: "++id,name",
-        //     spells: "++id,name,*classKinds",
-        //     classFeatures: "++id,classKind,level,optionId",
-        //     classFeatureOptions: "++id,featId",
-        //     classSpellSlots: "++id,classKind,level,classKind+level",
-        // }).upgrade(t => {
-        //     t.table('classSpellSlots').bulkAdd([
-        //         {
-        //             classKind: ClassKind.Cleric,
-        //             level: 0,
-        //         }
-        //     ])
-        // });
+        try {
+            this.version(3).stores({
+                seeds: "++id",
+                characters: "++id,name",
+                spells: "++id,name,*classKinds",
+                classFeatures: "++id,classKind,level,optionId",
+                classFeatureOptions: "++id,featId",
+                classSpellSlots: "++id,classKind,level",
+            }).upgrade(t => {
+                console.log('upgrading to v3');
+                let table = t.table('classSpellSlots');
+                import('./seeder').then(mod => mod.seedClassSpellSlots(t.table('classSpellSlots')))
+            });
+        } catch (e) {
+            console.error('error upgrading to version 3', e)
+        }
     }
 
     private async upgradeToTwo(t: Dexie.Transaction) {
@@ -451,13 +456,7 @@ export class Database extends Dexie {
     }
 
     public async seed() {
-        try {
-            let mod = await import('./seeder');
-            await mod.seed(this);
-        } catch (e) {
-            console.error('error seeding', e);
-            throw e;
-        }
+        return import('./seeder').then(mod => mod.seed(this))
     }
 
     async allCharacters(): Promise<Character[]> {
@@ -603,5 +602,9 @@ export class Database extends Dexie {
 
     async getFeaturesForOption(optId: number) {
         return await this.classFeatures.where('optionId').equals(optId).toArray()
-    } 
+    }
+
+    async getCasterInfoFor(classKind: ClassKind, level: number): Promise<IClassSpellSlots> {
+        return await this.classSpellSlots.where('classKind').equals(classKind).and(s => s.level === level).first();
+    }
 }
