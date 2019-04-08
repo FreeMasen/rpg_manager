@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { ListView, ListViewHeader, ListViewRow } from './common/ListView';
 import { Spell } from '../models/spells';
+import { CasterInfo } from '../models/casterInfo';
 
 interface ISpellsListProps {
     title: string;
     spells: Spell[];
+    casterInfo: CasterInfo;
+    saveKnownSpells: (spells: Spell[]) => Promise<void>;
 }
 
 interface ISpellsListState {
     spells: Spell[][];
     selectedSpell: number;
     selectedSpellLevel: number;
+    isEditing: boolean;
+    pendingSpells: Spell[];
 }
 
 export class SpellsList extends React.Component<ISpellsListProps, ISpellsListState> {
@@ -19,45 +24,108 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
         this.state = {
             selectedSpell: -1,
             selectedSpellLevel: -1,
-            spells: [],
+            spells: this.mapSpells(props.spells || []),
+            isEditing: false,
+            pendingSpells: props.casterInfo._knownSpells.map(s => s),
         };
     }
     componentWillReceiveProps(props: ISpellsListProps) {
-        if (this.state.spells.length === 0 && props.spells.length > 0) {
-            let spells = props.spells.reduce((acc, spell) => {
-                acc[spell.level].push(spell);
-                return acc;
-            }, [[],[],[],[],[],[],[],[],[],[]]);
+        if (this.state.spells.length === 0 && props.spells.length > 0) {            
+            let spells = this.mapSpells(props.spells);
             this.setState({spells});
         }
+    }
+
+    mapSpells(spells: Spell[]): Spell[][] {
+        return this.props.spells.reduce((acc, spell) => {
+            acc[spell.level].push(spell);
+            return acc;
+        }, [[],[],[],[],[],[],[],[],[],[]]);
     }
     render() {
         return (
             <div className="box spell-list">
+                <span className="spell-list-header">
+                    {this.props.title}
+                    <button
+                        className="edit-spells-button"
+                        onClick={() => {
+                            if (!this.state.isEditing) {
+                                return this.setState({isEditing: true});
+                            }
+                            this.props.saveKnownSpells(
+                                this.state.pendingSpells
+                                ).then(() => {
+                                    this.setState({isEditing: false, pendingSpells: this.props.casterInfo._knownSpells})
+                                })
+                    }}
+                    >{this.state.isEditing 
+                        ? 'Save'
+                        : 'Edit'
+                    }</button>
+                    {this.state.isEditing
+                    ? <button
+                        className="edit-spells-button"
+                        onClick={() => {
+                            this.setState({isEditing: false,pendingSpells: this.props.casterInfo._knownSpells.map(s => s)})
+                        }}
+                    >Cancel</button>
+                    : null}
+                </span>
                 {this.renderInner()}
             </div>
         );
     }
 
-    renderInner() {
-        if (this.state.selectedSpell === -1) {
+    renderInner() {        
+        if (this.state.selectedSpell < 0) {
+            let spells = (this.state.isEditing ? this.state.spells : this.props.casterInfo.knownSpells) || [];     
             return (
+                
                 <ListView>
-                    <ListViewHeader className="spell-list-header">
-                        {this.props.title}
-                    </ListViewHeader>
-                    {this.state.spells.map((list: Spell[], level: number) => {
+                    {spells.map((list: Spell[], level: number) => {          
+                        let available = false;
+                        if (this.state.isEditing) {
+                            if (level < 1) {
+                                available = this.state.pendingSpells.filter(s => s.level < 1).length < this.props.casterInfo.cantripCount;
+                            } else {
+                                let smCt = this.state.pendingSpells.filter(s => s.level > 0 && s.level <= level).length;
+                                available = smCt < this.props.casterInfo.spellCount && level <= this.props.casterInfo.highestLevel;
+                            }
+                        }        
                         return ([<ListViewHeader className="spell-list-level-header" key={`spell-entry-${level}`}>
                                     {`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}
                                 </ListViewHeader>].concat(
                                     list.map((s: Spell, i: number) => {
+                                        let selected = this.state.pendingSpells.find(p => s.name === p.name) != null;
+                                        let showButton = false;
+                                        if (this.state.isEditing) {
+                                            if (selected) {
+                                                showButton = true;
+                                            } else {
+                                                showButton = available;
+                                            }
+                                        }
                                         return (
                                             <ListViewRow
                                                 className="spell-list-entry"
                                                 key={`spell-list-entry-${i}`}
-                                                onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
                                             >
                                                 <span>{`${s.name}`}</span>
+                                                <button 
+                                                    onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
+                                                    className="edit-spells-button"
+                                                >
+                                                    <i style={{display: 'block'}}>error_outline</i>
+                                                </button>
+                                                {showButton
+                                                ? <button
+                                                    className="edit-spells-button"
+                                                    onClick={() => this.spellToggled(s, selected)}
+                                                >
+                                                    {selected ? 'Remove' : 'Add'}
+                                                </button>
+                                                : null}
                                             </ListViewRow>
                                         );
                                     })
@@ -133,6 +201,18 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                 />
             ];
         }
+    }
+
+    spellToggled(spell: Spell, remove: boolean) {
+        this.setState((prev, props) => {
+            let pendingSpells;
+            if (remove) {
+                pendingSpells = prev.pendingSpells.filter(s => s.name !== spell.name);
+            } else {
+                pendingSpells = prev.pendingSpells.concat([spell]);
+            }
+            return {pendingSpells}
+        });
     }
 }
 

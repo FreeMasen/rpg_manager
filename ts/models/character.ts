@@ -275,6 +275,11 @@ export class Character {
     }
 
     public static fromJson(json: any): Character {
+        if (!json) {
+            let err = new Error('Character json is undefined');
+            console.error(err.message, err.stack);
+            throw err;
+        }
         let ret = new Character(
             json.name,
             AbilityScores.fromJson(json.abilityScores),

@@ -177,7 +177,7 @@ button.alert {
 
 .character-sheet {
     display: grid;
-    grid-template-columns: 55px 165px 387px 400px;
+    grid-template-columns: 55px 165px 387px 400px 565px;
     grid-template-rows: 75px 120px 80px 270px 275px;
     grid-template-areas: 
     'name name   meta meta  daily'
@@ -675,11 +675,11 @@ input[type="number"] {
     margin-top: 5px;
     display: grid;
     grid-template-rows: 25px 75px 75px;
-    grid-template-columns: 75px auto;
+    grid-template-columns: 125px 125px 310px;
     grid-template-areas: 
-        'header header '
-        'dc     x'
-        'ab     x';
+        'header header   header'
+        'dc     cantrips slots'
+        'ab     spells   x';
 }
 
 .spells-info > .box {
@@ -706,12 +706,26 @@ input[type="number"] {
     grid-area: ab;
 }
 
+.cantrips-known {
+    grid-area: cantrips;
+}
+
+.spells-known {
+    grid-area: spells;
+}
+
 .spells-dc,
-.spells-attack-bonus {
+.spells-attack-bonus,
+.cantrips-known,
+.spells-known {
     display: flex;
     flex-flow: column;
     justify-content: center;
     align-items: center;
+}
+
+.edit-spells-button {
+    margin-left: 5px;
 }
 
 .character-creator {
@@ -903,26 +917,21 @@ input[type="number"] {
 }
 
 .daily-spells {
-    grid-area: daily;
+    grid-area: slots;
     margin-top: 5px;
     margin-left: 5px;
+    margin-right: 5px;
 }
 
 .daily-spells-box-header {
-    width: 100%;
-    background: var(--tint-header);
     text-align: center;
-    padding: 5px 0;
+    padding-top: 5px;
 }
 
 .daily-spells-table {
-    width: 100%;
     text-align: center;
     border-collapse: collapse;
-    border: 1px solid var(--tint-background);
-    table-layout: fixed;
-    margin: 0 5px;
-    border-radius: 5px;
+    margin: 0 auto;
 }
 
 .daily-spells-headers {
@@ -930,13 +939,14 @@ input[type="number"] {
 }
 
 .daily-spells-values {
-    border: 1px solid var(--tint-background);
+    border: none;
     
 }
 
 .daily-spells-table td,
 .daily-spells-table th {
-    border: 1px solid var(--tint-background);
+    border: none;
+    width: 35px;
 }
 
 .spell-list {
@@ -946,13 +956,16 @@ input[type="number"] {
 }
 
 .spell-list-header {
-    border-bottom: 1px solid var(--tint-background);
+    background: var(--tint-background);
 }
 
 .spell-list-header,
 .spell-list-level-header,
 .spell-list-entry {
     padding: 5px 5px 0 5px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
 }
 
 .spell-list-entry {

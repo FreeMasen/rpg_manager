@@ -17,10 +17,10 @@ import { Spell } from '../models/spells';
 import { ClassDetails } from '../models/classDetails';
 import { Modal } from './common/Modal';
 import { SpellsInfo } from './spellsInfo';
+import { CasterInfo } from '../models/casterInfo';
 
 interface ICharacterSheetProps {
     character: Character;
-    data?: Data; 
     adjustDamage: (newValue: number) => void;
     adjustTempHP: (newValue: number) => void;
     adjustExp: (newValue: number) => void;
@@ -33,28 +33,18 @@ interface ICharacterSheetProps {
     classFeatureOptionSelected: (name: string, idx: number) => void;
     adjustClassSkills: (newSkills: SkillKind[]) => void;
     adjustExpertise: (newSkills: SkillKind[]) => void;
+    saveKnownSpells: (spells: Spell[]) => Promise<void>;
     spellList: Spell[];
 }
 
 interface ICharacterSheetState {
-    casterInfo: IClassSpellSlots;
 }
 
 export class CharacterSheet extends React.Component<ICharacterSheetProps, ICharacterSheetState> {
     constructor(props: ICharacterSheetProps) {
         super(props);
         this.state = {
-            casterInfo: null,
         }
-    }
-
-    async componentDidMount() {
-        this.props.data.getCasterInfoFor(
-            this.props.character.characterClass.name, 
-            this.props.character.characterClass.level
-        ).then(casterInfo => {
-            this.setState({casterInfo});
-        })
     }
 
     render() {
@@ -132,17 +122,18 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 adjustMagics={newMagics => this.props.adjustMagics(newMagics)}
             />,
         ];
-        if (this.props.character.characterClass.isCaster && this.state.casterInfo) {
+        if (this.props.character.characterClass.isCaster) {
             children.push(
                 <SpellsInfo
                     key="spells-info"
                     abilityModifier={this.props.character.castorAbilityModifier()}
-                    cantripsKnown={this.state.casterInfo.cantrips}
-                    spellsKnown={this.state.casterInfo.spells}
+                    cantripsKnown={this.props.character.characterClass.casterInfo.cantripCount}
+                    spellsKnown={this.props.character.characterClass.casterInfo.spellCount}
                     casterLevel={this.props.character.characterClass.level}
                     classKind={this.props.character.characterClass.name}
                     profBonus={this.props.character.proficiencyBonus}
                     dcBase={8}
+                    dailyBreakdown={this.props.character.characterClass.casterInfo.spellSlots}
                 />
             );
             children.push(
@@ -150,6 +141,8 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                     key="spells-list"
                     title={`${this.props.character.characterClass.name} Spells`}
                     spells={this.props.spellList}
+                    casterInfo={this.props.character.characterClass.casterInfo}
+                    saveKnownSpells={async spells => await this.props.saveKnownSpells(spells)}
                 />
             );
         }

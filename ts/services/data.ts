@@ -1,11 +1,12 @@
 import { Character, Wealth } from "../models/character";
 import { RaceKind, SubRace, Elf, Dwarf, Gnome, Halfling, Dragon } from '../models/race';
-import { ClassKind } from '../models/class';
+import { ClassKind, Class } from '../models/class';
 import { Range } from '../models/range';
 import { Background } from "../models/background";
 import { Spell, SpellName, SpellSave } from "../models/spells";
 import Dexie from 'dexie';
 import { BarbarianDetails, BardDetails, ClericDetails, DruidDetails, FighterDetails, MonkDetails, PaladinDetails, RangerDetails, RogueDetails, SorcererDetails, WarlockDetails, WizardDetails } from "../models/classDetails";
+import { CasterInfo } from "../models/casterInfo";
 
 export class Data {
     private db = new Database();
@@ -22,13 +23,6 @@ export class Data {
 
     async saveCharacter(ch: Character): Promise<Character> {
         return this.db.saveCharacter(ch);
-    }
-
-    async saveCharacters(characters: Character[]): Promise<void> {
-        if (!this.db.ready) {
-            await this.db.init();
-        }
-        return await this.db.saveCharacters(characters);
     }
 
     async getSpellsForClass(cls: ClassKind): Promise<Spell[]> {
@@ -379,6 +373,32 @@ export class Database extends Dexie {
     constructor() {
         super("DnDCharacterManager");
         (window as any).db = this;
+        try {
+            this.version(3).stores({
+                seeds: "++id",
+                characters: "++id,name",
+                spells: "++id,name,*classKinds",
+                classFeatures: "++id,classKind,level,optionId",
+                classFeatureOptions: "++id,featId",
+                classSpellSlots: "++id,classKind,level",
+            }).upgrade(t => {                let table = t.table('classSpellSlots');
+                import('./seeder').then(mod => mod.seedClassSpellSlots(t.table('classSpellSlots')))
+            });
+        } catch (e) {
+            console.error('error upgrading to version 3', e)
+        }
+        this.version(2).stores({
+            seeds: "++id",
+            characters: "++id,name",
+            spells: "++id,name,*classKinds",
+            classFeatures: "++id,classKind,level,optionId",
+            classFeatureOptions: "++id,featId"
+        }).upgrade((t) => {
+            console.info('upgrading to v2');
+            this.upgradeToTwo(t).then(() => {
+                console.info('update complete');
+            });
+        });
         this.version(1).stores({
             seeds: "++id",
             characters: "++id,name",
@@ -392,34 +412,6 @@ export class Database extends Dexie {
             warlockSpells: "++id,name",
             wizardSpells: "++id,name",
         });
-        this.version(2).stores({
-            seeds: "++id",
-            characters: "++id,name",
-            spells: "++id,name,*classKinds",
-            classFeatures: "++id,classKind,level,optionId",
-            classFeatureOptions: "++id,featId"
-        }).upgrade((t) => {
-            console.info('upgrading to v2');
-            this.upgradeToTwo(t).then(() => {
-                console.info('update complete');
-            });
-        });
-        try {
-            this.version(3).stores({
-                seeds: "++id",
-                characters: "++id,name",
-                spells: "++id,name,*classKinds",
-                classFeatures: "++id,classKind,level,optionId",
-                classFeatureOptions: "++id,featId",
-                classSpellSlots: "++id,classKind,level",
-            }).upgrade(t => {
-                console.log('upgrading to v3');
-                let table = t.table('classSpellSlots');
-                import('./seeder').then(mod => mod.seedClassSpellSlots(t.table('classSpellSlots')))
-            });
-        } catch (e) {
-            console.error('error upgrading to version 3', e)
-        }
     }
 
     private async upgradeToTwo(t: Dexie.Transaction) {
@@ -461,15 +453,54 @@ export class Database extends Dexie {
 
     async allCharacters(): Promise<Character[]> {
         let arr = await this.characters.toArray();
-        return arr.map(Character.fromJson);
+        let ret = new Array(arr.length);
+        for (let i = 0; i < arr.length; i++) {            let dbCh = arr[i];
+            let ch = Character.fromJson(dbCh);
+            if (ch.characterClass.isCaster && !ch.characterClass.casterInfo) {
+                ch.characterClass.casterInfo = await this.casterInfoFor(
+                    ch, 
+                );
+            }
+            ret[i] = ch;
+        }
+        return ret;
     }
 
     async addCharacter(ch: Character): Promise<void> {
         try {
+            if (ch.characterClass.isCaster) {
+                ch.characterClass.casterInfo = await this.casterInfoFor(
+                    ch
+                );
+            }
             await this.characters.add(ch);
         } catch (e) {
             console.error('failed to add character', e, ch);
         }
+    }
+
+    async casterInfoFor(ch: Character): Promise<CasterInfo> {
+        let dbCasterInfo = await this.classSpellSlots.where(
+            'classKind'
+            ).equals(
+                ch.characterClass.name
+                ).and(
+                    s => s.level === ch.level
+                    ).first();
+        let spellsKnown = dbCasterInfo.spells || 0;
+        
+        if (ch.characterClass.name === ClassKind.Cleric
+            || ch.characterClass.name === ClassKind.Druid
+            || ch.characterClass.name === ClassKind.Paladin
+            || ch.characterClass.name === ClassKind.Wizard) {
+            spellsKnown = ch.characterClass.level + ch.castorAbilityModifier();
+        }
+        return new CasterInfo(
+            dbCasterInfo.slots,
+            dbCasterInfo.slots,
+            dbCasterInfo.cantrips,
+            dbCasterInfo.spells,
+        );
     }
 
     async saveCharacter(ch: Character): Promise<Character> {
@@ -482,21 +513,28 @@ export class Database extends Dexie {
                 }
                 ch.characterClass._level = ch.level;
                 ch.characterClass.classDetails.level = ch.level;
-            } 
+                if (ch.characterClass.isCaster) {
+                    let knownSpells = ch.characterClass.casterInfo._knownSpells.map(s => s);
+                    ch.characterClass.casterInfo = await this.casterInfoFor(ch);
+                    ch.characterClass.casterInfo.setRawSpells(knownSpells);
+                }
+            }
+            if (ch.characterClass.isCaster && !ch.characterClass.casterInfo) {
+                let dbCasterInfo = await this.getCasterInfoFor(ch.characterClass.name, ch.level);
+                ch.characterClass.casterInfo = new CasterInfo(
+                    dbCasterInfo.slots,
+                    dbCasterInfo.slots,
+                    dbCasterInfo.cantrips,
+                    dbCasterInfo.spells,
+                );
+            } else if (!ch.characterClass.isCaster && ch.characterClass.casterInfo) {
+                delete ch.characterClass.casterInfo;
+            }
             await this.characters.put(ch);
         } catch (e) {
             console.error(e);
         }
         return ch;
-    }
-
-    async saveCharacters(chs: Character[]): Promise<void> {
-        try {
-            await this.characters.bulkPut(chs);
-        } catch (e) {
-            console.error('Failed to save characters', e, chs,);
-            throw e;
-        }
     }
 
     async spellsForClass(cls: ClassKind): Promise<Spell[]> {

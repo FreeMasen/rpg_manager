@@ -17,6 +17,7 @@ import {
     ClericDomain,
 } from './classDetails';
 import { Data } from '../services/data';
+import { CasterInfo } from './casterInfo';
 
 export const DEFAULT_BONUS_ABILITY_SCORES: [AbilityKind, number][] =  [
     [AbilityKind.Strength, 0],
@@ -47,6 +48,7 @@ export class Class {
         public bonusAbilityScores: [AbilityKind, number][] = DEFAULT_BONUS_ABILITY_SCORES,
         public selectedSkills: SkillKind[] = [],
         public expertise: SkillKind[] = [],
+        public casterInfo?: CasterInfo,
     ) {
         switch (name) {
             case ClassKind.Barbarian:
@@ -530,6 +532,7 @@ export class Class {
             json.bonusAbilityScores,
             json.selectedSkills || [],
             json.expertise || [],
+            CasterInfo.fromJson(json.casterInfo),
         );
         ret.name = json.name;
         switch (json.name) {

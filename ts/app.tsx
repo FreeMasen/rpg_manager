@@ -84,7 +84,6 @@ export class App extends React.Component<{}, IAppState> {
                 let ch = this.state.characters[this.state.selectedCharacter];
                 return (<CharacterSheet 
                             character={ch} 
-                            data={this.data}
                             adjustDamage={newDmg => this.adjustSelectedCharacterDamage(newDmg)}
                             adjustTempHP={newHp => this.adjustSelectedCharacterTempHP(newHp)}
                             adjustExp={newExp => this.adjustCharacterExperience(newExp)}
@@ -97,6 +96,7 @@ export class App extends React.Component<{}, IAppState> {
                             adjustClassSkills={async newSkills => await this.adjustClassSkills(newSkills)}
                             adjustExpertise={async skills => await this.adjustExpertise(skills)}
                             classFeatureOptionSelected={async (name, idx) => await this.updateCharacterFeature(name, idx)}
+                            saveKnownSpells={async spells => await this.updateSpells(spells)}
                             spellList={this.state.spellList}
                         />);
             case View.CharacterCreator:
@@ -116,10 +116,9 @@ export class App extends React.Component<{}, IAppState> {
                 this.setState({currentView: newView, selectedCharacter: -1, spellList: []});
             break;
             case View.CharacterSheet:
-                this.setState({currentView: newView, selectedCharacter: meta});
-                this.data.getSpellsForClass(this.state.characters[meta].characterClass.name).then(spells => {
-                    this.setState({currentView: newView, selectedCharacter: meta, spellList: spells});
-                });
+            this.data.getSpellsForClass(this.state.characters[meta].characterClass.name).then(spells => {
+                this.setState({currentView: newView, selectedCharacter: meta, spellList: spells});
+            });
             break;
             case View.CharacterCreator:
                 this.setState({currentView: newView, selectedCharacter: -1, spellList: []});
@@ -319,6 +318,20 @@ export class App extends React.Component<{}, IAppState> {
                     return ch;
                 }
                 return c
+            })}
+        });
+    }
+
+    async updateSpells(spells: Spell[]) {
+        let ch = this.state.characters[this.state.selectedCharacter];
+        ch.characterClass.casterInfo.setRawSpells(spells);
+        ch = await this.data.saveCharacter(ch);
+        this.setState((prev, props) => {
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c;
             })}
         });
     }

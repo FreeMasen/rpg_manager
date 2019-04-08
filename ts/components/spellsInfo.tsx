@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ClassKind } from '../models/class';
-
+import { SpellSlots } from './spellSlots';
 interface ISpellsInfoProps {
     classKind: ClassKind;
     profBonus: number;
@@ -9,6 +9,7 @@ interface ISpellsInfoProps {
     spellsKnown?: number;
     cantripsKnown?: number;
     casterLevel: number;
+    dailyBreakdown: number[];
 }
 
 interface ISpellsInfoState {
@@ -54,6 +55,9 @@ export class SpellsInfo extends React.Component<ISpellsInfoProps, ISpellsInfoSta
                     <span>{this.props.cantripsKnown}</span>
                 </div>
                 : null}
+                <SpellSlots
+                     dailyBreakdown={this.props.dailyBreakdown}
+                />
             </div>
         );
     }
