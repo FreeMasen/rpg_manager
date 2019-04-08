@@ -90,11 +90,11 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                                 available = this.state.pendingSpells.filter(s => s.level < 1).length < this.props.casterInfo.cantripCount;
                             } else {
                                 let smCt = this.state.pendingSpells.filter(s => s.level > 0 && s.level <= level).length;
-                                available = smCt < this.props.casterInfo.spellCount && level <= this.props.casterInfo.highestLevel;
+                                available = smCt < this.props.casterInfo.spellCount && level <= this.props.casterInfo.spellSlots.length;
                             }
                         }        
                         return ([<ListViewHeader className="spell-list-level-header" key={`spell-entry-${level}`}>
-                                    {`${level === 0 ? 'Cantrip' : `Level ${level}`} Spells`}
+                                    {`${level === 0 ? 'Cantrips' : `Level ${level}`} Spells`}
                                 </ListViewHeader>].concat(
                                     list.map((s: Spell, i: number) => {
                                         let selected = this.state.pendingSpells.find(p => s.name === p.name) != null;

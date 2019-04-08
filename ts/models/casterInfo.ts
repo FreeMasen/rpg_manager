@@ -65,19 +65,6 @@ export class CasterInfo {
         return this.knownSet.has(name);
     }
 
-    public get highestLevel(): number {
-        if (this.spellSlots[this._highest] && this.spellSlots[this._highest + 1] == 0) {
-            return this._highest;
-        }
-        while (this._highest < 10 && this.spellSlots[this._highest] > 0) {
-            this._highest++;
-            if (this.spellSlots[this._highest + 1] > 0) {
-                break;
-            }
-        }
-        return this._highest
-    }
-
     public static fromJson(json: any): CasterInfo {
         if (!json) return;
         return new CasterInfo(json.spellSlots, json.currentSlots, json.cantripCount, json.spellCount, json._knownSpells || []);
