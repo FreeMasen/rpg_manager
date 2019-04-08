@@ -89,8 +89,8 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                             if (level < 1) {
                                 available = this.state.pendingSpells.filter(s => s.level < 1).length < this.props.casterInfo.cantripCount;
                             } else {
-                                let smCt = this.state.pendingSpells.filter(s => s.level > 0 && s.level <= level).length;
-                                available = smCt < this.props.casterInfo.spellCount && level <= this.props.casterInfo.spellSlots.length;
+                                console.log(level, this.props.casterInfo.spellSlots.length, this.state.pendingSpells.filter(s => s.level > 0), this.props.casterInfo.spellCount)
+                                available = level <= this.props.casterInfo.spellSlots.length && this.state.pendingSpells.filter(s => s.level > 0).length < this.props.casterInfo.spellCount;
                             }
                         }        
                         return ([<ListViewHeader className="spell-list-level-header" key={`spell-entry-${level}`}>
