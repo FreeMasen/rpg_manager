@@ -316,7 +316,7 @@ button.alert {
     margin-top: 5px;
 }
 
-.ability-scores-column.alert {
+.box.alert {
     border: 1px solid var(--alert);
 }
 
@@ -728,6 +728,10 @@ input[type="number"] {
     margin-left: 5px;
 }
 
+.edit-spells-button.info-button {
+    padding: 3px;
+}
+
 .character-creator {
     display: flex;
     flex-flow: column;
@@ -841,9 +845,6 @@ input[type="number"] {
 
 .alignment-inputs > * + * {
     margin-left: 5px;
-}
-
-.class-info {
 }
 
 .class-selector {
@@ -970,6 +971,18 @@ input[type="number"] {
 
 .spell-list-entry {
     cursor: default;
+    display: grid;
+    grid-template-rows: 20px;
+    grid-template-columns: 450px 70px 25px;
+    grid-template-areas: 'name action info';
+}
+
+.spell-list-entry > span {
+    grid-area: name;
+}
+
+.spell-list-entry > .info-button {
+    grid-area: info;
 }
 
 .unit-value {

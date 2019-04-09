@@ -32,10 +32,6 @@ export class Data {
     async getClassDetails(cls: ClassKind, level: number) {
         return this.db.getClassDetails(cls, level);
     }
-    
-    async getCasterInfoFor(cls: ClassKind, level: number) {
-        return this.db.getCasterInfoFor(cls, level);
-    }
 
     static getAllClasses(): ClassKind[] {
         return Object.getOwnPropertyNames(ClassKind).map(n => ClassKind[n]);
@@ -354,6 +350,7 @@ export interface IClassSpellSlots {
     slots: number[];
     cantrips?: number;
     spells?: number;
+    _knownSpells: ISpell[];
 }
 
 function formatClassKind(s: string) {
@@ -454,12 +451,11 @@ export class Database extends Dexie {
     async allCharacters(): Promise<Character[]> {
         let arr = await this.characters.toArray();
         let ret = new Array(arr.length);
-        for (let i = 0; i < arr.length; i++) {            let dbCh = arr[i];
+        for (let i = 0; i < arr.length; i++) {            
+            let dbCh = arr[i];
             let ch = Character.fromJson(dbCh);
-            if (ch.characterClass.isCaster && !ch.characterClass.casterInfo) {
-                ch.characterClass.casterInfo = await this.casterInfoFor(
-                    ch, 
-                );
+            if (ch.characterClass.isCaster) {
+                ch.characterClass.casterInfo = await this.casterInfoFor(ch);
             }
             ret[i] = ch;
         }
@@ -499,7 +495,8 @@ export class Database extends Dexie {
             dbCasterInfo.slots,
             dbCasterInfo.slots,
             dbCasterInfo.cantrips,
-            dbCasterInfo.spells,
+            spellsKnown,
+            (ch.characterClass.casterInfo._knownSpells || dbCasterInfo._knownSpells || []).map(Spell.fromJson),
         );
     }
 
@@ -520,13 +517,7 @@ export class Database extends Dexie {
                 }
             }
             if (ch.characterClass.isCaster && !ch.characterClass.casterInfo) {
-                let dbCasterInfo = await this.getCasterInfoFor(ch.characterClass.name, ch.level);
-                ch.characterClass.casterInfo = new CasterInfo(
-                    dbCasterInfo.slots,
-                    dbCasterInfo.slots,
-                    dbCasterInfo.cantrips,
-                    dbCasterInfo.spells,
-                );
+                ch.characterClass.casterInfo = await this.casterInfoFor(ch);
             } else if (!ch.characterClass.isCaster && ch.characterClass.casterInfo) {
                 delete ch.characterClass.casterInfo;
             }
@@ -543,15 +534,6 @@ export class Database extends Dexie {
             return dbSpells.map(s => new Spell(s.name, s.level, s.verbalRequirement, s.somaticRequirement, s.materialRequirement, s.castingTime, s.desc, s.duration, s.range, s.save))
         } catch (e) {
             console.error('failed to get spells for ', cls, e);
-            throw e;
-        }
-    }
-
-    async spellBreakdownFor(cls: ClassKind, level: number): Promise<number[]> {
-        try {
-            return Promise.reject("unimplemented");
-        } catch (e) {
-            console.error('failed to get spellBreakdown', cls, level);
             throw e;
         }
     }

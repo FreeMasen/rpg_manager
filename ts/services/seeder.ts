@@ -444,7 +444,7 @@ export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, numbe
         {kind: ClassKind.Wizard, items: wizard},
     ];
     for (let set of classes) {        for (var i = 0; i < set.items.length; i++) {            let level = set.items[i];
-            t.add(Object.assign(level, {classKind: set.kind, level: i+1}))
+            t.add(Object.assign(level, {classKind: set.kind, level: i+1, _knownSpells: []}))
         }
     }
 }

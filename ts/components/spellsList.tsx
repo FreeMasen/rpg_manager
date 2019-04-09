@@ -43,8 +43,13 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
         }, [[],[],[],[],[],[],[],[],[],[]]);
     }
     render() {
+        let alerting = this.props.casterInfo._knownSpells.length < this.props.casterInfo.spellCount 
+                                                                    + this.props.casterInfo.cantripCount;   
         return (
-            <div className="box spell-list">
+            <div 
+                className={`box spell-list ${alerting ? 'alert' : ''}`}
+                title={alerting ? 'New Pending Spells' : null}
+            >
                 <span className="spell-list-header">
                     {this.props.title}
                     <button
@@ -79,7 +84,7 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
 
     renderInner() {        
         if (this.state.selectedSpell < 0) {
-            let spells = (this.state.isEditing ? this.state.spells : this.props.casterInfo.knownSpells) || [];     
+            let spells = (this.state.isEditing ? this.state.spells : this.props.casterInfo.knownSpells) || [];  
             return (
                 
                 <ListView>
@@ -89,7 +94,6 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                             if (level < 1) {
                                 available = this.state.pendingSpells.filter(s => s.level < 1).length < this.props.casterInfo.cantripCount;
                             } else {
-                                console.log(level, this.props.casterInfo.spellSlots.length, this.state.pendingSpells.filter(s => s.level > 0), this.props.casterInfo.spellCount)
                                 available = level <= this.props.casterInfo.spellSlots.length && this.state.pendingSpells.filter(s => s.level > 0).length < this.props.casterInfo.spellCount;
                             }
                         }        
@@ -112,12 +116,6 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                                                 key={`spell-list-entry-${i}`}
                                             >
                                                 <span>{`${s.name}`}</span>
-                                                <button 
-                                                    onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
-                                                    className="edit-spells-button"
-                                                >
-                                                    <i style={{display: 'block'}}>error_outline</i>
-                                                </button>
                                                 {showButton
                                                 ? <button
                                                     className="edit-spells-button"
@@ -126,6 +124,12 @@ export class SpellsList extends React.Component<ISpellsListProps, ISpellsListSta
                                                     {selected ? 'Remove' : 'Add'}
                                                 </button>
                                                 : null}
+                                                <button 
+                                                    onClick={() => this.setState({selectedSpell: i, selectedSpellLevel: level})}
+                                                    className="edit-spells-button info-button"
+                                                >
+                                                    <i style={{display: 'block'}}>error_outline</i>
+                                                </button>
                                             </ListViewRow>
                                         );
                                     })

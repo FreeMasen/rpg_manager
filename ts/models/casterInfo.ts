@@ -1,10 +1,9 @@
 import { Spell, SpellName } from "./spells";
 
-
-
 export class CasterInfo {
     private knownSet: Set<SpellName>
     private _highest = 0
+    public id?: number;
     constructor(
         public spellSlots: number[] = [],
         public currentSlots: number[] = [],
@@ -67,6 +66,12 @@ export class CasterInfo {
 
     public static fromJson(json: any): CasterInfo {
         if (!json) return;
-        return new CasterInfo(json.spellSlots, json.currentSlots, json.cantripCount, json.spellCount, json._knownSpells || []);
+        return new CasterInfo(
+            json.spellSlots, 
+            json.currentSlots, 
+            json.cantripCount, 
+            json.spellCount, 
+            (json._knownSpells || []).map(Spell.fromJson),
+        );
     }
 }
