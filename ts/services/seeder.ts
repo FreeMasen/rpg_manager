@@ -9,20 +9,36 @@ import { RaceKind, Race } from '../models/race';
 import { ClassKind, Class, DEFAULT_BONUS_ABILITY_SCORES } from '../models/class';
 import { Background } from '../models/background';
 import Dexie from 'dexie';
-export async function seed(db: Database) { 
+
+export async function seed(db: Database, reseed: boolean) {
+    
     let spellBooks = await fetch(window.location.href + 'spellBook.json')
         .then(res => res.json())
     console.info('seeding spells');
+    if (reseed && (await db.spells.count()) > 0) {
+        await db.spells.clear();
+    }
     await db.spells.bulkPut(spellBooks);
     let classInfo = await fetch(window.location.href + 'classes.json')
         .then(res => res.json());
     console.info('seeding class info');
+    if (reseed && (await Promise.all([db.classFeatures.count(), db.classFeatureOptions.count()]).then(cts => cts.reduce((acc, v) => acc + v, 0))) > 0) {
+        await db.classFeatureOptions.clear();
+        await db.classFeatures.clear();
+    }
     await seedClassInfo(db, classInfo);
     console.info('seeding characters');
+    if (reseed && (await db.characters.count()) > 0) {
+        db.characters.clear();
+    }
     let chs = await seedCharacters(db);
     await db.characters.bulkPut(chs);
-    console.info('seeding seeds');
+    console.info('seeding casterInfo');
+    if (reseed && (await db.classSpellSlots.count()) > 0) {
+        await db.classSpellSlots.clear();
+    }
     await seedClassSpellSlots(db.classSpellSlots)
+    console.info('seeding seeds');
     await db.seeds.put({when: new Date().toISOString(), version: db.verno});
 }
 async function seedClassInfo(db: Database, info: any) {
@@ -210,6 +226,7 @@ async function seedCharacters(db: Database): Promise<Character[]> {
     return [d];
 } 
 export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, number>) {
+    if (!t) return;
     let bard = [
             {slots: [2],                         cantrips: 2, spells: 4,},
             {slots: [3],                         cantrips: 2, spells: 5,},
@@ -443,7 +460,9 @@ export async function seedClassSpellSlots(t: Dexie.Table<IClassSpellSlots, numbe
         {kind: ClassKind.Warlock, items: warlock},
         {kind: ClassKind.Wizard, items: wizard},
     ];
-    for (let set of classes) {        for (var i = 0; i < set.items.length; i++) {            let level = set.items[i];
+    for (let set of classes) {        
+        for (var i = 0; i < set.items.length; i++) {            
+        let level = set.items[i];
             t.add(Object.assign(level, {classKind: set.kind, level: i+1, _knownSpells: []}))
         }
     }

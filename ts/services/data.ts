@@ -378,8 +378,6 @@ export class Database extends Dexie {
                 classFeatures: "++id,classKind,level,optionId",
                 classFeatureOptions: "++id,featId",
                 classSpellSlots: "++id,classKind,level",
-            }).upgrade(t => {                let table = t.table('classSpellSlots');
-                import('./seeder').then(mod => mod.seedClassSpellSlots(t.table('classSpellSlots')))
             });
         } catch (e) {
             console.error('error upgrading to version 3', e)
@@ -438,14 +436,18 @@ export class Database extends Dexie {
         if (!lastSeed) {
             console.info('no seeds... seeding');
             await this.seed();
+        } else if (lastSeed.version < this.verno) {
+            console.info('outdated database reseeding' );
+            await this.seed(true);
+            
         } else {
             console.info('last seeded version', lastSeed.version || 1,'at', lastSeed.when);
         }
         this.ready = true;
     }
 
-    public async seed() {
-        return import('./seeder').then(mod => mod.seed(this))
+    public async seed(reseed: boolean = false) {
+        return import('./seeder').then(mod => mod.seed(this, reseed))
     }
 
     async allCharacters(): Promise<Character[]> {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Character, Height, NormalLanguage, 
         Language, Alignment, AlignmentMinor, AlignmentMajor 
 } from '../models/character';
-import { Skills, SkillKind, Skill } from '../models/skills';
+import { SkillKind } from '../models/skills';
 import { Class, ClassKind } from '../models/class';
 import { ClassDetails} from '../models/classDetails';
 import { Race, RaceKind, SubRace } from '../models/race';
