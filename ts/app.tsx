@@ -202,7 +202,8 @@ export class App extends React.Component<{}, IAppState> {
             ch.characterClass.bonusAbilityScores = ch.characterClass.bonusAbilityScores.map((s, i) => {
                 let newValue = scores.find(a => a.kind === s[0]);
                 if (newValue) {
-                    return [newValue.kind, newValue.value] as [AbilityKind, number];
+                    let value = s[1] + newValue.value;
+                    return [newValue.kind, value] as [AbilityKind, number];
                 }
                 return s;
             })
