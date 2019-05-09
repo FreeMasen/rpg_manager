@@ -724,11 +724,14 @@
             {
                 "level": 5,
                 "name": "Destroy Undead",
-                "shortDesc": "When an undead of CR ${this.destroyUndeadCR()} or lower fails its saving throw against your Turn Undead feature, the creature is instantly destroyed.",
+                "shortDesc": "When an undead of CR {{levelValue}} or lower fails its saving throw against your Turn Undead feature, the creature is instantly destroyed.",
                 "longDesc": "",
-                "levels": {
-
-                }
+                "levelValues": [
+                    0,0,0,0,
+                    0.5,0.5,0.5,
+                    1,1,1,2,2,2,
+                    3,3,3,4,4,4,4
+                ]
             },
             {
                 "level": 10,
@@ -924,8 +927,12 @@
             {
                 "level": 2,
                 "name": "Action Surge",
-                "shortDesc": "You can push yourself beyond your normal limits for a moment. ${this.actionSurges}",
-                "longDesc": "On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n    Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+                "shortDesc": "You can push yourself beyond your normal limits for a moment. ({{levelValue}})",
+                "longDesc": "On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n    Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+                "levelValues": [
+                    0,1,1,1,1,1,1,1,1,1,
+                    1,1,1,1,1,2,2,2,2,2
+                ]
             },
             {
                 "level": 3,
@@ -942,7 +949,7 @@
                             {
                                 "level": 3,
                                 "name": "Improved Critical",
-                                "shortDesc": "Your weapon attacks score a critical hit on a roll of ${this.critStart}-20.",
+                                "shortDesc": "Your weapon attacks score a critical hit on a roll of 19-20.",
                                 "longDesc": ""
                             },
                             {
@@ -974,7 +981,7 @@
                             {
                                 "name": "Combat Superiority",
                                 "shortDesc": "You learn maneuvers that are fueled by special dice called superiority dice.",
-                                "longDesc": "You learn ${this.maneuversCount} maneuvers of your choice. Many maneuvers enhance an attack in some way. You can use only one maneuver per attack. Each time you learn new maneuvers, you can also replace one maneuver you know with a different one.\n\nSuperiority Dice\nYou have ${this.superiorityDie} superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest.\n\nSaving Throws\nSome of your maneuvers require your target to make a saving throw to resist the maneuver's effects. The saving throw DC is calculated as follows: Maneuver save DC = 8 + proficiency bonus + your Strength or Dexterity modifier (your choice)",
+                                "longDesc": "You learn {{levelValue}} maneuvers of your choice. Many maneuvers enhance an attack in some way. You can use only one maneuver per attack. Each time you learn new maneuvers, you can also replace one maneuver you know with a different one.\n\nSuperiority Dice\nYou have 4 (5 at level 7, 6 at level 15) superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest.\n\nSaving Throws\nSome of your maneuvers require your target to make a saving throw to resist the maneuver's effects. The saving throw DC is calculated as follows: Maneuver save DC = 8 + proficiency bonus + your Strength or Dexterity modifier (your choice)",
                                 "options": [
                                     {
                                         "level": 3,
@@ -1072,6 +1079,9 @@
                                         "shortDesc": "When you hit a creature with a weapon attack, you can expend one superiority die to attempt to knock the target down.",
                                         "longDesc": "You add the superiority die to the attack's damage roll, and if the target is Large or smaller, it must make a Strength saving throw. On a failed save, you knock the target prone."
                                     }
+                                ],
+                                "levelValues": [
+                                    0,0,3,3,3,3,5,5,5,7,7,7,7,7,9,9,9,9,9,9
                                 ]
                             },
                             {
@@ -1116,10 +1126,12 @@
                                 "level": 3,
                                 "name": "Spellcasting",
                                 "shortDesc": "You augment your martial prowess with the ability to cast spells.",
-                                "longDesc": "Cantrips\nYou learn ${this.cantripCount} cantrips of your choice from the wizard spell list. You learn an additional wizard cantrip of your choice at 10th level.\n\nSpell Slots\nThe Eldritch Knight Spellcasting table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\nFor example, if you know the 1st-level spell shield and have a 1st-level and a 2nd-level spell slot available, you can cast shield using either slot.\n\nSpells Known of 1st-Level and Higher\nYou know three 1st-level wizard spells of your choice, two of which you must choose from the abjuration and evocation spells on the wizard spell list.\n    The Spells Known column of the Eldritch Knight Spellcasting table shows when you learn more wizard spells of 1st level or higher. Each of these spells must be an abjuration or evocation spell of your choice, and must be of a level for which you have spell slots. For instance, when you reach 7th level in this class, you can learn one new spell of 1st or 2nd level.\n    The spells you learn at 8th, 14th, and 20th level can come from any school of magic.\n    Whenever you gain a level in this class, you can replace one of the wizard spells you know with another spell of your choice from the wizard spell list. The new spell must be of a level for which you have spell slots, and it must be an abjuration or evocation spell, unless you're replacing the spell you gained at 8th, 14th, or 20th level.\n\nSpellcasting Ability\nIntelligence is your spellcasting ability for your wizard spells, since you learn your spells through study and memorization. You use your Intelligence whenever a spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for a wizard spell you cast and when making an attack roll with one.\n    Spell save DC = 8 + your proficiency bonus + your Intelligence modifier\n    Spell attack modifier = your proficiency bonus + your Intelligence modifier",
-                                "levels": {
-
-                                }
+                                "longDesc": "Cantrips\nYou learn {{levelValue}} cantrips of your choice from the wizard spell list. You learn an additional wizard cantrip of your choice at 10th level.\n\nSpell Slots\nThe Eldritch Knight Spellcasting table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\nFor example, if you know the 1st-level spell shield and have a 1st-level and a 2nd-level spell slot available, you can cast shield using either slot.\n\nSpells Known of 1st-Level and Higher\nYou know three 1st-level wizard spells of your choice, two of which you must choose from the abjuration and evocation spells on the wizard spell list.\n    The Spells Known column of the Eldritch Knight Spellcasting table shows when you learn more wizard spells of 1st level or higher. Each of these spells must be an abjuration or evocation spell of your choice, and must be of a level for which you have spell slots. For instance, when you reach 7th level in this class, you can learn one new spell of 1st or 2nd level.\n    The spells you learn at 8th, 14th, and 20th level can come from any school of magic.\n    Whenever you gain a level in this class, you can replace one of the wizard spells you know with another spell of your choice from the wizard spell list. The new spell must be of a level for which you have spell slots, and it must be an abjuration or evocation spell, unless you're replacing the spell you gained at 8th, 14th, or 20th level.\n\nSpellcasting Ability\nIntelligence is your spellcasting ability for your wizard spells, since you learn your spells through study and memorization. You use your Intelligence whenever a spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for a wizard spell you cast and when making an attack roll with one.\n    Spell save DC = 8 + your proficiency bonus + your Intelligence modifier\n    Spell attack modifier = your proficiency bonus + your Intelligence modifier",
+                                "levelValues": [
+                                    0,0,2,2,2,2,2,2,2,
+                                    3,3,3,3,3,3,3,3,3,3,
+                                    3,3,3
+                                ]
                             },
                             {
                                 "level": 3,
@@ -1164,14 +1176,18 @@
             {
                 "level": 5,
                 "name": "Extra Attack",
-                "shortDesc": "You can attack ${this.attacks} times, instead of once, whenever you take the Attack action on your turn.",
+                "shortDesc": "You can attack 2 times, instead of once, whenever you take the Attack action on your turn.",
                 "longDesc": ""
             },
             {
                 "level": 9,
                 "name": "Indomitable",
-                "shortDesc": "You can reroll a saving throw that you fail ${this.indomitableCount} times between long rests",
-                "longDesc": "If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n    You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+                "shortDesc": "You can reroll a saving throw that you fail {{levelValue}} times between long rests",
+                "longDesc": "If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n    You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.",
+                "levelValues": [
+                    0,0,0,0,0,0,0,0,1,
+                    1,1,1,2,2,2,2,3,3,3,3
+                ]
             }
         ]
     },
@@ -1186,14 +1202,25 @@
             {
                 "level": 1,
                 "name": "Martial Arts",
-                "shortDesc": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons.",
-                "longDesc": "Shortswords and any simple melee weapons that don't have the two-handed or heavy property.\n    You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield.\n\n• You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n\n• You can roll a ${this.martialArtsDie} in place of the normal damage of your unarmed strike or monk weapon.\n\n• When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n\n    Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama)."
+                "shortDesc": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons. (1d{{levelValue}})",
+                "longDesc": "Shortswords and any simple melee weapons that don't have the two-handed or heavy property.\n    You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield.\n\n• You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n\n• You can roll a {{levelValue}} in place of the normal damage of your unarmed strike or monk weapon.\n\n• When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n\n    Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama).",
+                "levelValues": [
+                    4,4,4,4,
+                    6,6,6,6,6,6,
+                    8,8,8,8,8,8,
+                    10,10,10,10
+                ]
             },
             {
                 "level": 2,
                 "name": "Ki",
-                "shortDesc": "Your training allows you to harness the mystic energy of ki. (Ki Points: ${this.kiPoints})",
-                "longDesc": "Your access to this energy is represented by a number of ki points. You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.\n    When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.\n    Some of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows: Ki save DC = 8 + your proficiency bonus + your Wisdom modifier"
+                "shortDesc": "Your training allows you to harness the mystic energy of ki. (Ki Points: {{levelValue}})",
+                "longDesc": "Your access to this energy is represented by a number of ki points. You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.\n    When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.\n    Some of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows: Ki save DC = 8 + your proficiency bonus + your Wisdom modifier",
+                "levelValues": [
+                    0,2,3,4,5,6,7,8,9,10,
+                    11,12,13,14,15,16,17,18,
+                    19,20
+                ]
             },
             {
                 "level": 2,
@@ -1216,8 +1243,15 @@
             {
                 "level": 2,
                 "name": "Unarmored Movement",
-                "shortDesc": "Your speed increases by ${this.movementBonus} feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table.\n    At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
-                "longDesc": ""
+                "shortDesc": "Your speed increases by {{levelValue}} feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table.\n    At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+                "longDesc": "",
+                "levelValues": [
+                    0, 10, 10, 10 ,10,
+                    15, 15, 15, 15, 
+                    20, 20, 20, 20,
+                    25, 25, 25, 25,
+                    30, 30, 30
+                ]
             },
             {
                 "level": 3,
@@ -1399,7 +1433,7 @@
             {
                 "level": 5,
                 "name": "Extra Attack",
-                "shortDesc": "You can attack ${this.attacks} times, instead of once, whenever you take the Attack action on your turn.",
+                "shortDesc": "You can attack 2 times, instead of once, whenever you take the Attack action on your turn.",
                 "longDesc": ""
             },
             {
@@ -1872,7 +1906,7 @@
             {
                 "level": 5,
                 "name": "Extra Attack",
-                "shortDesc": "You can attack ${this.bonusAttacks} times, instead of once, whenever you take the Attack action on your turn.",
+                "shortDesc": "You can attack 2 times, instead of once, whenever you take the Attack action on your turn.",
                 "longDesc": ""
             },
             {
@@ -1933,7 +1967,7 @@
             {
                 "level": 1,
                 "name": "Natural Explorer",
-                "shortDesc": "You are particularly familiar with ${this.favoredTerrainCount} type of natural environment and are adept at traveling and surviving in such regions.",
+                "shortDesc": "You are particularly familiar with {{levelValue}} type of natural environment and are adept at traveling and surviving in such regions.",
                 "longDesc": "When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n    While traveling for an hour or more in your favored terrain, you gain the following benefits:\n\n• Difficult terrain doesn't slow your group's travel.\n• Your group can't become lost except by magical means.\n• Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n• If you are traveling alone, you can move stealthily at a normal pace.\n• When you forage, you find twice as much food as you normally would.\n• While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\n\n    You choose additional favored terrain types at 6th and 10th level.",
                 "options": [
                     "Arctic", 
@@ -1944,7 +1978,13 @@
                     "Mountain", 
                     "Swamp", 
                     "Underdark"
-                ]
+                ],
+                "levelValues": [
+                    1,1,1,1,1,
+                    2,2,2,2,2,
+                    3,3,3,3,3,
+                    3,3,3,3,3
+                ] 
             },
             {
                 "level": 2,
@@ -2127,7 +2167,7 @@
             {
                 "level": 5,
                 "name": "Extra Attack",
-                "shortDesc": "You can attack ${this.attacks}, instead of once, whenever you take the Attack action on your turn.",
+                "shortDesc": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
                 "longDesc": ""
             },
             {
@@ -2173,8 +2213,13 @@
             {
                 "level": 1,
                 "name": "Sneak Attack",
-                "shortDesc": "You know how to strike subtly and exploit a foe's distraction.",
-                "longDesc": "Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\n    You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\n    The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table."
+                "shortDesc": "You know how to strike subtly and exploit a foe's distraction. ({{levelValue}}d6)",
+                "longDesc": "Once per turn, you can deal an extra {{levelValue}}d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\n    You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\n    The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table.",
+                "levelValues": [
+                    1, 1, 2, 2, 3, 3, 3,
+                    3, 4, 4, 4, 4, 5, 5,
+                    5, 5, 6, 6, 6, 6
+                ]
             },
             {
                 "level": 1,
@@ -2487,8 +2532,12 @@
             {
                 "level": 2,
                 "name": "Sorcery Points",
-                "shortDesc": "You have ${this.sorceryPoints} sorcery points",
-                "longDesc": "You regain all spent sorcery points when you finish a long rest."
+                "shortDesc": "You have {{levelValue}} sorcery points",
+                "longDesc": "You regain all spent sorcery points when you finish a long rest.",
+                "levelValues": [
+                    0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                    11,12,13,14,15,16,17,18,19,20
+                ]
             },
             {
                 "level": 2,
@@ -2500,7 +2549,7 @@
                 "level": 3,
                 "name": "Metamagic",
                 "shortDesc": "You gain the ability to twist your spells to suit your needs.",
-                "longDesc": "You gain ${this.metaMagicCount} of the following Metamagic options of your choice.\nYou can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
+                "longDesc": "You gain {{levelValue}} of the following Metamagic options of your choice.\nYou can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
                 "options": [
                     {
                         "name": "Careful Spell",
@@ -2542,6 +2591,11 @@
                         "shortDesc": "When you cast a spell that doesn't have a range of self and is incapable of targeting more than one creature at the spell's current level, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip).",
                         "longDesc": ""
                     }
+                ],
+                "levelValues": [
+                    0,0,1,1,1,1,1,1,1,
+                    2,2,2,2,2,2,2,2,3,
+                    3,3
                 ]
             },
             {
@@ -2665,7 +2719,10 @@
                 "level": 2,
                 "name": "Eldritch Invocations",
                 "shortDesc": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.",
-                "longDesc": "You gain ${this.eldrichInvocationCount} eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice.\n    Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level. A level prerequisite in an invocation refers to warlock level, not character level."
+                "longDesc": "You know {{levelValue}} eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice.\n    Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level. A level prerequisite in an invocation refers to warlock level, not character level.",
+                "levelValues": [
+                    0,2,2,2,3,3,4,4,5,5,5,6,6,6,7,7,7,8,8,8
+                ]
             },
             {
                 "level": 3,
@@ -2694,7 +2751,19 @@
                 "level": 11,
                 "name": "Mystic Arcanum",
                 "shortDesc": "Your patron bestows upon you a magical secret called an arcanum.",
-                "longDesc": "Choose one ${mysticArcanumSpells.map(s => `${s}th`).join(' & ')} level spell from the warlock spell list as this arcanum.You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n    At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th-level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic A rcanum when you finish a long rest."
+                "longDesc": "Choose one {{levelValue}} level spell from the warlock spell list as this arcanum.You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n    At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th-level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic A rcanum when you finish a long rest.",
+                "levelValues": [
+                    "", "", "", "", "", "", "", "", "", "", 
+                    "6th", "6th", 
+                    "6th & 7th", 
+                    "6th & 7th", 
+                    "6th, 7th & 8th", 
+                    "6th, 7th & 8th",
+                    "6th, 7th, 8th & 9th",
+                    "6th, 7th, 8th & 9th",
+                    "6th, 7th, 8th & 9th",
+                    "6th, 7th, 8th & 9th"
+                ]
             },
             {
                 "level": 20,
