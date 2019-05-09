@@ -178,12 +178,13 @@ button.alert {
 .character-sheet {
     display: grid;
     grid-template-columns: 55px 165px 387px 400px 565px;
-    grid-template-rows: 75px 120px 80px 270px 275px;
+    grid-template-rows: 75px 120px 80px 270px 205px 70px;
     grid-template-areas: 
     'name name   meta meta  daily'
     'abi  save   def  notes daily'
     'abi  skills def  notes spells'
     'abi  skills cmb  notes spells'
+    'prof  prof  arm  items spells'
     'prof  prof  mon  items spells';
     margin-bottom: 50px;
 }
@@ -559,15 +560,37 @@ button.alert {
     width: 150px;
 }
 
+.armors {
+    grid-area: arm;
+    margin: 5px 0 0 5px;
+}
+
+.armors .armor-list .armor-entry .box {
+    display: grid;
+    grid-template-rows: 25px;
+    grid-template-columns: 120px 75px 75px;
+    margin-top: 5px;
+    font-size: 14pt;
+    padding-top: 5px;
+    padding-left: 5px;
+    margin-right: 5px;
+}
+
 .money {
     grid-area: mon;
     border-radius: 5px;
     margin: 5px 0 0 5px;
 }
-
+.money-row {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+    align-content: center;
+}
 .money-unit {
     display: grid;
-    grid-template-columns: 35px 125px;
+    grid-template-columns: 25px 15px;
     grid-template-areas: 
         'value unit';
     height: 25px;
@@ -577,11 +600,16 @@ button.alert {
 
 .unit-value {
     grid-area: value;
-    text-align: center;
+    text-align: right;
 }
 
 .unit-unit {
     grid-area: unit;
+    text-align: left;
+}
+
+.adjust-money-button {
+    width: 100%;
 }
 
 .money-adjuster {
