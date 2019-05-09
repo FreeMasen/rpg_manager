@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
     Character, Save, Weapon, Wealth, Alignment, MagicItem, ExpendableItem, 
-    WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness,
+    WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness, Armor,
 } from '../models/character';
 import { Range } from '../models/range';
 import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore';
@@ -103,6 +103,11 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 key="weapons"
                 weapons={this.props.character.weapons}
                 adjustWeapons={newWeapons => this.props.adjustWeapons(newWeapons)}
+            />,
+            <ArmorList
+                key="armors"
+                armor={this.props.character.armor}
+                shield={this.props.character.shield}
             />,
             <Money
                 key="money"
@@ -1162,6 +1167,57 @@ export class NewWeapon extends React.Component<INewWeaponProps, INewWeaponState>
     }
 }
 
+interface IArmorListProps {
+    armor: Armor;
+    shield?: Armor;
+}
+
+interface IArmorListState {
+
+}
+
+export class ArmorList extends React.Component<IArmorListProps, IArmorListState> {
+    constructor(props: IArmorListProps) {
+        super(props);
+    }
+    render() {
+        return (
+            <div className="armors box">
+                <ListView
+                    headerText="Armor"
+                    className="armor-list"
+                >
+                    <ListViewRow
+                        className="armor-entry"
+                    >
+                        <div className="box">
+                            <span>{this.props.armor.name}</span>
+                            <span>{this.props.armor.kind}</span>
+                            <span>+{this.props.armor.bonus} AC</span>
+                        </div>
+                    </ListViewRow>
+                    {
+                        this.props.shield 
+                        ? [<ListViewHeader>
+                            Shield
+                            </ListViewHeader>,
+                            <ListViewRow
+                                className="armor-entry"
+                            >
+                            <div className="box">
+                                <span>{this.props.shield.name}</span>
+                                <span>{this.props.shield.kind}</span>
+                                <span>{this.props.shield.bonus}</span>
+                            </div>
+                            </ListViewRow>]
+                        : null
+                    }
+                </ListView>
+            </div>
+        );
+    }
+}
+
 interface IMoneyProps {
     wealth: Wealth;
     adjustMoney: (wealth: Wealth) => void;
@@ -1183,46 +1239,40 @@ export class Money extends React.Component<IMoneyProps, IMoneyState> {
             <div 
                 className="money box"
                 key="money"
-                style={{
-                    display: 'flex',
-                    flexFlow: 'column',
-                }}
             >
                 <ListView
                     headerText="Money"
                 >
-                    <MoneyRow
-                        name="copper"
-                        value={this.props.wealth.copper}
-                    />
-                    <MoneyRow
-                        name="silver"
-                        value={this.props.wealth.silver}
-                    />
-                    <MoneyRow
-                        name="silver"
-                        value={this.props.wealth.silver}
-                    />
-                    <MoneyRow
-                        name="electrum"
-                        value={this.props.wealth.electrum}
-                    />
-                    <MoneyRow
-                        name="gold"
-                        value={this.props.wealth.gold}
-                    />
-                    <MoneyRow
-                        name="platinum"
-                        value={this.props.wealth.platinum}
-                    />
+                    <ListViewRow className="money-row">
+                        <MoneyRow
+                            name="c"
+                            value={this.props.wealth.copper}
+                        />
+                        <MoneyRow
+                            name="s"
+                            value={this.props.wealth.silver}
+                        />
+                        <MoneyRow
+                            name="e"
+                            value={this.props.wealth.electrum}
+                        />
+                        <MoneyRow
+                            name="g"
+                            value={this.props.wealth.gold}
+                        />
+                        <MoneyRow
+                            name="p"
+                            value={this.props.wealth.platinum}
+                        />
+                    </ListViewRow>
+                    <ListViewRow>
+                        <button
+                            className="adjust-money-button"
+                            onClick={() => this.updateMoney()}
+                        >edit
+                        </button>
+                    </ListViewRow>
                 </ListView>
-                <button
-                    style={{
-                        marginTop: 5,
-                    }}
-                    onClick={() => this.updateMoney()}
-                >edit
-                </button>
             </div>
         ];
         if (this.state.updatingMoney) {
@@ -1264,20 +1314,12 @@ export class MoneyRow extends React.Component<IMoneyRowProps, IMoneyRowState> {
     }
     render() {
         return (
-            <ListViewRow className="money-unit"
-                style={{
-                    background: 'rgba(0,0,0,0.04)'
-                }}
-            >
+            <div className="money-unit">
                 <span 
                     className="unit-value"
-                    style={{
-                        width: '30px',
-                        textAlign: 'right',
-                    }}
                 >{this.props.value}</span>
                 <span className="unit-unit">{this.props.name}</span>
-            </ListViewRow>
+            </div>
         );
     }
 }
