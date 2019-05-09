@@ -251,6 +251,7 @@ export interface IClassFeature {
     name: string;
     shortDesc: string;
     longDesc: string;
+    levelValues?: number[];
 }
 
 export interface IClassFeatureOption {
@@ -263,6 +264,7 @@ export interface IClassFeatureOption {
 
 export class ClassFeature {
     id?: number;
+    levelValues?: number[];
     constructor(
         public classKind: ClassKind,
         public level: number,
@@ -270,10 +272,14 @@ export class ClassFeature {
         public shortDesc: string,
         public longDesc: string,
         public options?: ClassFeatureOption[],
+        levelValues?: number[],
         id?: number,
     ) {
         if (id) {
             this.id = id;
+        }
+        if (levelValues) {
+            this.levelValues = levelValues;
         }
     }
 
@@ -291,7 +297,28 @@ export class ClassFeature {
         if (json.id) {
             ret.id = json.id;
         }
+        if (json.levelValues) {
+            ret.levelValues = json.levelValues;
+        }
         return ret;
+    }
+
+    /**
+     * Get the short description with any template text replaced
+     * @param level The Current Class Level
+     */
+    getShortDesc(level: number): string {
+        if (!this.levelValues) return this.shortDesc;
+        return this.shortDesc.replace("{{levelValue}}", this.levelValues[level-1].toString());
+    }
+    
+    /**
+     * Get the long description with any template text replaced
+     * @param level The Current Class Level
+     */
+    getLongDesc(level: number): string {
+        if (!this.levelValues) return this.longDesc;
+        return this.longDesc.replace("{{levelValue}}", this.levelValues[level-1].toString());
     }
 
     toString(): string {
@@ -578,7 +605,7 @@ export class Database extends Dexie {
         let ret: ClassFeature[] = new Array(dbFeats.length);
         for (let i = 0; i < dbFeats.length; i++) {
             let dbFeat = dbFeats[i];
-            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.id);
+            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.levelValues, dbFeat.id);
             let dbOpts = await this.getOptionsForClassFeature(dbFeats[i].id);
             if (dbOpts && dbOpts.length > 0) {
                 let options = new Array(dbOpts.length);
@@ -602,7 +629,7 @@ export class Database extends Dexie {
         let ret: ClassFeature[] = new Array(dbFeats.length);
         for (let i = 0; i < dbFeats.length; i++) {
             let dbFeat = dbFeats[i];
-            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.id);
+            let feature = new ClassFeature(dbFeat.classKind, dbFeat.level, dbFeat.name, dbFeat.shortDesc, dbFeat.longDesc, null, dbFeat.levelValues, dbFeat.id);
             let dbOpts = await this.getOptionsForClassFeature(dbFeats[i].id);
             if (dbOpts && dbOpts.length > 0) {
                 let options = new Array(dbOpts.length);

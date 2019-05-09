@@ -14,13 +14,15 @@ export async function seed(db: Database, reseed: boolean) {
     
     let spellBooks = await fetch(window.location.href + 'spellBook.json')
         .then(res => res.json())
+        .catch(e => console.error('Error in spells', e));
     console.info('seeding spells');
     if (reseed && (await db.spells.count()) > 0) {
         await db.spells.clear();
     }
     await db.spells.bulkPut(spellBooks);
     let classInfo = await fetch(window.location.href + 'classes.json')
-        .then(res => res.json());
+        .then(res => res.json())
+        .catch(e => console.error('Error in classes', e));
     console.info('seeding class info');
     if (reseed && (await Promise.all([db.classFeatures.count(), db.classFeatureOptions.count()]).then(cts => cts.reduce((acc, v) => acc + v, 0))) > 0) {
         await db.classFeatureOptions.clear();
@@ -56,6 +58,9 @@ async function insertFeature(db: Database, cls: ClassKind, feat: any, optId?: nu
         shortDesc: feat.shortDesc,
         longDesc: feat.longDesc,
     };
+    if (feat.levelValues) {
+        dbFeat.levelValues = feat.levelValues;
+    }
     if (optId) {
         dbFeat.optionId = optId;
     }
@@ -78,83 +83,8 @@ async function insertFeature(db: Database, cls: ClassKind, feat: any, optId?: nu
     }
 }
 async function seedCharacters(db: Database): Promise<Character[]> {
-    // let details = await db.getClassDetails(ClassKind.Rogue, 4);
-    // let d = new Character('Daggers', 
-    //             new AbilityScores([
-    //                 new AbilityScore(8, AbilityKind.Strength),
-    //                 new AbilityScore(8+7, AbilityKind.Dexterity),
-    //                 new AbilityScore(8, AbilityKind.Constitution),
-    //                 new AbilityScore(8, AbilityKind.Intelligence),
-    //                 new AbilityScore(8+1, AbilityKind.Wisdom),
-    //                 new AbilityScore(8+7, AbilityKind.Charisma),
-    //             ]), 
-    //             new Race(RaceKind.Human), 
-    //             new Class(
-    //                 ClassKind.Rogue, 
-    //                 4, 
-    //                 details,
-    //                 [
-    //                     [AbilityKind.Strength, 0],
-    //                     [AbilityKind.Dexterity, 2],
-    //                     [AbilityKind.Constitution, 0],
-    //                     [AbilityKind.Intelligence, 0],
-    //                     [AbilityKind.Wisdom, 0],
-    //                     [AbilityKind.Charisma, 0],
-    //                 ],
-    //                 [SkillKind.Acrobatics, SkillKind.SleightOfHand, 
-    //                     SkillKind.Persuasion, SkillKind.Perception,]
-    //             ),
-    //             new Background(BackgroundKind.Criminal,
-    //                 [SkillKind.Stealth, SkillKind.Deception],
-    //                 [],
-    //                 [MiscTools.Thieves, GamingSet.Dragonchess]),
-    //             Alignment.TrueNeutral(),
-    //             5116,
-    //             new Height(5, 8),
-    //             160,
-    //             'Blue',
-    //             0,
-    //             new Armor(LightArmor.Leather, ArmorWeight.Light, 2),
-    //             null,
-    //             new Skills(),
-    //             [new Weapon('Dagger', 
-    //                         WeaponType.Melee, 
-    //                         WeaponKind.Simple, 
-    //                         WeaponDamageKind.Piercing, 
-    //                         WeaponWeight.Light, 
-    //                         WeaponHandedness.One, 
-    //                         [1, 4], 
-    //                         new Range(5), 
-    //                         1, 
-    //                         new Range(20, 60), 
-    //                         false, 
-    //                         true),
-    //             new Weapon('Short Bow', 
-    //                         WeaponType.Range, 
-    //                         WeaponKind.Simple, 
-    //                         WeaponDamageKind.Piercing, 
-    //                         WeaponWeight.Light, 
-    //                         WeaponHandedness.Two, 
-    //                         [1,6], 
-    //                         new Range(80, 320), 
-    //                         1, 
-    //                         null, 
-    //                         true, 
-    //                         false),
-    //             ],
-    //             new Wealth(0, 0, 0, 3450, 0),
-    //             [NormalLanguage.Common],
-    //             0,
-    //             0,
-    //             [
-    //                 new MagicItem('Cloak of Elvenkind', 'Hood up: Preception checks to see you have disadvantage, stealth checks have advantage'),
-    //                 new MagicItem('Goggles of Night', 'Darkvision (60 feet)'),
-    //             ],
-    //             [new ExpendableItem(1, 'Health Pot.', 'heal 2d4+2 Damage')],
-    // );
-    // d.characterClass.classDetails.chooseFeatureOption('Roguish Archetype', 2);
-    // (d.characterClass.classDetails as RogueDetails).expertise.push(SkillKind.Deception, SkillKind.Stealth);
-    let details = await db.getClassDetails(ClassKind.Rogue, 4);
+    let details = await db.getClassDetails(ClassKind.Rogue, 8);
+    details.chooseFeatureOption('Roguish Archetype', 2);
     let d = new Character(
         'Daggers',
         new AbilityScores([
@@ -168,23 +98,34 @@ async function seedCharacters(db: Database): Promise<Character[]> {
         new Race(RaceKind.Human),
         new Class(
             ClassKind.Rogue,
-            4,
+            8,
             details,
-            DEFAULT_BONUS_ABILITY_SCORES,
+            [
+                [AbilityKind.Strength, 0],
+                [AbilityKind.Dexterity, 4],
+                [AbilityKind.Constitution, 0],
+                [AbilityKind.Intelligence, 0],
+                [AbilityKind.Wisdom, 0],
+                [AbilityKind.Charisma, 0],
+            ],
             [
                 SkillKind.Acrobatics,
                 SkillKind.Perception,
                 SkillKind.Persuasion,
                 SkillKind.SleightOfHand,
+            ],
+            [
+                SkillKind.Stealth,
+                SkillKind.SleightOfHand,
             ]
         ),
         Background.Criminal(),
         Alignment.TrueNeutral(),
-        5616,
+        34000,
         new Height(5, 8),
         160,
         'Blue',
-        0,
+        2,
         new Armor(LightArmor.Leather, ArmorWeight.Light, 2),
         null,
         new Skills(),
@@ -221,7 +162,7 @@ async function seedCharacters(db: Database): Promise<Character[]> {
             new MagicItem('Cloak of Elvenkind', 'Hood up: Preception checks to see you have disadvantage, stealth checks have advantage'),
             new MagicItem('Goggles of Night', 'Darkvision (60 feet)'),
         ],
-        [new ExpendableItem(1, 'Health Pot.', 'heal 2d4+2 Damage')],
+        [new ExpendableItem(2, 'Health Pot.', 'heal 2d4+2 Damage')],
 )
     return [d];
 } 

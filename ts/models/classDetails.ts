@@ -95,6 +95,9 @@ export class _ClassDetails<T> {
                     return acc;
                 }
             }
+            if (f) {
+                
+            }
             acc.push(f);
             return acc;
         }, []);

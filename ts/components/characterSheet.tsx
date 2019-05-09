@@ -1538,6 +1538,7 @@ export class Features extends React.Component<IFeaturesProps, IFeaturesState> {
                     /> 
                 : <FeatureInfo
                     note={this.props.classDetails.getAllAvailableFeatures()[this.state.selectedNote]}
+                    level={this.props.classDetails.level}
                     onBack={() => this.setState({selectedNote: -1})}
                     optionsSelected={(name, idx) => this.selectedFeature(name, idx)}
                 />
@@ -1577,7 +1578,7 @@ export class FeaturesList extends React.Component<IFeaturesListProps, IFeaturesL
                         let needsSelection = selection && selection.idx < 0 && selection.minLevel <= this.props.classDetails.level;
                         let desc;
                         if (needsSelection || !selection) {
-                            desc = n.shortDesc;
+                            desc = n.getShortDesc(this.props.classDetails.level);
                         } else {
                             desc = n.options[selection.idx].name;
                         }
@@ -1612,6 +1613,7 @@ export class FeaturesList extends React.Component<IFeaturesListProps, IFeaturesL
 
 interface IFeatureInfoProps {
     note: ClassFeature;
+    level: number;
     onBack: () => void;
     optionsSelected: (name: string, idx: number) => void;
 }
@@ -1668,13 +1670,13 @@ export class FeatureInfo extends React.Component<IFeatureInfoProps, IFeatureInfo
                         <span 
                             className="note-value"
                         >
-                            {this.props.note.shortDesc}
+                            {this.props.note.getShortDesc(this.props.level)}
                         </span>
                     </ListViewRow>
                     <ListViewRow
                     >
                         <span>
-                            {this.props.note.longDesc}
+                            {this.props.note.getLongDesc(this.props.level)}
                         </span>
                     </ListViewRow>
                 </div>
