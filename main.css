@@ -398,6 +398,10 @@ button.alert {
     cursor: default;
 }
 
+.skill-container div span {
+    line-height: 1;
+}
+
 .skill-adjustor-option.selected {
     background: var(--highlight);
 }
