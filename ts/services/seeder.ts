@@ -126,7 +126,7 @@ async function seedCharacters(db: Database): Promise<Character[]> {
         160,
         'Blue',
         2,
-        new Armor(LightArmor.Leather, ArmorWeight.Light, 2),
+        new Armor(LightArmor.StuddedLeather, ArmorWeight.Light, 2, -1),
         null,
         new Skills(),
         [new Weapon('Dagger', 
@@ -156,7 +156,7 @@ async function seedCharacters(db: Database): Promise<Character[]> {
         ],
         new Wealth(0, 0, 0, 3300, 0),
         [NormalLanguage.Common, NormalLanguage.Draconic],
-        0,
+        16,
         0,
         [
             new MagicItem('Cloak of Elvenkind', 'Hood up: Preception checks to see you have disadvantage, stealth checks have advantage'),

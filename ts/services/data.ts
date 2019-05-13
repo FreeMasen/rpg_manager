@@ -1,4 +1,4 @@
-import { Character, Wealth } from "../models/character";
+import { Character, Wealth, Armor, ArmorWeight, ArmorName, LightArmor, MediumArmor, HeavyArmor } from "../models/character";
 import { RaceKind, SubRace, Elf, Dwarf, Gnome, Halfling, Dragon } from '../models/race';
 import { ClassKind, Class } from '../models/class';
 import { Range } from '../models/range';
@@ -231,6 +231,38 @@ export class Data {
             }
             if (level > 13) {
                 ret += 2;
+            }
+        }
+        return ret;
+    }
+
+    public static availableArmorFor(weights: ArmorWeight[]): Armor[] {
+        let ret = [];
+        for (let weight of weights) {
+            switch (weight) {
+                case ArmorWeight.Light:
+                    
+                    ret.push(
+                        new Armor(LightArmor.Padded, ArmorWeight.Light, 1, -1),
+                        new Armor(LightArmor.Leather, weight, 1, -1),
+                        new Armor(LightArmor.StuddedLeather, weight, 2, -1)
+                    );
+                break;
+                case ArmorWeight.Medium:
+                    ret.push(
+                        new Armor(MediumArmor.Hide, weight, 2, 2),
+                        new Armor(MediumArmor.ChainShirt, weight, 3, 2),
+                        new Armor(MediumArmor.ScaleMail, weight, 4, 2),
+                        new Armor(MediumArmor.BreastPlate, weight, 4, 2),
+                        new Armor(MediumArmor.HalfPlate, weight, 5, 2));
+                break;
+                case ArmorWeight.Heavy:
+                    ret.push(
+                        new Armor(HeavyArmor.RingMail, weight, 4, 0),
+                        new Armor(HeavyArmor.ChainMail, weight, 6, 0),
+                        new Armor(HeavyArmor.Splint, weight, 7, 0),
+                        new Armor(HeavyArmor.Plate, weight, 8, 0));
+                break;
             }
         }
         return ret;
@@ -520,12 +552,18 @@ export class Database extends Dexie {
             || ch.characterClass.name === ClassKind.Wizard) {
             spellsKnown = ch.characterClass.level + ch.castorAbilityModifier();
         }
+        let spells = [];
+        if (ch.characterClass.casterInfo) {
+            spells = ch.characterClass.casterInfo._knownSpells || [];
+        } else if (dbCasterInfo._knownSpells) {
+            spells = dbCasterInfo._knownSpells;
+        }
         return new CasterInfo(
             dbCasterInfo.slots,
             dbCasterInfo.slots,
             dbCasterInfo.cantrips,
             spellsKnown,
-            (ch.characterClass.casterInfo._knownSpells || dbCasterInfo._knownSpells || []).map(Spell.fromJson),
+            spells.map(Spell.fromJson),
         );
     }
 

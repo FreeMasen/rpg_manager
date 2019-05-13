@@ -381,7 +381,6 @@ export class Class {
             ArmorWeight.Light,
             ArmorWeight.Medium,
         ];
-        this.canUseShield = true;
         this.weaponProfs = [
             WeaponKind.Simple,
             StdWeaponName.HandCrossbow,

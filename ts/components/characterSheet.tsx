@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
-    Character, Save, Weapon, Wealth, Alignment, MagicItem, ExpendableItem, 
-    WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness, Armor,
+    Character, Save, Weapon, Wealth, Alignment, MagicItem, ExpendableItem,
+    WeaponType, WeaponKind, WeaponDamageKind, WeaponWeight, WeaponHandedness, Armor, ArmorWeight, LightArmor, ArmorName, HeavyArmor, MediumArmor,
 } from '../models/character';
 import { Range } from '../models/range';
 import { AbilityScores, AbilityScore, AbilityKind } from '../models/abilityScore';
@@ -17,7 +17,6 @@ import { Spell } from '../models/spells';
 import { ClassDetails } from '../models/classDetails';
 import { Modal } from './common/Modal';
 import { SpellsInfo } from './spellsInfo';
-import { CasterInfo } from '../models/casterInfo';
 
 interface ICharacterSheetProps {
     character: Character;
@@ -34,6 +33,7 @@ interface ICharacterSheetProps {
     adjustClassSkills: (newSkills: SkillKind[]) => void;
     adjustExpertise: (newSkills: SkillKind[]) => void;
     saveKnownSpells: (spells: Spell[]) => Promise<void>;
+    adjustArmor: (a: Armor, s: Armor) => void;
     spellList: Spell[];
 }
 
@@ -78,9 +78,9 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 languages={this.props.character.languages}
             />,
             <Saves key="saves" saves={this.props.character.saves} />,
-            <SkillsList 
-                key="skills-list" 
-                skills={this.props.character.rawSkills} 
+            <SkillsList
+                key="skills-list"
+                skills={this.props.character.rawSkills}
                 newSkillsAvailable={this.props.character.skillsModNeeded()}
                 newSkillsOptions={this.props.character.availableSkillsToAdd()}
                 skillsUpdated={skills => this.props.adjustClassSkills(skills)}
@@ -108,6 +108,9 @@ export class CharacterSheet extends React.Component<ICharacterSheetProps, IChara
                 key="armors"
                 armor={this.props.character.armor}
                 shield={this.props.character.shield}
+                availableArmors={Data.availableArmorFor(this.props.character.characterClass.armorProfs)}
+                shieldAllowed={this.props.character.characterClass.canUseShield}
+                onChange={(a, s) => this.props.adjustArmor(a, s)}
             />,
             <Money
                 key="money"
@@ -198,9 +201,9 @@ export class CharacterName extends React.Component<ICharacterNameProps, {}> {
                         <i style={{ fontFamily: 'Material Icons', lineHeight: 1 }}>expand_less</i>
                     </button>
                     <button style={{
-                            padding: '0px'
-                        }} 
-                    onClick={() => this.props.inspirationChanged(this.props.inspiration - 1)} className="down">
+                        padding: '0px'
+                    }}
+                        onClick={() => this.props.inspirationChanged(this.props.inspiration - 1)} className="down">
                         <i style={{ fontFamily: 'Material Icons', lineHeight: 1 }}>expand_more</i>
                     </button>
                 </div>
@@ -238,7 +241,7 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                 key="character-desc"
             >
                 <div className="character-class desc-part">
-                    <span 
+                    <span
                         className="character-class-value desc-value"
                     >{this.props.name}</span>
                     <hr className="desc-divider" />
@@ -253,8 +256,8 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                     <span
                         style={{
                             color: "rgba(0,0,0,0.5)"
-                         }} 
-                         className="class-level-label desc-label"
+                        }}
+                        className="class-level-label desc-label"
                     >level</span>
                 </div>
                 <div className="character-background desc-part">
@@ -263,7 +266,7 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                     <span
                         style={{
                             color: "rgba(0,0,0,0.5)"
-                         }} 
+                        }}
                         className="background-label desc-label">background</span>
                 </div>
                 <div className="character-race desc-part">
@@ -272,7 +275,7 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                     <span
                         style={{
                             color: "rgba(0,0,0,0.5)"
-                         }} 
+                        }}
                         className="race-label desc-label">race</span>
                 </div>
                 <div className="character-alignment desc-part">
@@ -281,7 +284,7 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                     <span
                         style={{
                             color: "rgba(0,0,0,0.5)"
-                         }}  className="alignment-label desc-label">alignment</span>
+                        }} className="alignment-label desc-label">alignment</span>
                 </div>
                 <div className="character-experience desc-part"
                     onClick={() => this.adjustExperience()}
@@ -292,7 +295,7 @@ export class CharacterDescription extends React.Component<ICharacterDescriptionP
                     <span
                         style={{
                             color: "rgba(0,0,0,0.5)"
-                         }} className="experience-label desc-label">experience</span>
+                        }} className="experience-label desc-label">experience</span>
                 </div>
             </div>
         ];
@@ -469,8 +472,8 @@ export class AbilityScoreAdjustor extends React.Component<IAbilityScoreAdjustorP
                 <div className="scores-list box">
                     {this.state.abilityScores.map(score => {
                         return (
-                            <div 
-                                key={`adjusting-score-${score.kind}`} 
+                            <div
+                                key={`adjusting-score-${score.kind}`}
                                 className={`box input-group ${score.kind.toLowerCase()}`}>
                                 <span style={{ textAlign: "center" }}>{score.kind}</span>
                                 <input
@@ -552,9 +555,9 @@ export class AbilityScoreContainer extends React.Component<IAbilityScoreContaine
             <div
                 className="ability-score-container box"
             >
-                <label style={{lineHeight: '1'}} className="ability-score-name">{this.props.name.substr(0, 3).toUpperCase()}</label>
-                <span style={{lineHeight: '1'}} className="ability-score-value">{this.props.score.value}</span>
-                <span style={{lineHeight: '1'}} className="ability-modifier-value">{this.props.score.modifier}</span>
+                <label style={{ lineHeight: '1' }} className="ability-score-name">{this.props.name.substr(0, 3).toUpperCase()}</label>
+                <span style={{ lineHeight: '1' }} className="ability-score-value">{this.props.score.value}</span>
+                <span style={{ lineHeight: '1' }} className="ability-modifier-value">{this.props.score.modifier}</span>
             </div>
         )
     }
@@ -614,13 +617,13 @@ export class SkillsList extends React.Component<ISkillsListProps, ISkillsListSta
             max = this.props.expertiseRequired;
         }
         return [
-            <div 
-                key="skills-list" 
+            <div
+                key="skills-list"
                 className={`skills-list box ${pendingSkills || expertise ? 'alert' : ''}`}
                 title={title}
                 onClick={() => {
                     if ((pendingSkills || expertise) && !this.state.editingSkills) {
-                        this.setState({editingSkills: true});
+                        this.setState({ editingSkills: true });
                     }
                 }}
             >
@@ -628,20 +631,20 @@ export class SkillsList extends React.Component<ISkillsListProps, ISkillsListSta
                     return (<SkillContainer key={`skill-${skill[0]}`} name={skill[0]} score={skill[1]} enabled={skill[2]} />)
                 })}
             </div>,
-            this.state.editingSkills ? 
-            <SkillAdjustor
-                key="skills-adjuster"
-                maxAdditional={max}
-                skills={options}
-                onComplete={skills => this.skillsUpdated(expertise, skills)}
-                expertise={expertise}
-            />
-            : null,
+            this.state.editingSkills ?
+                <SkillAdjustor
+                    key="skills-adjuster"
+                    maxAdditional={max}
+                    skills={options}
+                    onComplete={skills => this.skillsUpdated(expertise, skills)}
+                    expertise={expertise}
+                />
+                : null,
         ];
     }
 
     skillsUpdated(expertise: boolean, skills?: SkillKind[]) {
-        this.setState({editingSkills: false}, () => {
+        this.setState({ editingSkills: false }, () => {
             if (expertise && skills) {
                 this.props.expertiseUpdated(skills);
             } else if (skills) {
@@ -661,12 +664,12 @@ export class SkillContainer extends React.Component<ISkillContainerProps, {}> {
     render() {
         return (
             <div className="skill-container">
-                <Radio 
+                <Radio
                     label={`${this.props.score} ${this.props.name}`}
                     checked={this.props.enabled}
                     disabled={false}
                     title={this.props.name}
-                    onClick={() => {}}
+                    onClick={() => { }}
                 />
             </div>
         )
@@ -695,9 +698,9 @@ export class SkillAdjustor extends React.Component<ISkillAdjustorProps, ISkillAd
         return (
             <Modal className="skills-adjustor box">
                 <span className="skills-adjustor-title">Remaining: {this.props.maxAdditional - this.state.selected.size}</span>
-                {this.props.skills.map(s => 
-                    <span 
-                        className={`skill-adjustor-option ${this.state.selected.has(s) ? 'selected' : ''}`} 
+                {this.props.skills.map(s =>
+                    <span
+                        className={`skill-adjustor-option ${this.state.selected.has(s) ? 'selected' : ''}`}
                         key={`skill-adjustor-${s}`}
                         onClick={() => this.skillClicked(s)}
                     >{s}</span>
@@ -719,7 +722,7 @@ export class SkillAdjustor extends React.Component<ISkillAdjustorProps, ISkillAd
             } else if (prev.selected.size < props.maxAdditional) {
                 prev.selected.add(kind);
             }
-            return {selected: prev.selected}
+            return { selected: prev.selected }
         });
     }
     done(withValue: boolean) {
@@ -839,7 +842,7 @@ export class DefenceContainer extends React.Component<IDefenceContainerProps, ID
                                 lineHeight: 1,
                                 padding: '0px',
                             }}
-                            >expand_less</button>
+                        >expand_less</button>
                         <button
                             className="adjust-down"
                             onClick={() => this.props.valueChanged(this.props.value - 1)}
@@ -920,9 +923,9 @@ export class Weapons extends React.Component<IWeaponsProps, IWeaponsState> {
                     />))}
                 </ListView>
                 <button
-                style={{
-                    padding: '0px',
-                }}
+                    style={{
+                        padding: '0px',
+                    }}
                     onClick={() => this.setState({ addingWeapon: true })}
                 >add</button>
 
@@ -977,7 +980,7 @@ export class WeaponContainer extends React.Component<IWeaponContainerProps, IWea
             >
                 <span className="weapon-name">{this.props.weapon.name}</span>
                 <span className="weapon-dmg">{`${this.props.weapon.hitDie[0]}d${this.props.weapon.hitDie[1]}`}</span>
-                <span className="weapon-misc">{this.props.weapon.miscString()}</span>
+                <span title={this.props.weapon.longMiscString()} className="weapon-misc">{this.props.weapon.miscString()}</span>
                 <button
                     onClick={() => this.props.onDeleteClicked()}
                     style={{
@@ -1170,15 +1173,21 @@ export class NewWeapon extends React.Component<INewWeaponProps, INewWeaponState>
 interface IArmorListProps {
     armor: Armor;
     shield?: Armor;
+    shieldAllowed: boolean;
+    availableArmors: Armor[];
+    onChange: (a: Armor, s: Armor) => void;
 }
 
 interface IArmorListState {
-
+    editing: boolean;
 }
 
 export class ArmorList extends React.Component<IArmorListProps, IArmorListState> {
     constructor(props: IArmorListProps) {
         super(props);
+        this.state = {
+            editing: false,
+        }
     }
     render() {
         return (
@@ -1188,33 +1197,165 @@ export class ArmorList extends React.Component<IArmorListProps, IArmorListState>
                     className="armor-list"
                 >
                     <ListViewRow
+                        className="armor-list-header"
+                    >
+                        <span>Armor</span>
+                        <span>Bonus</span>
+                        <span>+Dex Max</span>
+                    </ListViewRow>
+                    <ListViewRow
                         className="armor-entry"
                     >
                         <div className="box">
                             <span>{this.props.armor.name}</span>
-                            <span>{this.props.armor.kind}</span>
                             <span>+{this.props.armor.bonus} AC</span>
+                            <span>{this.props.armor.maxDex()}</span>
                         </div>
                     </ListViewRow>
-                    {
-                        this.props.shield 
+                    {this.props.shield
                         ? [<ListViewHeader>
                             Shield
-                            </ListViewHeader>,
-                            <ListViewRow
-                                className="armor-entry"
-                            >
+                        </ListViewHeader>,
+                        <ListViewRow
+                            className="armor-entry"
+                        >
                             <div className="box">
                                 <span>{this.props.shield.name}</span>
-                                <span>{this.props.shield.kind}</span>
                                 <span>{this.props.shield.bonus}</span>
                             </div>
-                            </ListViewRow>]
+                        </ListViewRow>]
                         : null
                     }
+                    <ListViewRow
+                        className="armor-list-button-row"
+                    >
+                        <button
+                            className="adjust-armor-button"
+                            onClick={() => this.setState({ editing: true })}
+                        >edit</button>
+                    </ListViewRow>
+                </ListView>
+                {
+                    this.state.editing
+                        ? (<ArmorAdjustor
+                            currentArmor={this.props.armor}
+                            armorOptions={this.props.availableArmors}
+                            currentShield={this.props.shield}
+                            allowShield={this.props.shieldAllowed}
+                            onComplete={(a, s) => this.adjustmentComplete(a, s)}
+                        />)
+                        : null
+                }
+            </div>
+        );
+    }
+    adjustmentComplete(armor: Armor, shield: Armor) {
+        this.setState({editing: false}, () => {
+            if (!armor) {
+                return;
+            }
+            this.props.onChange(armor, shield)
+        });
+    }
+}
+
+interface IArmorAdjustorProps {
+    currentArmor?: Armor;
+    currentShield?: Armor;
+    armorOptions: Armor[];
+    allowShield: boolean;
+    onComplete: (a: Armor, s: Armor) => void;
+}
+
+interface IArmorAdjustorState {
+    armor: Armor;
+    shield?: Armor;
+}
+
+export class ArmorAdjustor extends React.Component<IArmorAdjustorProps, IArmorAdjustorState> {
+
+    constructor(props: IArmorAdjustorProps) {
+        super(props);
+        this.state = {
+            armor: props.currentArmor || new Armor(LightArmor.StuddedLeather, ArmorWeight.Light, 2, -1),
+            shield: props.currentShield,
+        };
+    }
+
+    render() {
+        return (
+            <div className="armor-adjustor common-modal">
+                <ListView
+                    headerText="Adjust Armor"
+                >
+                    <ListViewRow
+                        className="armor-adjustor-entry armor-adjustor-header"
+                    >
+                        <span>Armor</span>
+                        <span>Bonus</span>
+                        <span>+Dex Max</span>
+
+                    </ListViewRow>
+                    <ListViewRow className="armor-adjustor-entry armor-adjustor-armor">
+                        <select
+                            value={this.state.armor.name}
+                            onChange={ev => this.armorChanged(ev.currentTarget.value as ArmorName)}
+                        >
+                            {this.props.armorOptions.map(o =>
+                                <option value={o.name} key={o.name}>{o.name}</option>)
+                            }
+                        </select>
+                        <span>{this.state.armor.bonus}</span>
+                        <span>{this.state.armor.maxDex()}</span>
+                    </ListViewRow>
+                    {this.props.allowShield
+                        ? <ListViewRow
+                            className="armor-adjustor-entry"
+                        >
+                            <label>
+                                Equip Shield
+                        </label>
+                            <input
+                                type="checkbox"
+                                checked={this.state.shield != null}
+                                onChange={ev => this.shieldChanged()}
+                            />
+                        </ListViewRow>
+                        : null}
+                        <ListViewRow>
+                            <button 
+                                onClick={() => this.adjustmentComplete(true)}
+                            >Save</button>
+                            <button
+                                onClick={() => this.adjustmentComplete(false)}
+                            >Cancel</button>
+                        </ListViewRow>
                 </ListView>
             </div>
         );
+    }
+
+    armorChanged(name: ArmorName) {
+        let armor = this.props.armorOptions.find(a => a.name === name);
+        this.setState({ armor });
+    }
+
+    shieldChanged() {
+        this.setState((prev, props) => {
+            if (prev.shield != null) {
+                return { shield: null }
+            } else {
+                return { shield: new Armor('Shield', ArmorWeight.Light, 2, -1) }
+            }
+        });
+    }
+
+    adjustmentComplete(isSave: boolean) {
+        if (isSave) {
+            this.props.onComplete(this.state.armor, this.state.shield);
+        } else {
+            this.props.onComplete(null, null);
+        }
     }
 }
 
@@ -1236,7 +1377,7 @@ export class Money extends React.Component<IMoneyProps, IMoneyState> {
     }
     render() {
         let ret = [
-            <div 
+            <div
                 className="money box"
                 key="money"
             >
@@ -1245,25 +1386,26 @@ export class Money extends React.Component<IMoneyProps, IMoneyState> {
                 >
                     <ListViewRow className="money-row">
                         <MoneyRow
-                            name="c"
-                            value={this.props.wealth.copper}
-                        />
-                        <MoneyRow
-                            name="s"
-                            value={this.props.wealth.silver}
-                        />
-                        <MoneyRow
-                            name="e"
-                            value={this.props.wealth.electrum}
+                            name="p"
+                            value={this.props.wealth.platinum}
                         />
                         <MoneyRow
                             name="g"
                             value={this.props.wealth.gold}
                         />
                         <MoneyRow
-                            name="p"
-                            value={this.props.wealth.platinum}
+                            name="e"
+                            value={this.props.wealth.electrum}
                         />
+                        <MoneyRow
+                            name="s"
+                            value={this.props.wealth.silver}
+                        />
+                        <MoneyRow
+                            name="c"
+                            value={this.props.wealth.copper}
+                        />
+
                     </ListViewRow>
                     <ListViewRow>
                         <button
@@ -1315,7 +1457,7 @@ export class MoneyRow extends React.Component<IMoneyRowProps, IMoneyRowState> {
     render() {
         return (
             <div className="money-unit">
-                <span 
+                <span
                     className="unit-value"
                 >{this.props.value}</span>
                 <span className="unit-unit">{this.props.name}</span>
@@ -1355,7 +1497,7 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                         display: 'flex',
                         flexFlow: 'column',
                         marginBottom: 0,
-                        
+
                     }}
                 >
                     <span>Update Money</span>
@@ -1366,10 +1508,27 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                         }}
                     >
                         <div className="input-pair">
-                            <label>Copper</label>
+                            <label>Platinum</label>
                             <input
-                                defaultValue={this.state.currentWealth.copper.toString()}
-                                onChange={ev => this.updateCurrentWealth('copper', ev.currentTarget.valueAsNumber || 0)}
+                                type="number"
+                                defaultValue={this.state.currentWealth.platinum.toString()}
+                                onChange={ev => this.updateCurrentWealth('platinum', ev.currentTarget.valueAsNumber || 0)}
+                            />
+                        </div>
+                        <div className="input-pair">
+                            <label>Gold</label>
+                            <input
+                                defaultValue={this.state.currentWealth.gold.toString()}
+                                onChange={ev => this.updateCurrentWealth('gold', ev.currentTarget.valueAsNumber || 0)}
+                                type="number"
+                            />
+                        </div>
+
+                        <div className="input-pair">
+                            <label>Electrum</label>
+                            <input
+                                defaultValue={this.state.currentWealth.electrum.toString()}
+                                onChange={ev => this.updateCurrentWealth('electrum', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
                             />
                         </div>
@@ -1382,27 +1541,11 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                             />
                         </div>
                         <div className="input-pair">
-                            <label>Electrum</label>
+                            <label>Copper</label>
                             <input
-                                defaultValue={this.state.currentWealth.electrum.toString()}
-                                onChange={ev => this.updateCurrentWealth('electrum', ev.currentTarget.valueAsNumber || 0)}
+                                defaultValue={this.state.currentWealth.copper.toString()}
+                                onChange={ev => this.updateCurrentWealth('copper', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
-                            />
-                        </div>
-                        <div className="input-pair">
-                            <label>Gold</label>
-                            <input
-                                defaultValue={this.state.currentWealth.gold.toString()}
-                                onChange={ev => this.updateCurrentWealth('gold', ev.currentTarget.valueAsNumber || 0)}
-                                type="number"
-                            />
-                        </div>
-                        <div className="input-pair">
-                            <label>Platinum</label>
-                            <input
-                                type="number"
-                                defaultValue={this.state.currentWealth.platinum.toString()}
-                                onChange={ev => this.updateCurrentWealth('platinum', ev.currentTarget.valueAsNumber || 0)}
                             />
                         </div>
                     </div>
@@ -1416,18 +1559,18 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                         }}
                     >
                         <div className="input-pair">
-                            <label>Copper</label>
+                            <label>Platinum</label>
                             <input
-                                defaultValue={this.state.updatedWealth.copper.toString()}
-                                onChange={ev => this.updateUpdatedWealth('copper', ev.currentTarget.valueAsNumber || 0)}
+                                defaultValue={this.state.updatedWealth.platinum.toString()}
+                                onChange={ev => this.updateUpdatedWealth('platinum', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
                             />
-                        </div>
+                        </div>  
                         <div className="input-pair">
-                            <label>Silver</label>
+                            <label>Gold</label>
                             <input
-                                defaultValue={this.state.updatedWealth.silver.toString()}
-                                onChange={ev => this.updateUpdatedWealth('silver', ev.currentTarget.valueAsNumber || 0)}
+                                defaultValue={this.state.updatedWealth.gold.toString()}
+                                onChange={ev => this.updateUpdatedWealth('gold', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
                             />
                         </div>
@@ -1439,19 +1582,20 @@ export class MoneyAdjuster extends React.Component<IMoneyAdjusterProps, IMoneyAd
                                 type="number"
                             />
                         </div>
+                        
                         <div className="input-pair">
-                            <label>Gold</label>
+                            <label>Silver</label>
                             <input
-                                defaultValue={this.state.updatedWealth.gold.toString()}
-                                onChange={ev => this.updateUpdatedWealth('gold', ev.currentTarget.valueAsNumber || 0)}
+                                defaultValue={this.state.updatedWealth.silver.toString()}
+                                onChange={ev => this.updateUpdatedWealth('silver', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
                             />
                         </div>
                         <div className="input-pair">
-                            <label>Platinum</label>
+                            <label>Copper</label>
                             <input
-                                defaultValue={this.state.updatedWealth.platinum.toString()}
-                                onChange={ev => this.updateUpdatedWealth('platinum', ev.currentTarget.valueAsNumber || 0)}
+                                defaultValue={this.state.updatedWealth.copper.toString()}
+                                onChange={ev => this.updateUpdatedWealth('copper', ev.currentTarget.valueAsNumber || 0)}
                                 type="number"
                             />
                         </div>
@@ -1576,21 +1720,21 @@ export class Features extends React.Component<IFeaturesProps, IFeaturesState> {
                 {this.state.selectedNote < 0 ?
                     <FeaturesList
                         classDetails={this.props.classDetails}
-                        noteSelected={idx => this.setState({selectedNote: idx})}
-                    /> 
-                : <FeatureInfo
-                    note={this.props.classDetails.getAllAvailableFeatures()[this.state.selectedNote]}
-                    level={this.props.classDetails.level}
-                    onBack={() => this.setState({selectedNote: -1})}
-                    optionsSelected={(name, idx) => this.selectedFeature(name, idx)}
-                />
+                        noteSelected={idx => this.setState({ selectedNote: idx })}
+                    />
+                    : <FeatureInfo
+                        note={this.props.classDetails.getAllAvailableFeatures()[this.state.selectedNote]}
+                        level={this.props.classDetails.level}
+                        onBack={() => this.setState({ selectedNote: -1 })}
+                        optionsSelected={(name, idx) => this.selectedFeature(name, idx)}
+                    />
                 }
             </div>
         );
     }
 
     selectedFeature(name: string, idx: number) {
-        this.setState({selectedNote: -1}, () => {
+        this.setState({ selectedNote: -1 }, () => {
             this.props.optionsSelected(name, idx);
         });
     }
@@ -1613,42 +1757,42 @@ export class FeaturesList extends React.Component<IFeaturesListProps, IFeaturesL
         let features = this.props.classDetails.getAllAvailableFeatures();
         return (
             <ListView
-                headerText="Notes"
+                headerText="Features"
             >
-                    {features.map((n, i) => {
-                        let selection = this.props.classDetails.selectedFeatures.get(n.name);
-                        let needsSelection = selection && selection.idx < 0 && selection.minLevel <= this.props.classDetails.level;
-                        let desc;
-                        if (needsSelection || !selection) {
-                            desc = n.getShortDesc(this.props.classDetails.level);
-                        } else {
-                            desc = n.options[selection.idx].name;
-                        }
-                        return (
-                            <ListViewRow 
-                                key={`note-${i}`} 
-                                onClick={() => this.props.noteSelected(i)}
-                                title={needsSelection ? 'Select an option' : ''}
-                                className="note-value"
+                {features.map((n, i) => {
+                    let selection = this.props.classDetails.selectedFeatures.get(n.name);
+                    let needsSelection = selection && selection.idx < 0 && selection.minLevel <= this.props.classDetails.level;
+                    let desc;
+                    if (needsSelection || !selection) {
+                        desc = n.getShortDesc(this.props.classDetails.level);
+                    } else {
+                        desc = n.options[selection.idx].name;
+                    }
+                    return (
+                        <ListViewRow
+                            key={`note-${i}`}
+                            onClick={() => this.props.noteSelected(i)}
+                            title={needsSelection ? 'Select an option' : ''}
+                            className="note-value"
+                        >
+                            <span
+                                style={{
+                                    fontWeight: 'bold',
+                                    marginRight: 5,
+                                    color: needsSelection ? 'red' : 'inherit',
+                                }}
                             >
-                                <span
-                                    style={{
-                                        fontWeight: 'bold',
-                                        marginRight: 5,
-                                        color: needsSelection ? 'red' : 'inherit',
-                                    }}
-                                    >
-                                    {n.name}
-                                </span>
-                                <span
-                                    style={{
-                                        marginRight: 5,
-                                    }}
-                                    >-</span>
-                                <span>{desc}</span>
-                            </ListViewRow>)
-                        })}
-                    </ListView>
+                                {n.name}
+                            </span>
+                            <span
+                                style={{
+                                    marginRight: 5,
+                                }}
+                            >-</span>
+                            <span>{desc}</span>
+                        </ListViewRow>)
+                })}
+            </ListView>
         );
     }
 }
@@ -1673,55 +1817,55 @@ export class FeatureInfo extends React.Component<IFeatureInfoProps, IFeatureInfo
             <div
                 key="main-note-info"
             >
-                    <ListViewHeader>
-                        <button
-                            onClick={() => this.props.onBack()}
-                            style={{
-                                marginRight: 5,
-                                textAlign: 'center',
-                                height: 20,
-                                width: 20,
-                                padding: '0 0 0 3px',
-                            }}
-                        >
-                            <i style={{
-                                fontFamily: 'Material Icons',
-                                fontSize: 10,
-                                lineHeight: 1,
-                            }}
-                            >arrow_back_ios</i>
-                        </button>
-                        <span className="notes-header">Notes</span>
-                    </ListViewHeader>
-                    <ListViewRow
+                <ListViewHeader>
+                    <button
+                        onClick={() => this.props.onBack()}
                         style={{
-                            borderBottom: '1px solid rgba(0,0,0,0.3)',
-                        }} 
+                            marginRight: 5,
+                            textAlign: 'center',
+                            height: 20,
+                            width: 20,
+                            padding: '0 0 0 3px',
+                        }}
                     >
-                        <span
-                            style={{
-                                fontWeight: 'bold',
+                        <i style={{
+                            fontFamily: 'Material Icons',
+                            fontSize: 10,
+                            lineHeight: 1,
+                        }}
+                        >arrow_back_ios</i>
+                    </button>
+                    <span className="notes-header">Notes</span>
+                </ListViewHeader>
+                <ListViewRow
+                    style={{
+                        borderBottom: '1px solid rgba(0,0,0,0.3)',
+                    }}
+                >
+                    <span
+                        style={{
+                            fontWeight: 'bold',
 
-                            }}
-                        >
+                        }}
+                    >
                         {this.props.note.name}
-                        </span>
-                    </ListViewRow>
-                    <ListViewRow 
+                    </span>
+                </ListViewRow>
+                <ListViewRow
+                >
+                    <span
+                        className="note-value"
                     >
-                        <span 
-                            className="note-value"
-                        >
-                            {this.props.note.getShortDesc(this.props.level)}
-                        </span>
-                    </ListViewRow>
-                    <ListViewRow
-                    >
-                        <span>
-                            {this.props.note.getLongDesc(this.props.level)}
-                        </span>
-                    </ListViewRow>
-                </div>
+                        {this.props.note.getShortDesc(this.props.level)}
+                    </span>
+                </ListViewRow>
+                <ListViewRow
+                >
+                    <span>
+                        {this.props.note.getLongDesc(this.props.level)}
+                    </span>
+                </ListViewRow>
+            </div>
         ];
         if (this.props.note.options) {
             inner.push(
@@ -1739,39 +1883,39 @@ export class FeatureInfo extends React.Component<IFeatureInfoProps, IFeatureInfo
                                     paddingBottom: 5,
                                 }}
                             >
-                                
-                                    <p
-                                        style={{
-                                            padding: 0,
-                                            fontWeight: 'bold',
-                                            margin: 0,
-                                        }}
-                                    >
-                                        {o.name}
-                                    </p>
-                                    <p
-                                        style={{
-                                            padding: 0,
-                                            margin: 0,
-                                        }}
-                                    >
-                                        {o.shortDesc}
-                                    </p>
-                                    <p
-                                        style={{
-                                            padding: 0,
-                                            margin: 0,
-                                        }}
-                                    >
-                                        {o.longDesc}
-                                    </p>
+
+                                <p
+                                    style={{
+                                        padding: 0,
+                                        fontWeight: 'bold',
+                                        margin: 0,
+                                    }}
+                                >
+                                    {o.name}
+                                </p>
+                                <p
+                                    style={{
+                                        padding: 0,
+                                        margin: 0,
+                                    }}
+                                >
+                                    {o.shortDesc}
+                                </p>
+                                <p
+                                    style={{
+                                        padding: 0,
+                                        margin: 0,
+                                    }}
+                                >
+                                    {o.longDesc}
+                                </p>
                                 <button
                                     onClick={() => this.props.optionsSelected(this.props.note.name, i)}
                                 >Choose</button>
                             </ListViewRow>
                         );
                     })}
-                </div> 
+                </div>
             );
         }
         return (
@@ -1802,81 +1946,81 @@ export class ItemsList extends React.Component<IItemsListProps, IItemsListState>
     }
     render() {
         let ret = [
-            <div 
+            <div
                 className="items-list box"
                 key="items-list"
                 style={{
                     padding: "0px",
                 }}
             >
-            <ListView>
-                <div className="magic-list item-list">
-                    <ListViewHeader>
-                        Magic Items
+                <ListView>
+                    <div className="magic-list item-list">
+                        <ListViewHeader>
+                            Magic Items
                     </ListViewHeader>
-                    {this.props.magicItems.map((item, i) => {
-                        return <ListViewRow key={`magic-item-${i}`} className="magic-list-item">
-                            <span><span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.buf}`}</span>
-                            <button
-                                onClick={() => this.removeItem(i, true)}
-                                style={{
-                                    width: 19,
-                                    height: 19,
-                                    padding: "0px",
-                                    lineHeight: '14px',
-                                    color: 'red',
-                                }}
-                            >
-                                <i style={{ fontFamily: 'Material Icons' }}>delete</i>
-                            </button>
-                        </ListViewRow>
-                    })}
-                </div>
-                <div className="expendable-list item-list">
-                    <ListViewHeader>
-                        Expendable Items
+                        {this.props.magicItems.map((item, i) => {
+                            return <ListViewRow key={`magic-item-${i}`} className="magic-list-item">
+                                <span><span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.buf}`}</span>
+                                <button
+                                    onClick={() => this.removeItem(i, true)}
+                                    style={{
+                                        width: 19,
+                                        height: 19,
+                                        padding: "0px",
+                                        lineHeight: '14px',
+                                        color: 'red',
+                                    }}
+                                >
+                                    <i style={{ fontFamily: 'Material Icons' }}>delete</i>
+                                </button>
+                            </ListViewRow>
+                        })}
+                    </div>
+                    <div className="expendable-list item-list">
+                        <ListViewHeader>
+                            Expendable Items
                     </ListViewHeader>
-                    {this.props.expendables.map((item, i) => {
-                        return <ListViewRow key={`expendable-item-${i}`} className="magic-list-item">
-                            <span>{`${item.quantity}x`}<span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.desc}`}</span>
-                            <button
-                                onClick={() => this.adjustExpendables(i, item.quantity + 1)}
-                                style={{
-                                    padding: "0px",
-                                    width: 19,
-                                    height: 19,
-                                    lineHeight: '14px'
-                                }}
-                            >+</button>
-                            <button
-                                onClick={() => this.adjustExpendables(i, item.quantity - 1)}
-                                style={{
-                                    padding: "0px",
-                                    width: 19,
-                                    height: 19,
-                                    lineHeight: '14px'
-                                }}
-                            >-</button>
-                            <button
-                                onClick={() => this.removeItem(i, false)}
-                                style={{
-                                    padding: "0px",
-                                    width: 19,
-                                    height: 19,
-                                    lineHeight: '14px',
-                                    color: 'red',
-                                }}
-                            >
-                                <i style={{ fontFamily: 'Material Icons' }}>delete</i>
-                            </button>
-                        </ListViewRow>
-                    })}
-                </div>
-            </ListView>
-            <button
-                onClick={() => this.setState({ addingItem: true })}
-            >add</button>
-        </div>];
+                        {this.props.expendables.map((item, i) => {
+                            return <ListViewRow key={`expendable-item-${i}`} className="magic-list-item">
+                                <span>{`${item.quantity}x`}<span style={{ fontWeight: 'bold' }}>{`${item.name}`}</span>{` - ${item.desc}`}</span>
+                                <button
+                                    onClick={() => this.adjustExpendables(i, item.quantity + 1)}
+                                    style={{
+                                        padding: "0px",
+                                        width: 19,
+                                        height: 19,
+                                        lineHeight: '14px'
+                                    }}
+                                >+</button>
+                                <button
+                                    onClick={() => this.adjustExpendables(i, item.quantity - 1)}
+                                    style={{
+                                        padding: "0px",
+                                        width: 19,
+                                        height: 19,
+                                        lineHeight: '14px'
+                                    }}
+                                >-</button>
+                                <button
+                                    onClick={() => this.removeItem(i, false)}
+                                    style={{
+                                        padding: "0px",
+                                        width: 19,
+                                        height: 19,
+                                        lineHeight: '14px',
+                                        color: 'red',
+                                    }}
+                                >
+                                    <i style={{ fontFamily: 'Material Icons' }}>delete</i>
+                                </button>
+                            </ListViewRow>
+                        })}
+                    </div>
+                </ListView>
+                <button
+                    onClick={() => this.setState({ addingItem: true })}
+                >add</button>
+            </div>];
         if (this.state.addingItem) {
             ret.push(<NewItem
                 key="new-item"
@@ -1980,18 +2124,18 @@ export class NewItem extends React.Component<INewItemProps, INewItemState> {
                         </div>
                         : <div className="input-set">
                             <input
-                            id="new-exp-item-name"
-                            defaultValue={this.state.pendingName}
-                            onChange={ev => this.setState({ pendingName: ev.currentTarget.value })}
-                            placeholder="Name"
-                            title="Name"
+                                id="new-exp-item-name"
+                                defaultValue={this.state.pendingName}
+                                onChange={ev => this.setState({ pendingName: ev.currentTarget.value })}
+                                placeholder="Name"
+                                title="Name"
                             />
                             <input
-                            id="new-exp-item-desc"
-                            defaultValue={this.state.pendingDesc}
-                            onChange={ev => this.setState({ pendingDesc: ev.currentTarget.value })}
-                            placeholder="Description"
-                            title="Description"
+                                id="new-exp-item-desc"
+                                defaultValue={this.state.pendingDesc}
+                                onChange={ev => this.setState({ pendingDesc: ev.currentTarget.value })}
+                                placeholder="Description"
+                                title="Description"
                             />
                             <input
                                 id="new-exp-item-qty"

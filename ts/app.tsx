@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { CharacterSheet } from './components/characterSheet';
 import { CharacterPicker } from './components/characterPicker';
-import { Character, Wealth, ExpendableItem, MagicItem, Weapon } from './models/character';
+import { Character, Wealth, ExpendableItem, MagicItem, Weapon, Armor } from './models/character';
 import { Data } from './services/data';
 import { CharacterCreator } from './components/newCharacter';
 import { AbilityScore, AbilityKind } from './models/abilityScore';
@@ -97,6 +97,7 @@ export class App extends React.Component<{}, IAppState> {
                             adjustExpertise={async skills => await this.adjustExpertise(skills)}
                             classFeatureOptionSelected={async (name, idx) => await this.updateCharacterFeature(name, idx)}
                             saveKnownSpells={async spells => await this.updateSpells(spells)}
+                            adjustArmor={async (a, s) => await this.updateArmor(a, s)}
                             spellList={this.state.spellList}
                         />);
             case View.CharacterCreator:
@@ -326,6 +327,21 @@ export class App extends React.Component<{}, IAppState> {
     async updateSpells(spells: Spell[]) {
         let ch = this.state.characters[this.state.selectedCharacter];
         ch.characterClass.casterInfo.setRawSpells(spells);
+        ch = await this.data.saveCharacter(ch);
+        this.setState((prev, props) => {
+            return {characters: prev.characters.map(c => {
+                if (c.id === ch.id) {
+                    return ch;
+                }
+                return c;
+            })}
+        });
+    }
+
+    async updateArmor(armor: Armor, shield?: Armor) {
+        let ch = this.state.characters[this.state.selectedCharacter];
+        ch.armor = armor;
+        ch.shield = shield;
         ch = await this.data.saveCharacter(ch);
         this.setState((prev, props) => {
             return {characters: prev.characters.map(c => {

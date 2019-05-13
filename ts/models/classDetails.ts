@@ -1,6 +1,7 @@
 import { SkillKind } from './skills';
 import { AbilityKind } from './abilityScore';
 import { ClassFeature } from '../services/data';
+import { Armor } from './character';
 
 export type ClassDetails = BarbarianDetails 
                         | BardDetails 
@@ -96,7 +97,7 @@ export class _ClassDetails<T> {
                 }
             }
             if (f) {
-                
+
             }
             acc.push(f);
             return acc;

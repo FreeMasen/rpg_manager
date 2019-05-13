@@ -434,15 +434,22 @@ export class Armor {
         public name: ArmorName,
         public kind: ArmorWeight,
         public bonus: number,
-        public dexLimit?: number,
-    ) { }
+        public dexLimit: number,
+    ) { 
+    }
+    public maxDex(): string {
+        if (this.dexLimit < 0) {
+            return '∞';
+        }
+        return this.dexLimit.toString();
+    }
     public static fromJson(json: any): Armor {
         if (!json) return null;
         return new Armor(
             json.name,
             json.kind,
             json.bonus,
-            json.dexLimit,
+            json.dexLimit || -1,
         )
     }
 }
@@ -452,20 +459,20 @@ export type ArmorName = LightArmor | MediumArmor | HeavyArmor | 'Shield';
 export enum LightArmor {
     Padded = 'Padded',
     Leather = 'Leather',
-    StuddedLeather = 'StuddedLeather',
+    StuddedLeather = 'Studded Leather',
 }
 
 export enum MediumArmor {
     Hide = 'Hide',
-    ChainShirt = 'ChainShirt',
-    ScaleMail = 'ScaleMail',
-    BreastPlate = 'BreastPlate',
-    HalfPlate = 'HalfPlate',
+    ChainShirt = 'Chain Shirt',
+    ScaleMail = 'Scale Mail',
+    BreastPlate = 'Breast Plate',
+    HalfPlate = 'Half Plate',
 }
 
 export enum HeavyArmor {
-    RingMail = 'RingMail',
-    ChainMail = 'ChainMail',
+    RingMail = 'Ring Mail',
+    ChainMail = 'Chain Mail',
     Splint = 'Splint',
     Plate = 'Plate',
 }
@@ -512,6 +519,20 @@ export class Weapon {
             ret += '/F'
         }
         ret += '/' + this.range.metaString();
+        return ret;
+    }
+
+    longMiscString(): string {
+        let ret = `Damage Kind: ${this.damageKind}`;
+        if (this.handedness) {
+            ret += `\nHandedness: ${this.handedness}`;
+        }
+        if (this.weight) {
+            ret += `\nWeight: ${this.weight}`;
+        }
+        ret += `\nRanged: ${this.isRanged ? 'Yes' : 'No'}`;
+        ret += `\nThrowable: ${this.thrown ? 'Yes' : 'No'}`;
+        ret += `\nFinesse: ${this.thrown ? 'Yes' : 'No'}`
         return ret;
     }
     public static fromJson(json: any): Weapon {
