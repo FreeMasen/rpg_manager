@@ -93,6 +93,7 @@ button.alert {
     grid-template-columns: 75px auto 75px;
     grid-template-areas: 'back title x';
     background: var(--tint-background);
+    min-width: 1005px;
 }
 
 .back-button {
@@ -563,17 +564,43 @@ button.alert {
 .armors {
     grid-area: arm;
     margin: 5px 0 0 5px;
+    position: relative;
 }
 
-.armors .armor-list .armor-entry .box {
+.armors .armor-list .armor-entry .box,
+.armor-list-header {
     display: grid;
     grid-template-rows: 25px;
-    grid-template-columns: 120px 75px 75px;
+    grid-template-columns: 150px 75px 85px;
     margin-top: 5px;
     font-size: 14pt;
     padding-top: 5px;
     padding-left: 5px;
     margin-right: 5px;
+}
+
+.armor-list-button-row button {
+    width: 100%;
+    
+}
+
+.armor-adjustor {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.armor-adjustor-header,
+.armor-adjustor-armor {
+    display: grid;
+    grid-template-rows: 25px;
+    grid-template-columns: 100px 100px 100px;
+}
+
+.armor-adjustor-header span,
+.armor-adjustor-armor span {
+    text-align: center;
+    line-height: 18pt;
 }
 
 .money {
@@ -651,6 +678,10 @@ button.alert {
     flex-flow: column;
 }
 
+.note-value {
+    cursor: default;
+}
+
 .items-list {
     grid-area: items;
     display: flex;
@@ -673,6 +704,10 @@ button.alert {
     text-align: center;
     padding: 0;
     border: 0;
+}
+
+.magic-list-item {
+    cursor: default;
 }
 
 .new-item {
