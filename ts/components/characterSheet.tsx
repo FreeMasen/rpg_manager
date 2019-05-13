@@ -1171,7 +1171,7 @@ export class NewWeapon extends React.Component<INewWeaponProps, INewWeaponState>
 }
 
 interface IArmorListProps {
-    armor: Armor;
+    armor?: Armor;
     shield?: Armor;
     shieldAllowed: boolean;
     availableArmors: Armor[];
@@ -1203,7 +1203,8 @@ export class ArmorList extends React.Component<IArmorListProps, IArmorListState>
                         <span>Bonus</span>
                         <span>+Dex Max</span>
                     </ListViewRow>
-                    <ListViewRow
+                    { this.props.armor 
+                    ? <ListViewRow
                         className="armor-entry"
                     >
                         <div className="box">
@@ -1212,6 +1213,7 @@ export class ArmorList extends React.Component<IArmorListProps, IArmorListState>
                             <span>{this.props.armor.maxDex()}</span>
                         </div>
                     </ListViewRow>
+                    : null }
                     {this.props.shield
                         ? [<ListViewHeader>
                             Shield
@@ -1242,18 +1244,16 @@ export class ArmorList extends React.Component<IArmorListProps, IArmorListState>
                             armorOptions={this.props.availableArmors}
                             currentShield={this.props.shield}
                             allowShield={this.props.shieldAllowed}
-                            onComplete={(a, s) => this.adjustmentComplete(a, s)}
+                            onComplete={(isSave, a, s) => this.adjustmentComplete(isSave, a, s)}
                         />)
                         : null
                 }
             </div>
         );
     }
-    adjustmentComplete(armor: Armor, shield: Armor) {
+    adjustmentComplete(isSave: boolean, armor: Armor, shield: Armor) {
+        if (!isSave) return;
         this.setState({editing: false}, () => {
-            if (!armor) {
-                return;
-            }
             this.props.onChange(armor, shield)
         });
     }
@@ -1264,7 +1264,7 @@ interface IArmorAdjustorProps {
     currentShield?: Armor;
     armorOptions: Armor[];
     allowShield: boolean;
-    onComplete: (a: Armor, s: Armor) => void;
+    onComplete: (isSave: boolean, a: Armor, s: Armor) => void;
 }
 
 interface IArmorAdjustorState {
@@ -1300,7 +1300,8 @@ export class ArmorAdjustor extends React.Component<IArmorAdjustorProps, IArmorAd
                         <select
                             value={this.state.armor.name}
                             onChange={ev => this.armorChanged(ev.currentTarget.value as ArmorName)}
-                        >
+                        >   
+                            <option value="none">None</option>
                             {this.props.armorOptions.map(o =>
                                 <option value={o.name} key={o.name}>{o.name}</option>)
                             }
@@ -1335,8 +1336,13 @@ export class ArmorAdjustor extends React.Component<IArmorAdjustorProps, IArmorAd
         );
     }
 
-    armorChanged(name: ArmorName) {
-        let armor = this.props.armorOptions.find(a => a.name === name);
+    armorChanged(name: ArmorName | 'none') {
+        let armor: Armor;
+        if (name === 'none') {
+            armor = null;
+        } else {
+            armor = this.props.armorOptions.find(a => a.name === name);
+        }
         this.setState({ armor });
     }
 
@@ -1352,9 +1358,9 @@ export class ArmorAdjustor extends React.Component<IArmorAdjustorProps, IArmorAd
 
     adjustmentComplete(isSave: boolean) {
         if (isSave) {
-            this.props.onComplete(this.state.armor, this.state.shield);
+            this.props.onComplete(true, this.state.armor, this.state.shield);
         } else {
-            this.props.onComplete(null, null);
+            this.props.onComplete(false, null, null);
         }
     }
 }
