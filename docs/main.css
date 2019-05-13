@@ -22,6 +22,10 @@ html, body {
     font-family: 'Roboto', sans-serif;
 }
 
+span {
+    line-height: 1;
+}
+
 button {
     border: 0;
     padding: 0 10px;
