@@ -575,7 +575,7 @@ button.alert {
 .armor-list-header {
     display: grid;
     grid-template-rows: 25px;
-    grid-template-columns: 150px 75px 85px;
+    grid-template-columns: 150px 75px 90px;
     margin-top: 5px;
     font-size: 14pt;
     padding-top: 5px;
